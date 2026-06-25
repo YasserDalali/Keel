@@ -5,6 +5,7 @@ export type Bindings = {
   AI: Ai;
   JWT_SECRET: string;
   TURNSTILE_SECRET: string;
+  PII_ENCRYPTION_KEY: string;
 };
 
 export type Variables = {
