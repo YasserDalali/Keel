@@ -6,6 +6,8 @@ export type Bindings = {
   TURNSTILE_SECRET: string;
   PII_ENCRYPTION_KEY: string;
   GEMINI_API_KEY: string;
+  PLAID_CLIENT_ID: string;
+  PLAID_SECRET: string;
 };
 
 export type Variables = {
