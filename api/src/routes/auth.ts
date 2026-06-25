@@ -71,4 +71,13 @@ auth.post("/logout", requireAuth, async (c) => {
   return c.json({ ok: true });
 });
 
+auth.get("/me", requireAuth, async (c) => {
+  const userId = c.var.userId;
+  const user = await c.env.DB.prepare("SELECT email FROM users WHERE id = ?")
+    .bind(userId)
+    .first<{ email: string }>();
+  if (!user) return c.json({ error: "User not found" }, 404);
+  return c.json({ userId, email: user.email, role: c.var.role });
+});
+
 export default auth;
