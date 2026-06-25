@@ -5,6 +5,7 @@ import { requireRole } from "../src/middleware/requireRole";
 import type { Bindings, Variables } from "../src/types";
 import app from "../src/index";
 import { signJwt } from "../src/auth/jwt";
+import { upsertPlaidItem } from "../src/plaid/items";
 
 async function authHeaderFor(userId: string, role: "borrower" | "officer" | "admin"): Promise<Record<string, string>> {
   const token = await signJwt({ sub: userId, role }, env.JWT_SECRET, 3600);
@@ -17,10 +18,29 @@ async function insertTestUser(userId: string, email: string, role: "borrower" | 
     .run();
 }
 
+// Seed a connected bank + approved profile so the borrower clears the loan risk gate.
+async function enableBorrowing(userId: string, bankScore = 90): Promise<void> {
+  await upsertPlaidItem(env.DB, env.PII_ENCRYPTION_KEY, {
+    userId,
+    itemId: "item-x",
+    accessToken: "access-x",
+    institutionName: "Test Bank",
+    bankSafetyScore: bankScore,
+    bankSignals: "{}",
+  });
+  await env.DB.prepare(
+    `INSERT INTO profiles (user_id, first_name, last_name, phone, address, national_id_number, kyc_status)
+     VALUES (?, 'e', 'e', ?, 'e', ?, 'approved')`
+  )
+    .bind(userId, crypto.randomUUID(), crypto.randomUUID())
+    .run();
+}
+
 describe("POST /api/loans", () => {
   it("creates a pending loan request for the authenticated borrower", async () => {
     const borrowerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "loan-borrower@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     const headers = await authHeaderFor(borrowerId, "borrower");
 
     const res = await app.request(
@@ -62,6 +82,7 @@ describe("GET /api/loans/:id", () => {
   it("returns the loan and its (empty, pre-approval) installments", async () => {
     const borrowerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "loan-getter@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     const headers = await authHeaderFor(borrowerId, "borrower");
 
     const createRes = await app.request(
@@ -88,6 +109,7 @@ describe("POST /api/loans/:id/approve", () => {
     const borrowerId = crypto.randomUUID();
     const officerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "approve-borrower@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     await insertTestUser(officerId, "approve-officer@example.com", "officer");
     const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
     const officerHeaders = await authHeaderFor(officerId, "officer");
@@ -130,6 +152,7 @@ describe("POST /api/loans/:id/approve", () => {
     const borrowerId = crypto.randomUUID();
     const officerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "double-approve-borrower@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     await insertTestUser(officerId, "double-approve-officer@example.com", "officer");
     const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
     const officerHeaders = await authHeaderFor(officerId, "officer");
@@ -171,6 +194,7 @@ describe("POST /api/loans/:id/approve", () => {
   it("rejects approval from a borrower with 403", async () => {
     const borrowerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "no-approve@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     const headers = await authHeaderFor(borrowerId, "borrower");
 
     const createRes = await app.request(
@@ -223,6 +247,7 @@ describe("POST /api/loans/:id/installments/:installmentId/pay", () => {
     const borrowerId = crypto.randomUUID();
     const officerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "pay-borrower@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     await insertTestUser(officerId, "pay-officer@example.com", "officer");
     const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
     const officerHeaders = await authHeaderFor(officerId, "officer");
@@ -253,6 +278,7 @@ describe("POST /api/loans/:id/installments/:installmentId/pay", () => {
     const borrowerId = crypto.randomUUID();
     const officerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "fully-paid-borrower@example.com", "borrower");
+    await enableBorrowing(borrowerId);
     await insertTestUser(officerId, "fully-paid-officer@example.com", "officer");
     const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
     const officerHeaders = await authHeaderFor(officerId, "officer");
