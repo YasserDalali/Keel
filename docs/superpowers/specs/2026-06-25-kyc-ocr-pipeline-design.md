@@ -6,7 +6,9 @@
 
 ## Goal
 
-A logged-in borrower uploads a National ID image. A Workers AI vision model performs OCR to pre-fill name / national ID number / date of birth. The borrower confirms or edits the suggested values and submits, which creates their **encrypted** profile flagged `kyc_status = 'pending'` for later officer review.
+A logged-in borrower uploads a National ID image. The **Gemini API** (`gemini-2.5-flash`, multimodal) performs OCR + field extraction in one free-tier call to pre-fill name / national ID number / date of birth. The borrower confirms or edits the suggested values and submits, which creates their **encrypted** profile flagged `kyc_status = 'pending'` for later officer review.
+
+> **OCR engine note (changed 2026-06-25):** the original design used Workers AI (`@cf/meta/llama-3.2-11b-vision-instruct`). It was swapped for the Gemini API to avoid any Cloudflare AI (neuron) cost — Gemini's free tier covers this and `gemini-2.5-flash` is itself multimodal, so no separate open-source OCR engine (e.g. Tesseract) is needed. `extractOcr` now takes `(image, mimeType, apiKey)` and calls Gemini over `fetch`; the `AI` binding is removed. The two-step flow, R2/KV/D1 storage, encryption, and parser contract are unchanged.
 
 ## Decisions (locked during brainstorming)
 

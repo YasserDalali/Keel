@@ -1,9 +1,11 @@
 name = "microloans-platform"
 main = "api/src/index.ts"
 compatibility_date = "2026-06-25"
+account_id = "3163500eb2f2f9b177791b4b3ce97aa9"
 
-[site]
-bucket = "./frontend/dist"
+# Frontend will be served separately (Workers Assets or Pages) once built.
+# The deprecated [site] block was removed — it has no assets to serve yet and
+# blocked API deploys on an empty ./frontend/dist.
 
 [[kv_namespaces]]
 binding = "LOAN_CACHE"
@@ -19,6 +21,3 @@ migrations_dir = "./api/migrations"
 [[r2_buckets]]
 binding = "KYC_BUCKET"
 bucket_name = "microloans-kyc"
-
-[ai]
-binding = "AI"
