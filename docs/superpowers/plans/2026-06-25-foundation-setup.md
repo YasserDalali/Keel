@@ -319,7 +319,7 @@ git commit -m "feat: add D1 initial schema migration"
     "hono": "^4.6.0"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.0",
     "@cloudflare/workers-types": "^4.20260601.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
@@ -360,6 +360,13 @@ export default defineWorkersConfig({
 
 Run: `npm install --prefix api`
 Expected: `api/node_modules/` created, no errors.
+
+- [ ] **Step 4b: Create the `frontend/dist` placeholder**
+
+`wrangler.toml`'s `[site]` bucket points at `./frontend/dist`. Miniflare scans that directory on startup (for both `vitest-pool-workers` and `wrangler dev`) and throws `ENOENT` if it's missing. The `borrower-frontend` plan (see Roadmap) will populate it for real; until then, an empty directory satisfies the scan.
+
+Run: `mkdir -p frontend/dist`
+Expected: directory created, no output. (Already covered by `.gitignore`'s `dist/` pattern — do not commit it.)
 
 - [ ] **Step 5: Write the failing test**
 
