@@ -83,6 +83,74 @@ describe("GET /api/loans/:id", () => {
   });
 });
 
+describe("POST /api/loans/:id/approve", () => {
+  it("activates the loan, creates installments, and records a disbursement", async () => {
+    const borrowerId = crypto.randomUUID();
+    const officerId = crypto.randomUUID();
+    await insertTestUser(borrowerId, "approve-borrower@example.com", "borrower");
+    await insertTestUser(officerId, "approve-officer@example.com", "officer");
+    const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
+    const officerHeaders = await authHeaderFor(officerId, "officer");
+
+    const createRes = await app.request(
+      "/api/loans",
+      {
+        method: "POST",
+        headers: { ...borrowerHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 1200, termMonths: 6 }),
+      },
+      env
+    );
+    const { id: loanId } = await createRes.json<{ id: string }>();
+
+    const approveRes = await app.request(
+      `/api/loans/${loanId}/approve`,
+      { method: "POST", headers: officerHeaders },
+      env
+    );
+    expect(approveRes.status).toBe(200);
+    const approveBody = await approveRes.json();
+    expect(approveBody.status).toBe("active");
+    expect(approveBody.installmentCount).toBe(6);
+
+    const getRes = await app.request(`/api/loans/${loanId}`, { headers: borrowerHeaders }, env);
+    const getBody = await getRes.json();
+    expect(getBody.loan.status).toBe("active");
+    expect(getBody.installments).toHaveLength(6);
+
+    const txRes = await env.DB.prepare(
+      "SELECT type, amount FROM transactions WHERE loan_id = ?"
+    )
+      .bind(loanId)
+      .all<{ type: string; amount: number }>();
+    expect(txRes.results).toEqual([{ type: "disbursement", amount: 1200 }]);
+  });
+
+  it("rejects approval from a borrower with 403", async () => {
+    const borrowerId = crypto.randomUUID();
+    await insertTestUser(borrowerId, "no-approve@example.com", "borrower");
+    const headers = await authHeaderFor(borrowerId, "borrower");
+
+    const createRes = await app.request(
+      "/api/loans",
+      {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 500, termMonths: 3 }),
+      },
+      env
+    );
+    const { id: loanId } = await createRes.json<{ id: string }>();
+
+    const approveRes = await app.request(
+      `/api/loans/${loanId}/approve`,
+      { method: "POST", headers },
+      env
+    );
+    expect(approveRes.status).toBe(403);
+  });
+});
+
 describe("requireRole", () => {
   function buildTestApp() {
     const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
