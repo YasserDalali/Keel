@@ -126,6 +126,48 @@ describe("POST /api/loans/:id/approve", () => {
     expect(txRes.results).toEqual([{ type: "disbursement", amount: 1200 }]);
   });
 
+  it("rejects re-approving an already-active loan with a non-success status", async () => {
+    const borrowerId = crypto.randomUUID();
+    const officerId = crypto.randomUUID();
+    await insertTestUser(borrowerId, "double-approve-borrower@example.com", "borrower");
+    await insertTestUser(officerId, "double-approve-officer@example.com", "officer");
+    const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
+    const officerHeaders = await authHeaderFor(officerId, "officer");
+
+    const createRes = await app.request(
+      "/api/loans",
+      {
+        method: "POST",
+        headers: { ...borrowerHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 1200, termMonths: 6 }),
+      },
+      env
+    );
+    const { id: loanId } = await createRes.json<{ id: string }>();
+
+    const firstApprove = await app.request(
+      `/api/loans/${loanId}/approve`,
+      { method: "POST", headers: officerHeaders },
+      env
+    );
+    expect(firstApprove.status).toBe(200);
+
+    const secondApprove = await app.request(
+      `/api/loans/${loanId}/approve`,
+      { method: "POST", headers: officerHeaders },
+      env
+    );
+    expect(secondApprove.status).not.toBe(200);
+    expect([404, 409]).toContain(secondApprove.status);
+
+    const installmentsRes = await env.DB.prepare(
+      "SELECT COUNT(*) as count FROM installments WHERE loan_id = ?"
+    )
+      .bind(loanId)
+      .first<{ count: number }>();
+    expect(installmentsRes?.count).toBe(6);
+  });
+
   it("rejects approval from a borrower with 403", async () => {
     const borrowerId = crypto.randomUUID();
     await insertTestUser(borrowerId, "no-approve@example.com", "borrower");

@@ -58,9 +58,16 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
 
   const schedule = generateInstallments(loan.amount, loan.interest_rate, loan.term_months, new Date());
 
-  await c.env.DB.batch([
+  // ponytail: UPDATE's WHERE status='pending' is the real concurrency guard (atomic
+  // against the row at write time); the SELECT above only filters the common case.
+  // D1 batch() runs every statement regardless of an earlier one's rows-affected, so a
+  // racing request can still leave orphaned installments/transaction rows here. Closing
+  // that fully needs all three statements conditioned on the UPDATE (e.g. a stored
+  // procedure/CTE) — out of scope; this narrows the window and reports the conflict
+  // instead of returning a false success.
+  const [updateResult] = await c.env.DB.batch([
     c.env.DB.prepare(
-      "UPDATE loans SET status = 'active', approved_by = ?, approved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+      "UPDATE loans SET status = 'active', approved_by = ?, approved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'pending'"
     ).bind(c.var.userId, loanId),
     ...schedule.map((installment) =>
       c.env.DB.prepare(
@@ -71,6 +78,10 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
       "INSERT INTO transactions (id, loan_id, type, amount, payment_method, status) VALUES (?, ?, 'disbursement', ?, 'mock_gateway', 'completed')"
     ).bind(crypto.randomUUID(), loanId, loan.amount),
   ]);
+
+  if (updateResult.meta.changes === 0) {
+    return c.json({ error: "Loan no longer pending" }, 409);
+  }
 
   return c.json({ id: loanId, status: "active", installmentCount: schedule.length });
 });
