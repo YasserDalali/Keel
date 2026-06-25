@@ -5,7 +5,11 @@ export async function verifyTurnstile(token: string, secret: string): Promise<bo
   body.append("secret", secret);
   body.append("response", token);
 
-  const res = await fetch(SITEVERIFY_URL, { method: "POST", body });
-  const outcome = await res.json<{ success: boolean }>();
-  return outcome.success;
+  try {
+    const res = await fetch(SITEVERIFY_URL, { method: "POST", body });
+    const outcome = await res.json<{ success: boolean }>();
+    return outcome.success;
+  } catch {
+    return false; // ponytail: fail-closed on transport/parse errors
+  }
 }

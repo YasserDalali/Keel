@@ -45,6 +45,37 @@ describe("POST /api/auth/register", () => {
 
     expect(second.status).toBe(409);
   });
+
+  it("rejects a duplicate email that differs only by case", async () => {
+    await app.request(
+      "/api/auth/register",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "Casing@example.com",
+          password: "correct-horse-battery-staple",
+          turnstileToken: DUMMY_TOKEN,
+        }),
+      },
+      env
+    );
+    const second = await app.request(
+      "/api/auth/register",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "casing@example.com",
+          password: "correct-horse-battery-staple",
+          turnstileToken: DUMMY_TOKEN,
+        }),
+      },
+      env
+    );
+
+    expect(second.status).toBe(409);
+  });
 });
 
 describe("POST /api/auth/login", () => {

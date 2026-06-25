@@ -10,13 +10,15 @@ const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 auth.post("/register", async (c) => {
   const body = await c.req.json<{ email: string; password: string; turnstileToken: string }>();
 
+  const email = body.email.toLowerCase();
+
   const passed = await verifyTurnstile(body.turnstileToken, c.env.TURNSTILE_SECRET);
   if (!passed) {
     return c.json({ error: "Turnstile verification failed" }, 403);
   }
 
   const existing = await c.env.DB.prepare("SELECT id FROM users WHERE email = ?")
-    .bind(body.email)
+    .bind(email)
     .first();
   if (existing) {
     return c.json({ error: "Email already registered" }, 409);
@@ -27,14 +29,16 @@ auth.post("/register", async (c) => {
   await c.env.DB.prepare(
     "INSERT INTO users (id, email, password_hash, role) VALUES (?, ?, ?, 'borrower')"
   )
-    .bind(id, body.email, passwordHash)
+    .bind(id, email, passwordHash)
     .run();
 
-  return c.json({ id, email: body.email }, 201);
+  return c.json({ id, email }, 201);
 });
 
 auth.post("/login", async (c) => {
   const body = await c.req.json<{ email: string; password: string; turnstileToken: string }>();
+
+  const email = body.email.toLowerCase();
 
   const passed = await verifyTurnstile(body.turnstileToken, c.env.TURNSTILE_SECRET);
   if (!passed) {
@@ -44,7 +48,7 @@ auth.post("/login", async (c) => {
   const user = await c.env.DB.prepare(
     "SELECT id, password_hash, role FROM users WHERE email = ?"
   )
-    .bind(body.email)
+    .bind(email)
     .first<{ id: string; password_hash: string; role: "borrower" | "officer" | "admin" }>();
 
   if (!user || !(await verifyPassword(body.password, user.password_hash))) {
@@ -60,7 +64,7 @@ auth.post("/logout", requireAuth, async (c) => {
   const exp = c.var.exp;
   const ttl = exp - Math.floor(Date.now() / 1000);
 
-  if (ttl > 0) {
+  if (ttl >= 60) {
     await c.env.LOAN_CACHE.put(`blacklist:${jti}`, "1", { expirationTtl: ttl });
   }
 
