@@ -1,0 +1,24 @@
+name = "microloans-platform"
+main = "api/src/index.ts"
+compatibility_date = "2026-06-25"
+
+[site]
+bucket = "./frontend/dist"
+
+[[kv_namespaces]]
+binding = "LOAN_CACHE"
+id = "xxxxxxxxxxxx_kv_id"
+preview_id = "xxxxxxxxxxxx_kv_preview_id"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "microloans_db"
+database_id = "xxxxxxxxxxxx_db_id"
+migrations_dir = "./api/migrations"
+
+[[r2_buckets]]
+binding = "KYC_BUCKET"
+bucket_name = "microloans-kyc"
+
+[ai]
+binding = "AI"

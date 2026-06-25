@@ -1,0 +1,13 @@
+{
+  "name": "microloans-platform",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "npm test --prefix api",
+    "deploy": "npm run build --prefix frontend && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.0"
+  }
+}
