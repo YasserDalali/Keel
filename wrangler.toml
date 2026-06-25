@@ -7,8 +7,8 @@ bucket = "./frontend/dist"
 
 [[kv_namespaces]]
 binding = "LOAN_CACHE"
-id = "xxxxxxxxxxxx_kv_id"
-preview_id = "xxxxxxxxxxxx_kv_preview_id"
+id = "8ca0b171dd5b4224a8cb9cd06749d165"
+preview_id = "7de6d77f091a4cd5b4f621a6023531b0"
 
 [[d1_databases]]
 binding = "DB"
