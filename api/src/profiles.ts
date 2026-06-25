@@ -7,6 +7,8 @@ export type ProfileInput = {
   phone: string;
   address: string;
   nationalIdNumber: string;
+  kycDocumentR2Key: string;
+  ocrExtractedData: string;
 };
 
 export type ProfileRecord = {
@@ -17,6 +19,8 @@ export type ProfileRecord = {
   address: string;
   nationalIdNumber: string;
   kycStatus: "pending" | "approved" | "rejected";
+  kycDocumentR2Key: string;
+  ocrExtractedData: string;
 };
 
 export async function createProfile(
@@ -24,20 +28,33 @@ export async function createProfile(
   encryptionKey: string,
   input: ProfileInput
 ): Promise<void> {
-  const [firstName, lastName, phone, address, nationalIdNumber] = await Promise.all([
-    encryptField(input.firstName, encryptionKey),
-    encryptField(input.lastName, encryptionKey),
-    encryptField(input.phone, encryptionKey),
-    encryptField(input.address, encryptionKey),
-    encryptField(input.nationalIdNumber, encryptionKey),
-  ]);
+  const [firstName, lastName, phone, address, nationalIdNumber, ocrExtractedData] =
+    await Promise.all([
+      encryptField(input.firstName, encryptionKey),
+      encryptField(input.lastName, encryptionKey),
+      encryptField(input.phone, encryptionKey),
+      encryptField(input.address, encryptionKey),
+      encryptField(input.nationalIdNumber, encryptionKey),
+      encryptField(input.ocrExtractedData, encryptionKey),
+    ]);
 
   await db
     .prepare(
-      `INSERT INTO profiles (user_id, first_name, last_name, phone, address, national_id_number)
-       VALUES (?, ?, ?, ?, ?, ?)`
+      `INSERT INTO profiles
+         (user_id, first_name, last_name, phone, address, national_id_number,
+          kyc_document_r2_key, ocr_extracted_data)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(input.userId, firstName, lastName, phone, address, nationalIdNumber)
+    .bind(
+      input.userId,
+      firstName,
+      lastName,
+      phone,
+      address,
+      nationalIdNumber,
+      input.kycDocumentR2Key,
+      ocrExtractedData
+    )
     .run();
 }
 
@@ -48,7 +65,8 @@ export async function getProfile(
 ): Promise<ProfileRecord | null> {
   const row = await db
     .prepare(
-      `SELECT user_id, first_name, last_name, phone, address, national_id_number, kyc_status
+      `SELECT user_id, first_name, last_name, phone, address, national_id_number,
+              kyc_status, kyc_document_r2_key, ocr_extracted_data
        FROM profiles WHERE user_id = ?`
     )
     .bind(userId)
@@ -60,19 +78,23 @@ export async function getProfile(
       address: string;
       national_id_number: string;
       kyc_status: "pending" | "approved" | "rejected";
+      kyc_document_r2_key: string;
+      ocr_extracted_data: string;
     }>();
 
   if (!row) {
     return null;
   }
 
-  const [firstName, lastName, phone, address, nationalIdNumber] = await Promise.all([
-    decryptField(row.first_name, encryptionKey),
-    decryptField(row.last_name, encryptionKey),
-    decryptField(row.phone, encryptionKey),
-    decryptField(row.address, encryptionKey),
-    decryptField(row.national_id_number, encryptionKey),
-  ]);
+  const [firstName, lastName, phone, address, nationalIdNumber, ocrExtractedData] =
+    await Promise.all([
+      decryptField(row.first_name, encryptionKey),
+      decryptField(row.last_name, encryptionKey),
+      decryptField(row.phone, encryptionKey),
+      decryptField(row.address, encryptionKey),
+      decryptField(row.national_id_number, encryptionKey),
+      decryptField(row.ocr_extracted_data, encryptionKey),
+    ]);
 
   return {
     userId: row.user_id,
@@ -82,5 +104,7 @@ export async function getProfile(
     address,
     nationalIdNumber,
     kycStatus: row.kyc_status,
+    kycDocumentR2Key: row.kyc_document_r2_key,
+    ocrExtractedData,
   };
 }
