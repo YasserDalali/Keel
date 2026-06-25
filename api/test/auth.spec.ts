@@ -115,3 +115,51 @@ describe("POST /api/auth/login", () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe("POST /api/auth/logout", () => {
+  async function registerAndLogin(email: string): Promise<string> {
+    await app.request(
+      "/api/auth/register",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: "correct-horse-battery-staple", turnstileToken: DUMMY_TOKEN }),
+      },
+      env
+    );
+    const loginRes = await app.request(
+      "/api/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: "correct-horse-battery-staple", turnstileToken: DUMMY_TOKEN }),
+      },
+      env
+    );
+    const { token } = await loginRes.json<{ token: string }>();
+    return token;
+  }
+
+  it("revokes the token so it can no longer be used", async () => {
+    const token = await registerAndLogin("logout-test@example.com");
+
+    const logoutRes = await app.request(
+      "/api/auth/logout",
+      { method: "POST", headers: { Authorization: `Bearer ${token}` } },
+      env
+    );
+    expect(logoutRes.status).toBe(200);
+
+    const secondLogoutRes = await app.request(
+      "/api/auth/logout",
+      { method: "POST", headers: { Authorization: `Bearer ${token}` } },
+      env
+    );
+    expect(secondLogoutRes.status).toBe(401);
+  });
+
+  it("returns 401 with no Authorization header", async () => {
+    const res = await app.request("/api/auth/logout", { method: "POST" }, env);
+    expect(res.status).toBe(401);
+  });
+});

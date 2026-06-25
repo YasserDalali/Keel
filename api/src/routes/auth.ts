@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { hashPassword, verifyPassword } from "../auth/password";
 import { signJwt } from "../auth/jwt";
 import { verifyTurnstile } from "../middleware/turnstile";
+import { requireAuth } from "../middleware/requireAuth";
 import type { Bindings, Variables } from "../types";
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -52,6 +53,18 @@ auth.post("/login", async (c) => {
 
   const token = await signJwt({ sub: user.id, role: user.role }, c.env.JWT_SECRET, 3600);
   return c.json({ token });
+});
+
+auth.post("/logout", requireAuth, async (c) => {
+  const jti = c.var.jti;
+  const exp = c.var.exp;
+  const ttl = exp - Math.floor(Date.now() / 1000);
+
+  if (ttl > 0) {
+    await c.env.LOAN_CACHE.put(`blacklist:${jti}`, "1", { expirationTtl: ttl });
+  }
+
+  return c.json({ ok: true });
 });
 
 export default auth;
