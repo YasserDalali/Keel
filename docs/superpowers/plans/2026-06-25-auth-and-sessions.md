@@ -834,17 +834,21 @@ git commit -m "feat: add requireAuth middleware and POST /api/auth/logout"
 - Consumes: everything from Tasks 1–6.
 - Produces: confirmation that the full auth flow works under the real `wrangler dev` process, with real local D1 and KV — the gate before the `loan-and-ledger-core` plan builds protected endpoints on top of `requireAuth`.
 
-- [ ] **Step 1: Confirm `api/.dev.vars` exists with `JWT_SECRET` and `TURNSTILE_SECRET`**
+- [x] **Step 1: Confirm `api/.dev.vars` exists with `JWT_SECRET` and `TURNSTILE_SECRET`**
 
 Run: `cat api/.dev.vars`
 Expected: two lines, `JWT_SECRET=...` and `TURNSTILE_SECRET=1x0000000000000000000000000000000AA`. If missing, re-create it per Task 4 Step 1 — `wrangler dev` reads it the same way the test runner does.
 
-- [ ] **Step 2: Start the dev server**
+✓ Confirmed: both vars present in `.dev.vars`
+
+- [x] **Step 2: Start the dev server**
 
 Run: `npx wrangler dev --local`
 Expected: `Ready on http://localhost:8787`, no binding or env var errors.
 
-- [ ] **Step 3: Register a user**
+✓ Dev server started successfully; all bindings initialized (D1, KV, R2, AI, env vars)
+
+- [x] **Step 3: Register a user**
 
 Run:
 ```bash
@@ -854,7 +858,9 @@ curl -s -X POST http://localhost:8787/api/auth/register \
 ```
 Expected: `{"id":"<uuid>","email":"smoke-test@example.com"}`, HTTP 201.
 
-- [ ] **Step 4: Log in and capture the token**
+✓ HTTP 201 returned; response: `{"id":"fde86b3d-2d66-4d08-8cc8-8d519e64e834","email":"smoke-test@example.com"}`
+
+- [x] **Step 4: Log in and capture the token**
 
 Run:
 ```bash
@@ -864,7 +870,9 @@ curl -s -X POST http://localhost:8787/api/auth/login \
 ```
 Expected: `{"token":"<header>.<payload>.<signature>"}`, HTTP 200.
 
-- [ ] **Step 5: Log out with the captured token**
+✓ HTTP 200 returned; valid JWT with claims `{sub, role: "borrower", jti, exp}` captured
+
+- [x] **Step 5: Log out with the captured token**
 
 Run (substitute the real token from Step 4):
 ```bash
@@ -873,16 +881,22 @@ curl -s -i -X POST http://localhost:8787/api/auth/logout \
 ```
 Expected: `HTTP/1.1 200`, body `{"ok":true}`.
 
-- [ ] **Step 6: Confirm the logged-out token is now rejected**
+✓ HTTP 200 returned; response: `{"ok":true}` — token added to KV blacklist
+
+- [x] **Step 6: Confirm the logged-out token is now rejected**
 
 Run the same `curl` command from Step 5 again with the same token.
 Expected: `HTTP/1.1 401`, body `{"error":"Token revoked"}`.
 
-- [ ] **Step 7: Stop the dev server**
+✓ HTTP 401 returned; response: `{"error":"Token revoked"}` — blacklist check working correctly
+
+- [x] **Step 7: Stop the dev server**
 
 Press `Ctrl+C` in the terminal running `wrangler dev`.
 
-- [ ] **Step 8: Commit**
+✓ Dev server terminated cleanly
+
+- [x] **Step 8: Commit**
 
 ```bash
 git add docs/superpowers/plans/2026-06-25-auth-and-sessions.md
