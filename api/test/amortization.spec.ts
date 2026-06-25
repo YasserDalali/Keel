@@ -18,4 +18,9 @@ describe("generateInstallments", () => {
     const schedule = generateInstallments(1200, 0.05, 3, new Date("2026-01-15"));
     expect(schedule.map((i) => i.dueDate)).toEqual(["2026-02-15", "2026-03-15", "2026-04-15"]);
   });
+
+  it("clamps due dates to last day of target month when day-of-month doesn't exist", () => {
+    const schedule = generateInstallments(1000, 0.1, 3, new Date("2026-01-31"));
+    expect(schedule.map((i) => i.dueDate)).toEqual(["2026-02-28", "2026-03-31", "2026-04-30"]);
+  });
 });
