@@ -58,7 +58,7 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
 
   const schedule = generateInstallments(loan.amount, loan.interest_rate, loan.term_months, new Date());
 
-  // ponytail: UPDATE's WHERE status='pending' is the real concurrency guard (atomic
+  // UPDATE's WHERE status='pending' is the real concurrency guard (atomic
   // against the row at write time); the SELECT above only filters the common case.
   // D1 batch() runs every statement regardless of an earlier one's rows-affected, so a
   // racing request can still leave orphaned installments/transaction rows here. Closing

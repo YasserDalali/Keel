@@ -10,6 +10,6 @@ export async function verifyTurnstile(token: string, secret: string): Promise<bo
     const outcome = await res.json<{ success: boolean }>();
     return outcome.success;
   } catch {
-    return false; // ponytail: fail-closed on transport/parse errors
+    return false; // fail-closed on transport/parse errors
   }
 }

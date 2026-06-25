@@ -5,7 +5,7 @@ export type JwtPayload = {
   exp: number;
 };
 
-// ponytail: constant-time base64url comparison, prevents timing side-channel in JWT signature verification
+// constant-time base64url comparison, prevents timing side-channel in JWT signature verification
 function constantTimeCompare(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let mismatch = 0;
