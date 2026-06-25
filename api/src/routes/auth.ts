@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { hashPassword } from "../auth/password";
+import { hashPassword, verifyPassword } from "../auth/password";
+import { signJwt } from "../auth/jwt";
 import { verifyTurnstile } from "../middleware/turnstile";
 import type { Bindings, Variables } from "../types";
 
@@ -29,6 +30,28 @@ auth.post("/register", async (c) => {
     .run();
 
   return c.json({ id, email: body.email }, 201);
+});
+
+auth.post("/login", async (c) => {
+  const body = await c.req.json<{ email: string; password: string; turnstileToken: string }>();
+
+  const passed = await verifyTurnstile(body.turnstileToken, c.env.TURNSTILE_SECRET);
+  if (!passed) {
+    return c.json({ error: "Turnstile verification failed" }, 403);
+  }
+
+  const user = await c.env.DB.prepare(
+    "SELECT id, password_hash, role FROM users WHERE email = ?"
+  )
+    .bind(body.email)
+    .first<{ id: string; password_hash: string; role: "borrower" | "officer" | "admin" }>();
+
+  if (!user || !(await verifyPassword(body.password, user.password_hash))) {
+    return c.json({ error: "Invalid credentials" }, 401);
+  }
+
+  const token = await signJwt({ sub: user.id, role: user.role }, c.env.JWT_SECRET, 3600);
+  return c.json({ token });
 });
 
 export default auth;
