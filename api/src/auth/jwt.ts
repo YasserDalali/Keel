@@ -5,6 +5,16 @@ export type JwtPayload = {
   exp: number;
 };
 
+// ponytail: constant-time base64url comparison, prevents timing side-channel in JWT signature verification
+function constantTimeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 function base64url(input: string): string {
   return btoa(input).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -49,7 +59,7 @@ export async function verifyJwt(token: string, secret: string): Promise<JwtPaylo
   }
   const [encodedHeader, encodedPayload, signature] = parts;
   const expectedSignature = await hmacSign(`${encodedHeader}.${encodedPayload}`, secret);
-  if (signature !== expectedSignature) {
+  if (!constantTimeCompare(signature, expectedSignature)) {
     throw new Error("Invalid signature");
   }
   const payload: JwtPayload = JSON.parse(base64urlDecode(encodedPayload));
