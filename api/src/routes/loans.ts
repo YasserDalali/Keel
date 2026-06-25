@@ -86,4 +86,53 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
   return c.json({ id: loanId, status: "active", installmentCount: schedule.length });
 });
 
+loans.post("/:id/installments/:installmentId/pay", requireAuth, async (c) => {
+  const loanId = c.req.param("id");
+  const installmentId = c.req.param("installmentId");
+  const body = await c.req.json<{
+    amount: number;
+    paymentMethod: "stripe" | "bank_transfer" | "mock_gateway";
+  }>();
+
+  const installment = await c.env.DB.prepare(
+    "SELECT id, amount_due, amount_paid FROM installments WHERE id = ? AND loan_id = ?"
+  )
+    .bind(installmentId, loanId)
+    .first<{ id: string; amount_due: number; amount_paid: number }>();
+
+  if (!installment) {
+    return c.json({ error: "Installment not found" }, 404);
+  }
+
+  const newAmountPaid = installment.amount_paid + body.amount;
+  const newStatus = newAmountPaid >= installment.amount_due ? "paid" : "partial";
+
+  await c.env.DB.batch([
+    c.env.DB.prepare(
+      newStatus === "paid"
+        ? "UPDATE installments SET amount_paid = ?, status = ?, paid_at = CURRENT_TIMESTAMP WHERE id = ?"
+        : "UPDATE installments SET amount_paid = ?, status = ? WHERE id = ?"
+    ).bind(newAmountPaid, newStatus, installmentId),
+    c.env.DB.prepare(
+      "INSERT INTO transactions (id, loan_id, installment_id, type, amount, payment_method, status) VALUES (?, ?, ?, 'repayment', ?, ?, 'completed')"
+    ).bind(crypto.randomUUID(), loanId, installmentId, body.amount, body.paymentMethod),
+  ]);
+
+  const unpaidCount = await c.env.DB.prepare(
+    "SELECT COUNT(*) as count FROM installments WHERE loan_id = ? AND status != 'paid'"
+  )
+    .bind(loanId)
+    .first<{ count: number }>();
+
+  if (unpaidCount?.count === 0) {
+    await c.env.DB.prepare(
+      "UPDATE loans SET status = 'fully_paid', updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+    )
+      .bind(loanId)
+      .run();
+  }
+
+  return c.json({ installmentId, status: newStatus });
+});
+
 export default loans;

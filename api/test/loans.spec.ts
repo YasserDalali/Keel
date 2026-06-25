@@ -193,6 +193,95 @@ describe("POST /api/loans/:id/approve", () => {
   });
 });
 
+describe("POST /api/loans/:id/installments/:installmentId/pay", () => {
+  async function createActiveLoanWithInstallments(
+    borrowerHeaders: Record<string, string>,
+    officerHeaders: Record<string, string>,
+    amount: number,
+    termMonths: number
+  ): Promise<{ loanId: string; installmentIds: string[] }> {
+    const createRes = await app.request(
+      "/api/loans",
+      {
+        method: "POST",
+        headers: { ...borrowerHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, termMonths }),
+      },
+      env
+    );
+    const { id: loanId } = await createRes.json<{ id: string }>();
+
+    await app.request(`/api/loans/${loanId}/approve`, { method: "POST", headers: officerHeaders }, env);
+
+    const getRes = await app.request(`/api/loans/${loanId}`, { headers: borrowerHeaders }, env);
+    const { installments } = await getRes.json<{ installments: { id: string }[] }>();
+
+    return { loanId, installmentIds: installments.map((i) => i.id) };
+  }
+
+  it("marks an installment paid and records a repayment transaction", async () => {
+    const borrowerId = crypto.randomUUID();
+    const officerId = crypto.randomUUID();
+    await insertTestUser(borrowerId, "pay-borrower@example.com", "borrower");
+    await insertTestUser(officerId, "pay-officer@example.com", "officer");
+    const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
+    const officerHeaders = await authHeaderFor(officerId, "officer");
+
+    const { loanId, installmentIds } = await createActiveLoanWithInstallments(
+      borrowerHeaders,
+      officerHeaders,
+      300,
+      3
+    );
+
+    const payRes = await app.request(
+      `/api/loans/${loanId}/installments/${installmentIds[0]}/pay`,
+      {
+        method: "POST",
+        headers: { ...borrowerHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 105, paymentMethod: "mock_gateway" }),
+      },
+      env
+    );
+
+    expect(payRes.status).toBe(200);
+    const body = await payRes.json();
+    expect(body.status).toBe("paid");
+  });
+
+  it("flips the loan to fully_paid once every installment is paid", async () => {
+    const borrowerId = crypto.randomUUID();
+    const officerId = crypto.randomUUID();
+    await insertTestUser(borrowerId, "fully-paid-borrower@example.com", "borrower");
+    await insertTestUser(officerId, "fully-paid-officer@example.com", "officer");
+    const borrowerHeaders = await authHeaderFor(borrowerId, "borrower");
+    const officerHeaders = await authHeaderFor(officerId, "officer");
+
+    const { loanId, installmentIds } = await createActiveLoanWithInstallments(
+      borrowerHeaders,
+      officerHeaders,
+      200,
+      2
+    );
+
+    for (const installmentId of installmentIds) {
+      await app.request(
+        `/api/loans/${loanId}/installments/${installmentId}/pay`,
+        {
+          method: "POST",
+          headers: { ...borrowerHeaders, "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: 105, paymentMethod: "mock_gateway" }),
+        },
+        env
+      );
+    }
+
+    const getRes = await app.request(`/api/loans/${loanId}`, { headers: borrowerHeaders }, env);
+    const { loan } = await getRes.json<{ loan: { status: string } }>();
+    expect(loan.status).toBe("fully_paid");
+  });
+});
+
 describe("requireRole", () => {
   function buildTestApp() {
     const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
