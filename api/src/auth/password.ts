@@ -7,6 +7,16 @@ function bufferToHex(buffer: ArrayBuffer | Uint8Array): string {
     .join("");
 }
 
+// ponytail: constant-time hex comparison, prevents timing side-channel in password verification
+function constantTimeHexCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 function hexToBuffer(hex: string): Uint8Array {
   const bytes = new Uint8Array(hex.length / 2);
   for (let i = 0; i < bytes.length; i++) {
@@ -40,5 +50,5 @@ export async function verifyPassword(password: string, stored: string): Promise<
   const [saltHex, hashHex] = stored.split(":");
   const salt = hexToBuffer(saltHex);
   const derived = await deriveBits(password, salt);
-  return bufferToHex(derived) === hashHex;
+  return constantTimeHexCompare(bufferToHex(derived), hashHex);
 }
