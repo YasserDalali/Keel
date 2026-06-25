@@ -12,7 +12,12 @@ export default defineWorkersConfig(async () => {
         workers: {
           wrangler: { configPath: "../wrangler.toml" },
           miniflare: {
-            bindings: { TEST_MIGRATIONS: migrations },
+            // Pin Cloudflare's always-pass Turnstile test secret so the suite stays
+            // hermetic regardless of the real secret in .dev.vars (used for local dev).
+            bindings: {
+              TEST_MIGRATIONS: migrations,
+              TURNSTILE_SECRET: "1x0000000000000000000000000000000AA",
+            },
           },
         },
       },

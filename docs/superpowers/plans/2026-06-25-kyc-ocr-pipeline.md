@@ -6,7 +6,14 @@
 
 **Architecture:** Two `requireAuth`-gated endpoints under `/api/kyc`. `POST /upload` streams the image to R2, runs a pure-seam `extractOcr()` over the `AI` binding, and stashes the R2 key + raw OCR in a short-lived KV draft. `POST /confirm` reads the draft, calls the (extended) `createProfile()` to encrypt and persist the profile + OCR JSON + R2 pointer, and deletes the draft. The non-deterministic vision model is faked in automated tests via an `env.AI` override and verified once for real in a `wrangler dev` smoke test.
 
-**Tech Stack:** Hono, Cloudflare R2 (`KYC_BUCKET`), KV (`LOAN_CACHE`), Workers AI (`@cf/meta/llama-3.2-11b-vision-instruct`), Web Crypto AES-GCM (existing `crypto.ts`), Vitest + `@cloudflare/vitest-pool-workers`.
+**Tech Stack:** Hono, Cloudflare R2 (`KYC_BUCKET`), KV (`LOAN_CACHE`), **Gemini API (`gemini-2.5-flash`, multimodal, called over `fetch`)**, Web Crypto AES-GCM (existing `crypto.ts`), Vitest + `@cloudflare/vitest-pool-workers`.
+
+> **OCR engine swapped (2026-06-25, implemented):** Workers AI was replaced by the Gemini API to eliminate Cloudflare AI (neuron) cost — Gemini's free tier covers it and `gemini-2.5-flash` is multimodal (no separate open-source OCR engine needed). Concrete deltas vs. the task bodies below:
+> - `extractOcr(image, mimeType, apiKey)` POSTs the base64 image to `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>` and reads `candidates[0].content.parts[0].text`. The `OcrResult` type and the JSON parser are unchanged.
+> - `Bindings` gains `GEMINI_API_KEY: string` and drops `AI: Ai`; the `[ai]` block is removed from `wrangler.toml`. `GEMINI_API_KEY` comes from `.dev.vars` locally / `wrangler secret put GEMINI_API_KEY` in prod.
+> - Automated tests fake Gemini via the workers pool's undici `fetchMock` (NOT a `globalThis.fetch` spy — that corrupts isolated-storage teardown). R2 existence checks use `.head()` not `.get()` for the same reason.
+> - `vitest.config.ts` pins `TURNSTILE_SECRET` to the always-pass test key so the suite stays hermetic regardless of the real secret in `.dev.vars`.
+> - **Status: Tasks 1–4 implemented, full suite green (46/46). Task 5 (real-Gemini smoke test) pending a real `GEMINI_API_KEY`.**
 
 ## Global Constraints
 

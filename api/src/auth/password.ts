@@ -7,7 +7,7 @@ function bufferToHex(buffer: ArrayBuffer | Uint8Array): string {
     .join("");
 }
 
-// ponytail: constant-time hex comparison, prevents timing side-channel in password verification
+// constant-time hex comparison, prevents timing side-channel in password verification
 function constantTimeHexCompare(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let mismatch = 0;

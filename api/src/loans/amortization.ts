@@ -4,7 +4,7 @@ export type Installment = {
   amountDue: number;
 };
 
-// ponytail: clamping to last day of target month avoids Feb 29/30/31 bugs
+// clamping to last day of target month avoids Feb 29/30/31 bugs
 function addMonthsClamped(date: Date, months: number): Date {
   const day = date.getUTCDate();
   const targetYear = date.getUTCFullYear();
