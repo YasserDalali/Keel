@@ -17,6 +17,7 @@ export default defineWorkersConfig(async () => {
             bindings: {
               TEST_MIGRATIONS: migrations,
               TURNSTILE_SECRET: "1x0000000000000000000000000000000AA",
+              DIDIT_WEBHOOK_SECRET: "test-webhook-secret",
             },
           },
         },
