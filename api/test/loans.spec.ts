@@ -131,9 +131,10 @@ describe("POST /api/loans/:id/approve", () => {
       env
     );
     expect(approveRes.status).toBe(200);
-    const approveBody = await approveRes.json();
+    const approveBody = await approveRes.json<{ status: string; installmentCount: number; documentId: string }>();
     expect(approveBody.status).toBe("active");
     expect(approveBody.installmentCount).toBe(6);
+    expect(typeof approveBody.documentId).toBe("string");
 
     const getRes = await app.request(`/api/loans/${loanId}`, { headers: borrowerHeaders }, env);
     const getBody = await getRes.json();
@@ -270,8 +271,9 @@ describe("POST /api/loans/:id/installments/:installmentId/pay", () => {
     );
 
     expect(payRes.status).toBe(200);
-    const body = await payRes.json();
+    const body = await payRes.json<{ status: string; documentId: string }>();
     expect(body.status).toBe("paid");
+    expect(typeof body.documentId).toBe("string");
   });
 
   it("flips the loan to fully_paid once every installment is paid", async () => {

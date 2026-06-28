@@ -4,6 +4,8 @@ import { requireRole } from "../middleware/requireRole";
 import { generateInstallments } from "../loans/amortization";
 import { getPlaidItem } from "../plaid/items";
 import { behaviorScore, finalScore, THRESHOLD, type BehaviorHistory } from "../plaid/scoring";
+import { generateLoanAgreementPdf, generatePaymentReceiptPdf } from "../documents/generator";
+import { saveDocument } from "../documents/store";
 import type { Bindings, Variables } from "../types";
 
 const FLAT_INTEREST_RATE = 0.05;
@@ -142,10 +144,10 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
   const loanId = c.req.param("id");
 
   const loan = await c.env.DB.prepare(
-    "SELECT id, amount, interest_rate, term_months, upfront_required, upfront_paid FROM loans WHERE id = ? AND status = 'pending'"
+    "SELECT id, borrower_id, amount, interest_rate, term_months, upfront_required, upfront_paid FROM loans WHERE id = ? AND status = 'pending'"
   )
     .bind(loanId)
-    .first<{ id: string; amount: number; interest_rate: number; term_months: number; upfront_required: number; upfront_paid: number }>();
+    .first<{ id: string; borrower_id: string; amount: number; interest_rate: number; term_months: number; upfront_required: number; upfront_paid: number }>();
 
   if (!loan) {
     return c.json({ error: "Pending loan not found" }, 404);
@@ -182,7 +184,25 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
     return c.json({ error: "Loan no longer pending" }, 409);
   }
 
-  return c.json({ id: loanId, status: "active", installmentCount: schedule.length });
+  const docId = crypto.randomUUID();
+  const pdfBytes = await generateLoanAgreementPdf({
+    docId,
+    loanId,
+    borrowerId: loan.borrower_id,
+    amount: loan.amount,
+    interestRate: loan.interest_rate,
+    termMonths: loan.term_months,
+    schedule,
+  });
+  await saveDocument(c.env.DB, c.env.DOCS_BUCKET, {
+    id: docId,
+    userId: loan.borrower_id,
+    documentType: "loan_agreement",
+    referenceId: loanId,
+    pdfBytes,
+  });
+
+  return c.json({ id: loanId, status: "active", installmentCount: schedule.length, documentId: docId });
 });
 
 loans.post("/:id/reject", requireAuth, requireRole("officer", "admin"), async (c) => {
@@ -210,10 +230,10 @@ loans.post("/:id/installments/:installmentId/pay", requireAuth, async (c) => {
   }>();
 
   const installment = await c.env.DB.prepare(
-    "SELECT id, amount_due, amount_paid FROM installments WHERE id = ? AND loan_id = ?"
+    "SELECT id, installment_number, amount_due, amount_paid FROM installments WHERE id = ? AND loan_id = ?"
   )
     .bind(installmentId, loanId)
-    .first<{ id: string; amount_due: number; amount_paid: number }>();
+    .first<{ id: string; installment_number: number; amount_due: number; amount_paid: number }>();
 
   if (!installment) {
     return c.json({ error: "Installment not found" }, 404);
@@ -247,7 +267,26 @@ loans.post("/:id/installments/:installmentId/pay", requireAuth, async (c) => {
       .run();
   }
 
-  return c.json({ installmentId, status: newStatus });
+  const docId = crypto.randomUUID();
+  const pdfBytes = await generatePaymentReceiptPdf({
+    docId,
+    loanId,
+    installmentId,
+    installmentNumber: installment.installment_number,
+    amountPaid: body.amount,
+    paymentMethod: body.paymentMethod,
+    installmentStatus: newStatus,
+    paidAt: new Date().toISOString(),
+  });
+  await saveDocument(c.env.DB, c.env.DOCS_BUCKET, {
+    id: docId,
+    userId: c.var.userId,
+    documentType: "payment_receipt",
+    referenceId: installmentId,
+    pdfBytes,
+  });
+
+  return c.json({ installmentId, status: newStatus, documentId: docId });
 });
 
 export default loans;
