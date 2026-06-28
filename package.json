@@ -3,9 +3,19 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "wrangler dev",
-    "test": "npm test --prefix api",
-    "deploy": "npm run build --prefix frontend && wrangler deploy"
+    "dev": "npm run worker:dev",
+    "test": "npm run worker:test",
+    "deploy": "npm run worker:deploy",
+
+    "frontend:dev": "npm run dev --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
+    "frontend:preview": "npm run preview --prefix frontend",
+    "frontend:typecheck": "npm run typecheck --prefix frontend",
+    "frontend:gen:types": "npm run gen:types --prefix frontend",
+
+    "worker:dev": "wrangler dev",
+    "worker:test": "npm test --prefix api",
+    "worker:deploy": "npm run build --prefix frontend && wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^3.78.0"
