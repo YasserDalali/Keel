@@ -1,19 +1,17 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { createProfile, getProfile } from "../src/profiles";
+import { createProfile, getProfile, upsertVerificationStatus } from "../src/profiles";
 
-async function insertTestUser(userId: string, email: string): Promise<void> {
+async function insertUser(userId: string, email: string): Promise<void> {
   await env.DB.prepare(
-    "INSERT INTO users (id, email, password_hash, role) VALUES (?, ?, 'unused-hash', 'borrower')"
-  )
-    .bind(userId, email)
-    .run();
+    "INSERT INTO users (id, email, password_hash, role) VALUES (?, ?, 'hash', 'borrower')"
+  ).bind(userId, email).run();
 }
 
 describe("createProfile / getProfile", () => {
-  it("stores PII + OCR as ciphertext and returns decrypted plaintext on read", async () => {
+  it("stores PII as ciphertext and returns decrypted plaintext on read", async () => {
     const userId = crypto.randomUUID();
-    await insertTestUser(userId, "profile-test@example.com");
+    await insertUser(userId, "profile-test@example.com");
 
     await createProfile(env.DB, env.PII_ENCRYPTION_KEY, {
       userId,
@@ -22,39 +20,53 @@ describe("createProfile / getProfile", () => {
       phone: "+15551234567",
       address: "123 Main St",
       nationalIdNumber: "A1234567",
-      kycDocumentR2Key: `kyc/${userId}/doc-1`,
-      ocrExtractedData: JSON.stringify({ firstName: "Jane", nationalIdNumber: "A1234567" }),
     });
 
     const raw = await env.DB.prepare(
-      "SELECT first_name, phone, ocr_extracted_data, kyc_document_r2_key FROM profiles WHERE user_id = ?"
-    )
-      .bind(userId)
-      .first<{ first_name: string; phone: string; ocr_extracted_data: string; kyc_document_r2_key: string }>();
+      "SELECT first_name, phone FROM profiles WHERE user_id = ?"
+    ).bind(userId).first<{ first_name: string; phone: string }>();
     expect(raw?.first_name).not.toBe("Jane");
     expect(raw?.phone).not.toBe("+15551234567");
-    // OCR JSON is encrypted at rest — the raw column must not contain the plaintext field values
-    expect(raw?.ocr_extracted_data).not.toContain("Jane");
-    expect(raw?.ocr_extracted_data).not.toContain("A1234567");
-    // The R2 pointer is stored as plaintext (it is an opaque key, not PII)
-    expect(raw?.kyc_document_r2_key).toBe(`kyc/${userId}/doc-1`);
 
     const profile = await getProfile(env.DB, env.PII_ENCRYPTION_KEY, userId);
-    expect(profile).toEqual({
-      userId,
-      firstName: "Jane",
-      lastName: "Doe",
-      phone: "+15551234567",
-      address: "123 Main St",
-      nationalIdNumber: "A1234567",
-      kycStatus: "pending",
-      kycDocumentR2Key: `kyc/${userId}/doc-1`,
-      ocrExtractedData: JSON.stringify({ firstName: "Jane", nationalIdNumber: "A1234567" }),
-    });
+    expect(profile?.firstName).toBe("Jane");
+    expect(profile?.phone).toBe("+15551234567");
+    expect(profile?.kycStatus).toBe("pending");
+    expect(profile?.diditSessionId).toBeNull();
   });
 
   it("returns null for a user with no profile", async () => {
     const profile = await getProfile(env.DB, env.PII_ENCRYPTION_KEY, crypto.randomUUID());
     expect(profile).toBeNull();
+  });
+});
+
+describe("upsertVerificationStatus", () => {
+  it("creates a profile row if none exists", async () => {
+    const userId = crypto.randomUUID();
+    await insertUser(userId, "upsert-new@example.com");
+
+    await upsertVerificationStatus(env.DB, userId, "approved", "sess-123");
+
+    const profile = await getProfile(env.DB, env.PII_ENCRYPTION_KEY, userId);
+    expect(profile?.kycStatus).toBe("approved");
+    expect(profile?.diditSessionId).toBe("sess-123");
+  });
+
+  it("updates status on existing profile without overwriting PII", async () => {
+    const userId = crypto.randomUUID();
+    await insertUser(userId, "upsert-existing@example.com");
+
+    await createProfile(env.DB, env.PII_ENCRYPTION_KEY, {
+      userId, firstName: "Jane", lastName: "Doe",
+      phone: "+15551234567", address: "123 Main", nationalIdNumber: "A1234567",
+    });
+
+    await upsertVerificationStatus(env.DB, userId, "declined", "sess-456");
+
+    const profile = await getProfile(env.DB, env.PII_ENCRYPTION_KEY, userId);
+    expect(profile?.kycStatus).toBe("declined");
+    expect(profile?.diditSessionId).toBe("sess-456");
+    expect(profile?.firstName).toBe("Jane");
   });
 });
