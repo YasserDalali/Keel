@@ -1,6 +1,7 @@
 export type Bindings = {
   DB: D1Database;
   LOAN_CACHE: KVNamespace;
+  DOCS_BUCKET: R2Bucket;
   JWT_SECRET: string;
   TURNSTILE_SECRET: string;
   PII_ENCRYPTION_KEY: string;
