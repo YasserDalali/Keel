@@ -29,6 +29,21 @@ async function plaidPost<T>(path: string, body: Record<string, unknown>, env: Pl
   return data as T;
 }
 
+export async function createLinkToken(userId: string, env: PlaidEnv): Promise<string> {
+  const data = await plaidPost<{ link_token: string }>(
+    "/link/token/create",
+    {
+      user: { client_user_id: userId },
+      client_name: "Microloans",
+      products: ["transactions"],
+      country_codes: ["US"],
+      language: "en",
+    },
+    env
+  );
+  return data.link_token;
+}
+
 export async function sandboxCreatePublicToken(env: PlaidEnv): Promise<string> {
   const data = await plaidPost<{ public_token: string }>(
     "/sandbox/public_token/create",

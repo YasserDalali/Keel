@@ -8,6 +8,10 @@ export type Bindings = {
   GEMINI_API_KEY: string;
   PLAID_CLIENT_ID: string;
   PLAID_SECRET: string;
+  STRIPE_SECRET_KEY: string;
+  STRIPE_PUBLISHABLE_KEY: string;
+  PAYPAL_CLIENT_ID: string;
+  PAYPAL_SECRET: string;
 };
 
 export type Variables = {

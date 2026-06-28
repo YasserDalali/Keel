@@ -5,6 +5,8 @@ import loans from "./routes/loans";
 import kyc from "./routes/kyc";
 import plaid from "./routes/plaid";
 import profile from "./routes/profile";
+import payments from "./routes/payments";
+import config from "./routes/config";
 import type { Bindings, Variables } from "./types";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -15,5 +17,7 @@ app.route("/api/loans", loans);
 app.route("/api/kyc", kyc);
 app.route("/api/plaid", plaid);
 app.route("/api/profile", profile);
+app.route("/api/payments", payments);
+app.route("/api/config", config);
 
 export default app;

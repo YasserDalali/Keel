@@ -1,0 +1,5 @@
+ALTER TABLE loans ADD COLUMN upfront_required INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE loans ADD COLUMN upfront_amount REAL NOT NULL DEFAULT 0;
+ALTER TABLE loans ADD COLUMN upfront_paid INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE loans ADD COLUMN upfront_payment_id TEXT;
+ALTER TABLE loans ADD COLUMN upfront_payment_method TEXT;
