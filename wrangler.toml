@@ -17,7 +17,3 @@ binding = "DB"
 database_name = "microloans_db"
 database_id = "dcc7c188-9b19-4a0d-89d3-ffe89b86d374"
 migrations_dir = "./api/migrations"
-
-[[r2_buckets]]
-binding = "KYC_BUCKET"
-bucket_name = "microloans-kyc"
