@@ -21,9 +21,10 @@ describe("POST /api/auth/register", () => {
     );
 
     expect(res.status).toBe(201);
-    const body = await res.json();
+    const body = await res.json<{ id: string; email: string; documentId: string }>();
     expect(body.email).toBe("new-borrower@example.com");
     expect(typeof body.id).toBe("string");
+    expect(typeof body.documentId).toBe("string");
   });
 
   it("rejects a duplicate email with 409", async () => {

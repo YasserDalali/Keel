@@ -3,6 +3,8 @@ import { hashPassword, verifyPassword } from "../auth/password";
 import { signJwt } from "../auth/jwt";
 import { verifyTurnstile } from "../middleware/turnstile";
 import { requireAuth } from "../middleware/requireAuth";
+import { generateAccountOpenedPdf } from "../documents/generator";
+import { saveDocument } from "../documents/store";
 import type { Bindings, Variables } from "../types";
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -32,7 +34,11 @@ auth.post("/register", async (c) => {
     .bind(id, email, passwordHash)
     .run();
 
-  return c.json({ id, email }, 201);
+  const docId = crypto.randomUUID();
+  const pdfBytes = await generateAccountOpenedPdf({ docId, userId: id, email, createdAt: new Date().toISOString() });
+  await saveDocument(c.env.DB, c.env.DOCS_BUCKET, { id: docId, userId: id, documentType: "account_opened", pdfBytes });
+
+  return c.json({ id, email, documentId: docId }, 201);
 });
 
 auth.post("/login", async (c) => {
