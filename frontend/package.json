@@ -11,6 +11,7 @@
     "gen:types": "openapi-typescript ../api/openapi.json -o src/lib/api-types.ts"
   },
   "dependencies": {
+    "@didit-protocol/sdk-web": "^0.2.1",
     "@paypal/react-paypal-js": "^10.1.0",
     "@stripe/react-stripe-js": "^6.6.0",
     "@stripe/stripe-js": "^9.8.0",

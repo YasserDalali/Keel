@@ -6,6 +6,8 @@ export type Bindings = {
   TURNSTILE_SECRET: string;
   PII_ENCRYPTION_KEY: string;
   DIDIT_WEBHOOK_SECRET: string;
+  DIDIT_API_KEY: string;
+  DIDIT_WORKFLOW_ID: string;
   PLAID_CLIENT_ID: string;
   PLAID_SECRET: string;
   STRIPE_SECRET_KEY: string;
