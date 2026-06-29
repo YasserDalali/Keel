@@ -18,12 +18,9 @@ async function authHeaderFor(userId: string): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${token}` };
 }
 
-// Fake the three sandbox.plaid.com calls.
+// Stub Plaid token exchange + balance fetch (the two calls the route makes).
 function stubPlaid(accounts: unknown[]): void {
   const pool = fetchMock.get("https://sandbox.plaid.com");
-  pool
-    .intercept({ method: "POST", path: "/sandbox/public_token/create" })
-    .reply(200, { public_token: "public-sandbox-x" });
   pool
     .intercept({ method: "POST", path: "/item/public_token/exchange" })
     .reply(200, { access_token: "access-sandbox-secret-123", item_id: "item-1" });
@@ -37,14 +34,18 @@ const RICH = [
 ];
 
 describe("POST /api/plaid/connect", () => {
-  it("runs the sandbox audit, stores an encrypted item, returns the bank score", async () => {
+  it("exchanges public token, stores an encrypted item, returns the bank score", async () => {
     const userId = crypto.randomUUID();
     await insertTestUser(userId, "plaid@example.com");
     stubPlaid(RICH);
 
     const res = await app.request(
       "/api/plaid/connect",
-      { method: "POST", headers: await authHeaderFor(userId) },
+      {
+        method: "POST",
+        headers: { ...(await authHeaderFor(userId)), "Content-Type": "application/json" },
+        body: JSON.stringify({ publicToken: "public-sandbox-x" }),
+      },
       env
     );
 
