@@ -8,12 +8,13 @@ import LoginPage from "./pages/LoginPage";
 import KycPage from "./pages/KycPage";
 import DashboardPage from "./pages/DashboardPage";
 import OfficerPage from "./pages/OfficerPage";
+import OnboardingPage from "./pages/OnboardingPage";
 
 type Me = components["schemas"]["Me"];
 
 interface AuthCtx {
   user: Me | null;
-  login: (token: string) => Promise<void>;
+  login: (token: string) => Promise<Me | null>;
   logout: () => Promise<void>;
 }
 
@@ -25,13 +26,22 @@ export function useAuth() {
   return ctx;
 }
 
+function homeDestination(user: Me | null): string {
+  if (!user) return "/login";
+  if (user.role === "officer" || user.role === "admin") return "/officer";
+  if (!localStorage.getItem("onboarding_shown")) return "/onboarding";
+  return "/dashboard";
+}
+
 export default function App() {
   const [user, setUser] = useState<Me | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function fetchMe() {
+  async function fetchMe(): Promise<Me | null> {
     const { data } = await api.GET("/auth/me");
-    setUser(data ?? null);
+    const me = data ?? null;
+    setUser(me);
+    return me;
   }
 
   useEffect(() => {
@@ -42,9 +52,9 @@ export default function App() {
     }
   }, []);
 
-  async function login(token: string) {
+  async function login(token: string): Promise<Me | null> {
     localStorage.setItem("token", token);
-    await fetchMe();
+    return fetchMe();
   }
 
   async function logout() {
@@ -55,9 +65,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
+      <div className="flex items-center justify-center h-screen">Loading...</div>
     );
   }
 
@@ -67,6 +75,14 @@ export default function App() {
         <Nav />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <OnboardingPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/kyc"
             element={
@@ -91,12 +107,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/"
-            element={
-              <Navigate to={user ? "/dashboard" : "/login"} replace />
-            }
-          />
+          <Route path="/" element={<Navigate to={homeDestination(user)} replace />} />
         </Routes>
       </BrowserRouter>
     </AuthContext.Provider>

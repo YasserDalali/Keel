@@ -41,8 +41,15 @@ export default function LoginPage() {
       return;
     }
 
-    await login(data.token);
-    navigate("/dashboard");
+    const me = await login(data.token);
+    if (!me) return;
+    if (me.role === "officer" || me.role === "admin") {
+      navigate("/officer");
+    } else if (!localStorage.getItem("onboarding_shown")) {
+      navigate("/onboarding");
+    } else {
+      navigate("/dashboard");
+    }
   }
 
   return (
