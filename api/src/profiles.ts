@@ -52,6 +52,41 @@ export async function createProfile(
     .run();
 }
 
+export async function upsertProfile(
+  db: D1Database,
+  encryptionKey: string,
+  input: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    address: string;
+    nationalIdNumber: string;
+  }
+): Promise<void> {
+  const [firstName, lastName, phone, address, nationalIdNumber] = await Promise.all([
+    encryptField(input.firstName, encryptionKey),
+    encryptField(input.lastName, encryptionKey),
+    encryptField(input.phone, encryptionKey),
+    encryptField(input.address, encryptionKey),
+    encryptField(input.nationalIdNumber, encryptionKey),
+  ]);
+
+  await db
+    .prepare(
+      `INSERT INTO profiles (user_id, first_name, last_name, phone, address, national_id_number)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(user_id) DO UPDATE SET
+         first_name         = excluded.first_name,
+         last_name          = excluded.last_name,
+         phone              = excluded.phone,
+         address            = excluded.address,
+         national_id_number = excluded.national_id_number`
+    )
+    .bind(input.userId, firstName, lastName, phone, address, nationalIdNumber)
+    .run();
+}
+
 export async function upsertVerificationStatus(
   db: D1Database,
   userId: string,

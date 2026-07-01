@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { requireAuth } from "../middleware/requireAuth";
-import { getProfile } from "../profiles";
+import { requireRole } from "../middleware/requireRole";
+import { getProfile, upsertProfile } from "../profiles";
 import { getPlaidItem } from "../plaid/items";
 import type { Bindings, Variables } from "../types";
 
@@ -17,6 +18,35 @@ profile.get("/", requireAuth, async (c) => {
     bankConnected: bank !== null,
     bankSafetyScore: bank?.bankSafetyScore ?? null,
   });
+});
+
+profile.put("/", requireAuth, async (c) => {
+  const body = await c.req.json<{
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    address?: string;
+    nationalIdNumber?: string;
+  }>();
+
+  const { firstName, lastName, phone, address, nationalIdNumber } = body;
+  if (!firstName || !lastName || !phone || !address || !nationalIdNumber) {
+    return c.json(
+      { error: "All fields are required: firstName, lastName, phone, address, nationalIdNumber" },
+      400
+    );
+  }
+
+  await upsertProfile(c.env.DB, c.env.PII_ENCRYPTION_KEY, {
+    userId: c.var.userId,
+    firstName,
+    lastName,
+    phone,
+    address,
+    nationalIdNumber,
+  });
+
+  return c.json({ ok: true });
 });
 
 export default profile;
