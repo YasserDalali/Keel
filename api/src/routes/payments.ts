@@ -31,6 +31,10 @@ async function stripeGet<T>(path: string, secretKey: string): Promise<T> {
 
 // Creates a PaymentIntent; frontend uses Stripe.js to collect card details.
 payments.post("/stripe/intent", requireAuth, async (c) => {
+  if (!c.env.STRIPE_SECRET_KEY) {
+    return c.json({ error: "Stripe is not configured" }, 503);
+  }
+
   const { loanId } = await c.req.json<{ loanId: string }>();
   const userId = c.var.userId;
 
@@ -45,46 +49,66 @@ payments.post("/stripe/intent", requireAuth, async (c) => {
   if (loan.upfront_paid) return c.json({ error: "Upfront already paid" }, 409);
 
   const amountCents = Math.round(loan.upfront_amount * 100);
+  if (amountCents < 50) {
+    return c.json({ error: "Upfront amount is below Stripe minimum ($0.50)" }, 400);
+  }
 
-  const intent = await stripePost<{ id: string; client_secret: string }>(
-    "/payment_intents",
-    {
-      amount: String(amountCents),
-      currency: "usd",
-      metadata: JSON.stringify({ loanId, userId }),
-      description: `Upfront deposit for loan ${loanId}`,
-    },
-    c.env.STRIPE_SECRET_KEY
-  );
+  try {
+    const intent = await stripePost<{ id: string; client_secret: string }>(
+      "/payment_intents",
+      {
+        amount: String(amountCents),
+        currency: "usd",
+        "metadata[loanId]": loanId,
+        "metadata[userId]": userId,
+        description: `Upfront deposit for loan ${loanId}`,
+      },
+      c.env.STRIPE_SECRET_KEY
+    );
 
-  return c.json({ clientSecret: intent.client_secret, intentId: intent.id, amount: loan.upfront_amount });
+    return c.json({ clientSecret: intent.client_secret, intentId: intent.id, amount: loan.upfront_amount });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Stripe error";
+    console.error("POST /stripe/intent:", message);
+    return c.json({ error: message }, 502);
+  }
 });
 
 // Confirms a completed PaymentIntent and marks the loan's upfront as paid.
 payments.post("/stripe/confirm", requireAuth, async (c) => {
+  if (!c.env.STRIPE_SECRET_KEY) {
+    return c.json({ error: "Stripe is not configured" }, 503);
+  }
+
   const { loanId, intentId } = await c.req.json<{ loanId: string; intentId: string }>();
   const userId = c.var.userId;
 
-  const intent = await stripeGet<{ id: string; status: string; metadata: { loanId: string; userId: string } }>(
-    `/payment_intents/${intentId}`,
-    c.env.STRIPE_SECRET_KEY
-  );
+  try {
+    const intent = await stripeGet<{ id: string; status: string; metadata: { loanId: string; userId: string } }>(
+      `/payment_intents/${intentId}`,
+      c.env.STRIPE_SECRET_KEY
+    );
 
-  if (intent.status !== "succeeded") {
-    return c.json({ error: `Payment not completed (status: ${intent.status})` }, 402);
+    if (intent.status !== "succeeded") {
+      return c.json({ error: `Payment not completed (status: ${intent.status})` }, 402);
+    }
+    if (intent.metadata.loanId !== loanId || intent.metadata.userId !== userId) {
+      return c.json({ error: "Intent does not match loan" }, 403);
+    }
+
+    const { meta } = await c.env.DB.prepare(
+      `UPDATE loans SET upfront_paid = 1, upfront_payment_id = ?, upfront_payment_method = 'stripe',
+       updated_at = CURRENT_TIMESTAMP WHERE id = ? AND borrower_id = ? AND upfront_paid = 0`
+    ).bind(intentId, loanId, userId).run();
+
+    if (meta.changes === 0) return c.json({ error: "Loan not found or already paid" }, 409);
+
+    return c.json({ ok: true, loanId });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Stripe error";
+    console.error("POST /stripe/confirm:", message);
+    return c.json({ error: message }, 502);
   }
-  if (intent.metadata.loanId !== loanId || intent.metadata.userId !== userId) {
-    return c.json({ error: "Intent does not match loan" }, 403);
-  }
-
-  const { meta } = await c.env.DB.prepare(
-    `UPDATE loans SET upfront_paid = 1, upfront_payment_id = ?, upfront_payment_method = 'stripe',
-     updated_at = CURRENT_TIMESTAMP WHERE id = ? AND borrower_id = ? AND upfront_paid = 0`
-  ).bind(intentId, loanId, userId).run();
-
-  if (meta.changes === 0) return c.json({ error: "Loan not found or already paid" }, 409);
-
-  return c.json({ ok: true, loanId });
 });
 
 // ── PayPal ────────────────────────────────────────────────────────────────────
