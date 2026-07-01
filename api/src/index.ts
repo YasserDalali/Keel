@@ -22,7 +22,8 @@ app.use(
     origin: (origin) => {
       if (!origin) return "*";
       if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return origin;
-      if (/^https:\/\/[\w-]+\.pages\.dev$/.test(origin)) return origin;
+      // Pages: microloans.pages.dev and preview URLs like 94391843.microloans.pages.dev
+      if (/^https:\/\/([\w-]+\.)*pages\.dev$/.test(origin)) return origin;
       return null;
     },
     allowHeaders: ["Content-Type", "Authorization"],
