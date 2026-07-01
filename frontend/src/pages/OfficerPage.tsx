@@ -33,10 +33,17 @@ export default function OfficerPage() {
   const [profiles, setProfiles] = useState<Record<string, "loading" | null | ProfileRecord>>({});
 
   async function fetchLoans() {
-    const { data } = await api.GET("/loans", {
-      params: { query: { status: "pending" } },
-    });
-    if (data) setLoans(data.loans as Loan[]);
+    const { data } = await api.GET("/loans");
+    if (data) {
+      const all = data.loans as Loan[];
+      const order = { pending: 0, active: 1, fully_paid: 2, defaulted: 3 };
+      all.sort((a, b) => {
+        const byStatus = (order[a.status as keyof typeof order] ?? 9) - (order[b.status as keyof typeof order] ?? 9);
+        if (byStatus !== 0) return byStatus;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+      setLoans(all);
+    }
   }
 
   useEffect(() => { fetchLoans(); }, []);
@@ -82,9 +89,9 @@ export default function OfficerPage() {
 
   return (
     <div className="flex flex-col gap-4 p-8">
-      <h1 className="text-xl font-semibold">Pending Loans</h1>
+      <h1 className="text-xl font-semibold">Loans</h1>
       {error && <p className="text-red-600 text-sm">{error}</p>}
-      {loans.length === 0 && <p className="text-gray-500">No pending loans.</p>}
+      {loans.length === 0 && <p className="text-gray-500">No loans yet.</p>}
       {loans.map((loan) => {
         const isExpanded = expanded[loan.id];
         const profile = profiles[loan.borrower_id];
@@ -105,16 +112,19 @@ export default function OfficerPage() {
               <span className="font-mono text-sm">{loan.id.slice(0, 8)}…</span>
               <span>${loan.amount.toLocaleString()}</span>
               <span>{loan.term_months} mo</span>
+              <span>{loan.status}</span>
               {loan.risk_assessment_score != null && (
                 <span className="text-sm">risk: {loan.risk_assessment_score.toFixed(2)}</span>
               )}
               <span className="text-sm text-gray-500">
                 {new Date(loan.created_at).toLocaleDateString()}
               </span>
-              <div className="flex gap-2 ml-auto">
-                <button onClick={() => approve(loan.id)}>Approve</button>
-                <button onClick={() => reject(loan.id)}>Reject</button>
-              </div>
+              {loan.status === "pending" && (
+                <div className="flex gap-2 ml-auto">
+                  <button onClick={() => approve(loan.id)}>Approve</button>
+                  <button onClick={() => reject(loan.id)}>Reject</button>
+                </div>
+              )}
             </div>
 
             {isExpanded && (
