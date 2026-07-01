@@ -1,50 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
-import { usePlaidLink } from "react-plaid-link";
+import { useState, useEffect } from "react";
 import { api } from "../lib/api";
 import type { components } from "../lib/api-types";
 import UpfrontPaymentModal from "../components/UpfrontPaymentModal";
+import PlaidLinkButton from "../components/PlaidLinkButton";
 
 type Loan = components["schemas"]["Loan"] & {
   upfront_required?: number;
   upfront_amount?: number;
   upfront_paid?: number;
 };
-
-function PlaidLinkButton({ onScore }: { onScore: (score: number) => void }) {
-  const [linkToken, setLinkToken] = useState<string | null>(null);
-  const [linkError, setLinkError] = useState("");
-
-  useEffect(() => {
-    api.POST("/plaid/link-token").then(({ data, error }) => {
-      if (data) setLinkToken(data.linkToken);
-      else setLinkError(error && "error" in error ? error.error : "Could not get link token");
-    });
-  }, []);
-
-  const onSuccess = useCallback(
-    async (publicToken: string) => {
-      const { data, error } = await api.POST("/plaid/connect", {
-        body: { publicToken },
-      });
-      if (data) onScore(data.bankSafetyScore);
-      else setLinkError(error && "error" in error ? error.error : "Exchange failed");
-    },
-    [onScore]
-  );
-
-  const { open, ready } = usePlaidLink({
-    token: linkToken ?? "",
-    onSuccess,
-  });
-
-  if (linkError) return <span className="text-red-600 text-sm">{linkError}</span>;
-
-  return (
-    <button onClick={() => open()} disabled={!ready || !linkToken}>
-      {linkToken ? "Connect Bank (Plaid)" : "Loading…"}
-    </button>
-  );
-}
 
 export default function DashboardPage() {
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -83,7 +47,7 @@ export default function DashboardPage() {
       <div className="flex gap-4 items-center">
         <h1 className="text-xl font-semibold">My Loans</h1>
         {bankScore === null ? (
-          <PlaidLinkButton onScore={setBankScore} />
+          <PlaidLinkButton onConnected={setBankScore} />
         ) : (
           <span className="text-sm">Bank safety score: {bankScore.toFixed(2)}</span>
         )}
