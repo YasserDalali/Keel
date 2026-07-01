@@ -49,4 +49,11 @@ profile.put("/", requireAuth, async (c) => {
   return c.json({ ok: true });
 });
 
+profile.get("/:userId", requireAuth, requireRole("officer", "admin"), async (c) => {
+  const userId = c.req.param("userId");
+  const record = await getProfile(c.env.DB, c.env.PII_ENCRYPTION_KEY, userId);
+  if (!record) return c.json({ error: "Profile not found" }, 404);
+  return c.json({ profile: record });
+});
+
 export default profile;

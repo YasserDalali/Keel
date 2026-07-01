@@ -41,6 +41,47 @@ describe("GET /api/profile", () => {
   });
 });
 
+describe("GET /api/profile/:userId", () => {
+  it("returns decrypted profile for an officer", async () => {
+    const officer = await user("officer");
+    const borrower = await user();
+
+    const { upsertProfile } = await import("../src/profiles");
+    await upsertProfile(env.DB, env.PII_ENCRYPTION_KEY, {
+      userId: borrower.id,
+      firstName: "Carol", lastName: "White",
+      phone: "0699000001", address: "3 Oak Ave",
+      nationalIdNumber: "EF345678",
+    });
+
+    const res = await app.request(`/api/profile/${borrower.id}`, { headers: officer.headers }, env);
+
+    expect(res.status).toBe(200);
+    const body = await res.json() as { profile: { firstName: string } };
+    expect(body.profile.firstName).toBe("Carol");
+  });
+
+  it("returns 403 for a borrower", async () => {
+    const borrower = await user();
+    const res = await app.request(
+      `/api/profile/${crypto.randomUUID()}`,
+      { headers: borrower.headers },
+      env
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 404 when no profile exists for that userId", async () => {
+    const officer = await user("officer");
+    const res = await app.request(
+      `/api/profile/${crypto.randomUUID()}`,
+      { headers: officer.headers },
+      env
+    );
+    expect(res.status).toBe(404);
+  });
+});
+
 describe("PUT /api/profile", () => {
   it("creates a profile when none exists", async () => {
     const u = await user();
