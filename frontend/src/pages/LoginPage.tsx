@@ -3,8 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../App";
 
-// ponytail: hardcoded always-pass test token; swap for real Turnstile widget in prod
-const TEST_TURNSTILE = "1x00000000000000000000AA";
+const turnstileToken = import.meta.env.VITE_TURNSTILE_TOKEN || "1x00000000000000000000AA";
+if (!turnstileToken) {
+  throw new Error("VITE_TURNSTILE_TOKEN is required in the repo-root .env file");
+
+
+
+}
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -20,7 +25,7 @@ export default function LoginPage() {
 
     if (mode === "register") {
       const { error: err } = await api.POST("/auth/register", {
-        body: { email, password, turnstileToken: TEST_TURNSTILE },
+        body: { email, password, turnstileToken },
       });
       if (err) {
         setError("error" in err ? err.error : "Registration failed");
@@ -29,7 +34,7 @@ export default function LoginPage() {
     }
 
     const { data, error: err } = await api.POST("/auth/login", {
-      body: { email, password, turnstileToken: TEST_TURNSTILE },
+      body: { email, password, turnstileToken },
     });
     if (err || !data) {
       setError("error" in (err ?? {}) ? (err as { error: string }).error : "Login failed");

@@ -20,7 +20,8 @@ async function authHeaderFor(userId: string): Promise<Record<string, string>> {
 
 // Stub Plaid token exchange + balance fetch (the two calls the route makes).
 function stubPlaid(accounts: unknown[]): void {
-  const pool = fetchMock.get("https://sandbox.plaid.com");
+  const base = new URL(env.PLAID_BASE_URL);
+  const pool = fetchMock.get(base.origin);
   pool
     .intercept({ method: "POST", path: "/item/public_token/exchange" })
     .reply(200, { access_token: "access-sandbox-secret-123", item_id: "item-1" });

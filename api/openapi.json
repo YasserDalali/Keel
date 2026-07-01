@@ -514,82 +514,48 @@
         }
       }
     },
-    "/kyc/upload": {
+    "/kyc/session": {
       "post": {
-        "operationId": "kycUpload",
+        "operationId": "kycCreateSession",
+        "summary": "Create a Didit verification session",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "file"
-                ],
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Hosted verification URL for the Didit web SDK",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "suggestions",
-                    "r2Key"
-                  ],
+                  "required": ["url", "session_id"],
                   "properties": {
-                    "suggestions": {
-                      "$ref": "#/components/schemas/OcrSuggestions"
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Hosted Didit verification URL"
                     },
-                    "r2Key": {
-                      "type": "string"
+                    "session_id": {
+                      "type": "string",
+                      "format": "uuid"
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Missing or oversized file",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported file type",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
           "502": {
-            "description": "OCR failed",
+            "description": "Didit session creation failed",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "detail": { "type": "string" }
+                  }
                 }
               }
             }
@@ -597,94 +563,16 @@
         }
       }
     },
-    "/kyc/confirm": {
+    "/webhooks/didit": {
       "post": {
-        "operationId": "kycConfirm",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "firstName",
-                  "lastName",
-                  "nationalIdNumber",
-                  "phone",
-                  "address"
-                ],
-                "properties": {
-                  "firstName": {
-                    "type": "string"
-                  },
-                  "lastName": {
-                    "type": "string"
-                  },
-                  "nationalIdNumber": {
-                    "type": "string"
-                  },
-                  "phone": {
-                    "type": "string"
-                  },
-                  "address": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
+        "operationId": "diditWebhook",
+        "summary": "Didit signed webhook (X-Signature-V2)",
         "responses": {
-          "201": {
-            "description": "Profile created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "userId",
-                    "kycStatus"
-                  ],
-                  "properties": {
-                    "userId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "kycStatus": {
-                      "type": "string",
-                      "enum": [
-                        "pending"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
+          "200": {
+            "description": "Accepted"
           },
-          "400": {
-            "description": "No pending KYC upload",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Profile already exists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+          "401": {
+            "description": "Stale timestamp or invalid signature"
           }
         }
       }

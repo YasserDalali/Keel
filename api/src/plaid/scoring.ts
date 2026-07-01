@@ -1,7 +1,6 @@
 import type { PlaidAccount } from "./client";
 
 export const WEIGHTS = { bank: 0.6, behavior: 0.4 } as const;
-export const THRESHOLD = 50;
 
 export type BehaviorHistory = {
   kycStatus: "pending" | "approved" | "rejected";

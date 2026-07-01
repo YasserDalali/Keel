@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import health from "./routes/health";
 import auth from "./routes/auth";
 import loans from "./routes/loans";
@@ -14,6 +15,20 @@ import type { Bindings, Variables } from "./types";
 import openApiSpec from "../openapi.json";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+app.use(
+  "/api/*",
+  cors({
+    origin: (origin) => {
+      if (!origin) return "*";
+      if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return origin;
+      if (/^https:\/\/[\w-]+\.pages\.dev$/.test(origin)) return origin;
+      return null;
+    },
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  }),
+);
 
 app.route("/api/health", health);
 app.route("/api/auth", auth);

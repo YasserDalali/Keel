@@ -3,6 +3,7 @@ node_modules/
 dist/
 *.local
 .dev.vars
+.env
 .worktrees/
 .superpowers/
 frontend/vite-app/

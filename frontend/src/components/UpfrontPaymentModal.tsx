@@ -3,6 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { api } from "../lib/api";
+import { apiUrl } from "../lib/api-base";
 
 type Props = {
   loanId: string;
@@ -26,7 +27,7 @@ function StripeForm({ loanId, amount, onPaid }: { loanId: string; amount: number
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/payments/stripe/intent", {
+    const res = await fetch(apiUrl("/payments/stripe/intent"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +48,7 @@ function StripeForm({ loanId, amount, onPaid }: { loanId: string; amount: number
     });
     if (stripeErr) { setError(stripeErr.message ?? "Payment failed"); setLoading(false); return; }
 
-    const confirmRes = await fetch("/api/payments/stripe/confirm", {
+    const confirmRes = await fetch(apiUrl("/payments/stripe/confirm"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,11 +81,11 @@ export default function UpfrontPaymentModal({ loanId, amount, onPaid, onClose }:
   const [ppError, setPpError] = useState("");
 
   useEffect(() => {
-    fetch("/api/config").then((r) => r.json()).then((d) => setConfig(d as Config));
+    fetch(apiUrl("/config")).then((r) => r.json()).then((d) => setConfig(d as Config));
   }, []);
 
   async function createPayPalOrder() {
-    const res = await fetch("/api/payments/paypal/order", {
+    const res = await fetch(apiUrl("/payments/paypal/order"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +99,7 @@ export default function UpfrontPaymentModal({ loanId, amount, onPaid, onClose }:
   }
 
   async function capturePayPalOrder(data: { orderID: string }) {
-    const res = await fetch("/api/payments/paypal/capture", {
+    const res = await fetch(apiUrl("/payments/paypal/capture"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DiditSdk } from "@didit-protocol/sdk-web";
 import { api } from "../lib/api";
+import { apiUrl } from "../lib/api-base";
 
 type KycStatus =
   | "pending" | "approved" | "declined"
@@ -24,6 +25,7 @@ export default function KycPage() {
   const [status, setStatus] = useState<KycStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
+  const [consented, setConsented] = useState(false);
   const [error, setError] = useState("");
 
   async function fetchStatus() {
@@ -39,17 +41,22 @@ export default function KycPage() {
   useEffect(() => { fetchStatus(); }, []);
 
   async function startVerification() {
+    if (!consented) {
+      setError("Please confirm consent before starting verification.");
+      return;
+    }
+
     setStarting(true);
     setError("");
 
     const token = localStorage.getItem("token");
-    const res = await fetch("/api/kyc/session", {
+    const res = await fetch(apiUrl("/kyc/session"), {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     });
-    const json = await res.json() as { verificationUrl?: string; error?: string };
-    if (!res.ok || !json.verificationUrl) {
-      setError(json.error ?? "Failed to start verification");
+    const json = await res.json() as { url?: string; error?: string; detail?: string };
+    if (!res.ok || !json.url) {
+      setError(json.error ?? json.detail ?? "Failed to start verification");
       setStarting(false);
       return;
     }
@@ -57,13 +64,13 @@ export default function KycPage() {
     DiditSdk.shared.onComplete = (result) => {
       setStarting(false);
       if (result.type === "completed") {
-        // Webhook updates the DB asynchronously — refresh after a brief delay
+        // Webhook is the source of truth — refresh status after Didit processes the decision.
         setStatus("in_progress");
         setTimeout(() => fetchStatus(), 3000);
       }
     };
 
-    await DiditSdk.shared.startVerification({ url: json.verificationUrl });
+    await DiditSdk.shared.startVerification({ url: json.url });
   }
 
   if (loading) return <div className="p-8 text-gray-500">Loading…</div>;
@@ -107,7 +114,7 @@ export default function KycPage() {
       )}
 
       {canRestart && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {status !== "pending" && (
             <p className="text-sm text-gray-600">
               {status === "declined" && "Your verification was declined. You may try again."}
@@ -115,10 +122,24 @@ export default function KycPage() {
               {status === "abandoned" && "You did not complete the previous session."}
             </p>
           )}
+
+          <label className="flex items-start gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={consented}
+              onChange={(e) => setConsented(e.target.checked)}
+              className="mt-1"
+            />
+            <span>
+              I consent to identity verification via Didit, including capture of my ID document
+              and biometric liveness check, for KYC purposes.
+            </span>
+          </label>
+
           <button
             onClick={startVerification}
-            disabled={starting}
-            className="self-start"
+            disabled={starting || !consented}
+            className="self-start disabled:opacity-50"
           >
             {starting ? "Opening verification…" : "Start Verification"}
           </button>

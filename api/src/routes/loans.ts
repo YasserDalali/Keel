@@ -3,14 +3,10 @@ import { requireAuth } from "../middleware/requireAuth";
 import { requireRole } from "../middleware/requireRole";
 import { generateInstallments } from "../loans/amortization";
 import { getPlaidItem } from "../plaid/items";
-import { behaviorScore, finalScore, THRESHOLD, type BehaviorHistory } from "../plaid/scoring";
+import { behaviorScore, finalScore, WEIGHTS, type BehaviorHistory } from "../plaid/scoring";
 import { generateLoanAgreementPdf, generatePaymentReceiptPdf } from "../documents/generator";
 import { saveDocument } from "../documents/store";
 import type { Bindings, Variables } from "../types";
-
-const FLAT_INTEREST_RATE = 0.05;
-const UPFRONT_THRESHOLD = 5000; // loans above this require an upfront deposit
-const UPFRONT_PCT = 0.05;       // 5% of loan amount
 
 const loans = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -67,20 +63,24 @@ loans.post("/", requireAuth, async (c) => {
   const history = await loadBehaviorHistory(c.env.DB, userId);
   const behavior = behaviorScore(history);
   const score = finalScore(bank.bankSafetyScore, behavior);
+  const threshold = Number(c.env.RISK_SCORE_THRESHOLD);
+  const flatRate = Number(c.env.LOAN_FLAT_INTEREST_RATE);
+  const upfrontThreshold = Number(c.env.LOAN_UPFRONT_THRESHOLD);
+  const upfrontPct = Number(c.env.LOAN_UPFRONT_PCT);
   const summary = JSON.stringify({
     finalScore: score,
     bankSafety: bank.bankSafetyScore,
     behavior,
-    weights: { bank: 0.6, behavior: 0.4 },
-    threshold: THRESHOLD,
+    weights: WEIGHTS,
+    threshold,
   });
 
-  if (score < THRESHOLD) {
+  if (score < threshold) {
     return c.json({ error: "Risk score below threshold", finalScore: score, summary: JSON.parse(summary) }, 403);
   }
 
-  const upfrontRequired = body.amount > UPFRONT_THRESHOLD;
-  const upfrontAmount = upfrontRequired ? Math.round(body.amount * UPFRONT_PCT * 100) / 100 : 0;
+  const upfrontRequired = body.amount > upfrontThreshold;
+  const upfrontAmount = upfrontRequired ? Math.round(body.amount * upfrontPct * 100) / 100 : 0;
 
   const id = crypto.randomUUID();
   await c.env.DB.prepare(
@@ -88,7 +88,7 @@ loans.post("/", requireAuth, async (c) => {
        risk_assessment_score, risk_assessment_summary, upfront_required, upfront_amount)
      VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)`
   )
-    .bind(id, userId, body.amount, FLAT_INTEREST_RATE, body.termMonths, score, summary,
+    .bind(id, userId, body.amount, flatRate, body.termMonths, score, summary,
       upfrontRequired ? 1 : 0, upfrontAmount)
     .run();
 

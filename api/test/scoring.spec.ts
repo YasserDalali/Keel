@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bankSafetyScore, behaviorScore, finalScore, THRESHOLD } from "../src/plaid/scoring";
+import { bankSafetyScore, behaviorScore, finalScore } from "../src/plaid/scoring";
 import type { PlaidAccount } from "../src/plaid/client";
 
 function acct(type: string, available: number | null): PlaidAccount {
@@ -52,9 +52,5 @@ describe("behaviorScore", () => {
 describe("finalScore", () => {
   it("blends 60/40 and rounds", () => {
     expect(finalScore(90, 85)).toBe(88);
-  });
-
-  it("THRESHOLD is 50", () => {
-    expect(THRESHOLD).toBe(50);
   });
 });

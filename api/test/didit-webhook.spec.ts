@@ -1,27 +1,7 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import app from "../src/index";
-
-// Canonical JSON: sort object keys recursively (matches Didit X-Signature-V2)
-function canonicalize(obj: unknown): string {
-  if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
-    return JSON.stringify(obj);
-  }
-  const keys = Object.keys(obj as Record<string, unknown>).sort();
-  return `{${keys.map(k => `${JSON.stringify(k)}:${canonicalize((obj as Record<string, unknown>)[k])}`).join(",")}}`;
-}
-
-async function sign(payload: string, secret: string): Promise<string> {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
+import { canonicalWebhookBody, signWebhookBodyV2 } from "../src/didit/webhook-signature";
 
 async function insertUser(userId: string, email: string): Promise<void> {
   await env.DB.prepare(
@@ -32,8 +12,7 @@ async function insertUser(userId: string, email: string): Promise<void> {
 async function postWebhook(body: object, overrides: { sig?: string; timestamp?: number } = {}) {
   const now = Math.floor(Date.now() / 1000);
   const ts = overrides.timestamp ?? now;
-  const canonical = canonicalize(body);
-  const sig = overrides.sig ?? await sign(canonical, "test-webhook-secret");
+  const sig = overrides.sig ?? await signWebhookBodyV2(env.DIDIT_WEBHOOK_SECRET, body);
 
   return app.request("/api/webhooks/didit", {
     method: "POST",
@@ -55,26 +34,35 @@ function makeEvent(userId: string, status: string, webhookType = "status.updated
     created_at: Math.floor(Date.now() / 1000),
     timestamp: Math.floor(Date.now() / 1000),
     application_id: "app-id",
-    workflow_id: "wf-id",
+    workflow_id: env.DIDIT_WORKFLOW_ID,
     workflow_version: 1,
     vendor_data: userId,
   };
 }
 
+describe("Didit webhook canonicalisation", () => {
+  it("shortens whole-number floats before signing", async () => {
+    const body = { score: 1.0, nested: { weight: 2.0 }, items: [3.0] };
+    const canonical = canonicalWebhookBody(body);
+    expect(canonical).toContain('"score":1');
+    expect(canonical).not.toContain("1.0");
+  });
+});
+
 describe("POST /api/webhooks/didit", () => {
-  it("returns 400 when signature is wrong", async () => {
+  it("returns 401 when signature is wrong", async () => {
     const userId = crypto.randomUUID();
     await insertUser(userId, "bad-sig@example.com");
     const res = await postWebhook(makeEvent(userId, "Approved"), { sig: "deadbeef" });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
   });
 
-  it("returns 400 when timestamp is stale (> 300s)", async () => {
+  it("returns 401 when timestamp is stale (> 300s)", async () => {
     const userId = crypto.randomUUID();
     await insertUser(userId, "stale-ts@example.com");
     const staleTs = Math.floor(Date.now() / 1000) - 301;
     const res = await postWebhook(makeEvent(userId, "Approved"), { timestamp: staleTs });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
   });
 
   it("sets kycStatus=approved on Approved event", async () => {
@@ -115,6 +103,18 @@ describe("POST /api/webhooks/didit", () => {
     expect(row?.kyc_status).toBe("in_review");
   });
 
+  it("maps Kyc Expired to expired", async () => {
+    const userId = crypto.randomUUID();
+    await insertUser(userId, "kyc-expired@example.com");
+
+    const res = await postWebhook(makeEvent(userId, "Kyc Expired"));
+    expect(res.status).toBe(200);
+
+    const row = await env.DB.prepare("SELECT kyc_status FROM profiles WHERE user_id = ?")
+      .bind(userId).first<{ kyc_status: string }>();
+    expect(row?.kyc_status).toBe("expired");
+  });
+
   it("deduplicates events with the same event_id", async () => {
     const userId = crypto.randomUUID();
     await insertUser(userId, "dedup@example.com");
@@ -123,8 +123,8 @@ describe("POST /api/webhooks/didit", () => {
     const first = await postWebhook(event);
     expect(first.status).toBe(200);
 
-    const second = await postWebhook(event); // same event_id
-    expect(second.status).toBe(200); // still 2xx, just skipped
+    const second = await postWebhook(event);
+    expect(second.status).toBe(200);
   });
 
   it("ignores non-status.updated webhook types gracefully", async () => {

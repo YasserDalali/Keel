@@ -1,9 +1,9 @@
 import type { Bindings } from "../types";
 
-const PLAID_BASE = "https://sandbox.plaid.com";
-const SANDBOX_INSTITUTION = "ins_109508";
-
-type PlaidEnv = Pick<Bindings, "PLAID_CLIENT_ID" | "PLAID_SECRET">;
+type PlaidEnv = Pick<
+  Bindings,
+  "PLAID_CLIENT_ID" | "PLAID_SECRET" | "PLAID_BASE_URL" | "PLAID_SANDBOX_INSTITUTION"
+>;
 
 export type PlaidAccount = {
   name: string;
@@ -12,9 +12,8 @@ export type PlaidAccount = {
   balances: { available: number | null; current: number | null };
 };
 
-// One POST helper for the whole sandbox API; throws on Plaid error_code / non-200.
 async function plaidPost<T>(path: string, body: Record<string, unknown>, env: PlaidEnv): Promise<T> {
-  const res = await fetch(`${PLAID_BASE}${path}`, {
+  const res = await fetch(`${env.PLAID_BASE_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ client_id: env.PLAID_CLIENT_ID, secret: env.PLAID_SECRET, ...body }),
@@ -47,7 +46,7 @@ export async function createLinkToken(userId: string, env: PlaidEnv): Promise<st
 export async function sandboxCreatePublicToken(env: PlaidEnv): Promise<string> {
   const data = await plaidPost<{ public_token: string }>(
     "/sandbox/public_token/create",
-    { institution_id: SANDBOX_INSTITUTION, initial_products: ["transactions"] },
+    { institution_id: env.PLAID_SANDBOX_INSTITUTION, initial_products: ["transactions"] },
     env
   );
   return data.public_token;

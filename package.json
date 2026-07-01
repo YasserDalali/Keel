@@ -15,7 +15,8 @@
 
     "worker:dev": "wrangler dev",
     "worker:test": "npm test --prefix api",
-    "worker:deploy": "npm run build --prefix frontend && wrangler deploy"
+    "worker:deploy": "npm run build --prefix frontend && wrangler deploy",
+    "secrets:push": "bash scripts/push-wrangler-secrets.sh"
   },
   "devDependencies": {
     "wrangler": "^3.78.0"

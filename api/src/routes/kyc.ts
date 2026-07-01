@@ -4,12 +4,17 @@ import type { Bindings, Variables } from "../types";
 
 const kyc = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-// Creates a Didit verification session for the authenticated user.
-// Frontend passes the returned verification_url to the Didit JS SDK.
+type DiditSessionResponse = {
+  session_id: string;
+  session_token: string;
+  url: string;
+  status: string;
+};
+
 kyc.post("/session", requireAuth, async (c) => {
   const userId = c.var.userId;
 
-  const res = await fetch("https://verification.didit.me/v3/session/", {
+  const res = await fetch(c.env.DIDIT_SESSION_CREATE_URL, {
     method: "POST",
     headers: {
       "x-api-key": c.env.DIDIT_API_KEY,
@@ -22,21 +27,15 @@ kyc.post("/session", requireAuth, async (c) => {
   });
 
   if (!res.ok) {
-    const err = await res.text();
-    return c.json({ error: `Didit session creation failed: ${err}` }, 502);
+    const detail = await res.text();
+    return c.json({ error: "session_create_failed", detail }, 502);
   }
 
-  const data = await res.json<{
-    session_id: string;
-    session_token: string;
-    verification_url: string;
-    status: string;
-  }>();
+  const session = (await res.json()) as DiditSessionResponse;
 
   return c.json({
-    sessionId: data.session_id,
-    sessionToken: data.session_token,
-    verificationUrl: data.verification_url,
+    url: session.url,
+    session_id: session.session_id,
   });
 });
 
