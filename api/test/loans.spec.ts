@@ -76,6 +76,34 @@ describe("POST /api/loans", () => {
 
     expect(res.status).toBe(400);
   });
+
+  it("returns 403 when user has no KYC-approved profile", async () => {
+    const userId = crypto.randomUUID();
+    await insertTestUser(userId, `kyc-gate-${userId}@test.com`, "borrower");
+    // bank connected but no profile row — KYC gate must fire
+    await upsertPlaidItem(env.DB, env.PII_ENCRYPTION_KEY, {
+      userId,
+      itemId: "item-kyc",
+      accessToken: "access-kyc",
+      institutionName: "Test Bank",
+      bankSafetyScore: 90,
+      bankSignals: "{}",
+    });
+    const headers = await authHeaderFor(userId, "borrower");
+
+    const res = await app.request(
+      "/api/loans",
+      {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 500, termMonths: 6 }),
+      },
+      env
+    );
+
+    expect(res.status).toBe(403);
+    expect((await res.json() as { error: string }).error).toMatch(/KYC/i);
+  });
 });
 
 describe("GET /api/loans/:id", () => {

@@ -55,6 +55,15 @@ loans.post("/", requireAuth, async (c) => {
 
   const userId = c.var.userId;
 
+  const profileRow = await c.env.DB
+    .prepare("SELECT kyc_status FROM profiles WHERE user_id = ?")
+    .bind(userId)
+    .first<{ kyc_status: string }>();
+
+  if (!profileRow || profileRow.kyc_status !== "approved") {
+    return c.json({ error: "KYC verification required before applying for a loan" }, 403);
+  }
+
   const bank = await getPlaidItem(c.env.DB, c.env.PII_ENCRYPTION_KEY, userId);
   if (!bank) {
     return c.json({ error: "Bank audit required; connect a bank via /api/plaid/connect first" }, 428);
