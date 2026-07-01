@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 import type { components } from "../lib/api-types";
 import UpfrontPaymentModal from "../components/UpfrontPaymentModal";
@@ -15,7 +16,8 @@ export default function DashboardPage() {
   const [amount, setAmount] = useState("");
   const [termMonths, setTermMonths] = useState("");
   const [applyError, setApplyError] = useState("");
-  const [bankScore, setBankScore] = useState<number | null>(null);
+  const [bankConnected, setBankConnected] = useState(false);
+  const [kycApproved, setKycApproved] = useState(false);
   const [payingLoan, setPayingLoan] = useState<Loan | null>(null);
 
   async function fetchLoans() {
@@ -23,7 +25,17 @@ export default function DashboardPage() {
     if (data) setLoans(data.loans as Loan[]);
   }
 
-  useEffect(() => { fetchLoans(); }, []);
+  useEffect(() => {
+    fetchLoans();
+    (api.GET as Function)("/profile").then(
+      ({ data }: { data?: { bankConnected?: boolean; kycStatus?: string } }) => {
+        if (data) {
+          setBankConnected(data.bankConnected ?? false);
+          setKycApproved(data.kycStatus === "approved");
+        }
+      }
+    );
+  }, []);
 
   async function applyLoan(e: React.FormEvent) {
     e.preventDefault();
@@ -46,10 +58,10 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6 p-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-xl font-semibold">My Loans</h1>
-        {bankScore === null ? (
-          <PlaidLinkButton onConnected={setBankScore} />
+        {!bankConnected ? (
+          <PlaidLinkButton onConnected={() => setBankConnected(true)} />
         ) : (
-          <span className="text-sm">Bank safety score: {bankScore.toFixed(2)}</span>
+          <span className="text-sm text-green-700">Bank connected ✓</span>
         )}
       </div>
 
@@ -82,31 +94,40 @@ export default function DashboardPage() {
 
       <div className="flex flex-col gap-3">
         <h2 className="text-lg font-medium">Apply for a loan</h2>
-        <form className="flex gap-3 items-end" onSubmit={applyLoan}>
-          <div className="flex flex-col gap-1">
-            <label className="text-sm">Amount ($)</label>
-            <input
-              type="number"
-              placeholder="1000"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-              min="1"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-sm">Term (months)</label>
-            <input
-              type="number"
-              placeholder="12"
-              value={termMonths}
-              onChange={(e) => setTermMonths(e.target.value)}
-              required
-              min="1"
-            />
-          </div>
-          <button type="submit">Apply</button>
-        </form>
+        {!kycApproved ? (
+          <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-3">
+            Identity verification required to apply for a loan.{" "}
+            <Link to="/kyc" className="underline font-medium">
+              Complete verification →
+            </Link>
+          </p>
+        ) : (
+          <form className="flex gap-3 items-end" onSubmit={applyLoan}>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm">Amount ($)</label>
+              <input
+                type="number"
+                placeholder="1000"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                min="1"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm">Term (months)</label>
+              <input
+                type="number"
+                placeholder="12"
+                value={termMonths}
+                onChange={(e) => setTermMonths(e.target.value)}
+                required
+                min="1"
+              />
+            </div>
+            <button type="submit">Apply</button>
+          </form>
+        )}
         {applyError && <p className="text-red-600 text-sm">{applyError}</p>}
       </div>
 
