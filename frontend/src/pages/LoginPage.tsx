@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../App";
+import Field from "../components/ui/Field";
+import Button from "../components/ui/Button";
+import Panel from "../components/ui/Panel";
 
 const turnstileToken = import.meta.env.VITE_TURNSTILE_TOKEN || "1x00000000000000000000AA";
 if (!turnstileToken) {
   throw new Error("VITE_TURNSTILE_TOKEN is required in the repo-root .env file");
-
-
-
 }
 
 export default function LoginPage() {
@@ -53,41 +53,48 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="flex flex-col gap-4 w-80">
-        <h1 className="text-xl font-semibold">
-          {mode === "login" ? "Login" : "Create account"}
+    <div className="grid min-h-screen md:grid-cols-2">
+      <div className="flex flex-col justify-center border-b border-ink p-8 md:border-b-0 md:border-r">
+        <p className="font-mono text-xs uppercase tracking-wide2 text-ink/60">
+          MCL / 01 // ACCESS TERMINAL
+        </p>
+        <h1 className="font-display uppercase leading-[0.9] tracking-tightest text-[clamp(3rem,9vw,7rem)]">
+          Micro
+          <br />
+          Loans<span className="text-hazard">®</span>
         </h1>
-        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-          <button type="submit">
-            {mode === "login" ? "Login" : "Register"}
+      </div>
+
+      <div className="flex items-center justify-center p-8">
+        <Panel title={mode === "login" ? "Login" : "Register"} className="w-full max-w-sm">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <Field label="Email" type="email" value={email} onChange={setEmail} required autoComplete="email" />
+            <Field
+              label="Password"
+              type="password"
+              value={password}
+              onChange={setPassword}
+              required
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+            />
+            {error && (
+              <p className="border border-hazard bg-paper px-3 py-2 font-mono text-xs text-hazard">
+                {error}
+              </p>
+            )}
+            <Button type="submit">{mode === "login" ? "Login" : "Register"}</Button>
+          </form>
+          <button
+            type="button"
+            onClick={() => {
+              setMode((m) => (m === "login" ? "register" : "login"));
+              setError("");
+            }}
+            className="mt-4 font-mono text-xs uppercase tracking-wide2 underline"
+          >
+            {mode === "login" ? "No account? Register" : "Have an account? Login"}
           </button>
-        </form>
-        <button
-          type="button"
-          onClick={() => {
-            setMode((m) => (m === "login" ? "register" : "login"));
-            setError("");
-          }}
-          className="text-sm underline"
-        >
-          {mode === "login" ? "No account? Register" : "Have an account? Login"}
-        </button>
+        </Panel>
       </div>
     </div>
   );
