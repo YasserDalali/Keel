@@ -68,7 +68,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/kyc/upload": {
+    "/kyc/session": {
         parameters: {
             query?: never;
             header?: never;
@@ -77,14 +77,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["kycUpload"];
+        /** Create a Didit verification session */
+        post: operations["kycCreateSession"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/kyc/confirm": {
+    "/webhooks/didit": {
         parameters: {
             query?: never;
             header?: never;
@@ -93,7 +94,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["kycConfirm"];
+        /** Didit signed webhook (X-Signature-V2) */
+        post: operations["diditWebhook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -455,113 +457,68 @@ export interface operations {
             };
         };
     };
-    kycUpload: {
+    kycCreateSession: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    file: string;
-                };
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description Hosted verification URL for the Didit web SDK */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        suggestions: components["schemas"]["OcrSuggestions"];
-                        r2Key: string;
+                        /**
+                         * Format: uri
+                         * @description Hosted Didit verification URL
+                         */
+                        url: string;
+                        /** Format: uuid */
+                        session_id: string;
                     };
                 };
             };
-            /** @description Missing or oversized file */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Unsupported file type */
-            415: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description OCR failed */
+            /** @description Didit session creation failed */
             502: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Error"];
+                    "application/json": {
+                        error?: string;
+                        detail?: string;
+                    };
                 };
             };
         };
     };
-    kycConfirm: {
+    diditWebhook: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    firstName: string;
-                    lastName: string;
-                    nationalIdNumber: string;
-                    phone: string;
-                    address: string;
-                };
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description Profile created */
-            201: {
+            /** @description Accepted */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        userId: string;
-                        /** @enum {string} */
-                        kycStatus: "pending";
-                    };
-                };
+                content?: never;
             };
-            /** @description No pending KYC upload */
-            400: {
+            /** @description Stale timestamp or invalid signature */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Profile already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
+                content?: never;
             };
         };
     };

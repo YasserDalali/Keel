@@ -23,12 +23,13 @@ async function loadBehaviorHistory(
     .prepare(
       `SELECT
          COALESCE(SUM(CASE WHEN status = 'fully_paid' THEN 1 ELSE 0 END), 0) AS fully_paid,
-         COALESCE(SUM(CASE WHEN status = 'defaulted' THEN 1 ELSE 0 END), 0) AS defaulted
+         COALESCE(SUM(CASE WHEN status = 'defaulted' AND approved_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS defaulted
        FROM loans WHERE borrower_id = ?`
     )
     .bind(userId)
     .first<{ fully_paid: number; defaulted: number }>();
 
+  // 'defaulted' also stores declined and cancelled applications (never approved); only approved loans can really default.
   const overdue = await db
     .prepare(
       `SELECT COUNT(*) AS n FROM installments i
@@ -149,21 +150,20 @@ loans.get("/:id", requireAuth, async (c) => {
   return c.json({ loan, installments });
 });
 
-loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (c) => {
-  const loanId = c.req.param("id");
-
-  const loan = await c.env.DB.prepare(
+/** Officer approval, shared with the demo shortcut: activates a pending loan, writes its schedule, disbursement and agreement. */
+export async function approveLoan(env: Bindings, loanId: string, approverId: string | null) {
+  const loan = await env.DB.prepare(
     "SELECT id, borrower_id, amount, interest_rate, term_months, upfront_required, upfront_paid FROM loans WHERE id = ? AND status = 'pending'"
   )
     .bind(loanId)
     .first<{ id: string; borrower_id: string; amount: number; interest_rate: number; term_months: number; upfront_required: number; upfront_paid: number }>();
 
   if (!loan) {
-    return c.json({ error: "Pending loan not found" }, 404);
+    return { status: 404 as const, body: { error: "Pending loan not found" } };
   }
 
   if (loan.upfront_required && !loan.upfront_paid) {
-    return c.json({ error: "Upfront deposit required before approval" }, 402);
+    return { status: 402 as const, body: { error: "Upfront deposit required before approval" } };
   }
 
   const schedule = generateInstallments(loan.amount, loan.interest_rate, loan.term_months, new Date());
@@ -175,22 +175,22 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
   // that fully needs all three statements conditioned on the UPDATE (e.g. a stored
   // procedure/CTE) — out of scope; this narrows the window and reports the conflict
   // instead of returning a false success.
-  const [updateResult] = await c.env.DB.batch([
-    c.env.DB.prepare(
+  const [updateResult] = await env.DB.batch([
+    env.DB.prepare(
       "UPDATE loans SET status = 'active', approved_by = ?, approved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'pending'"
-    ).bind(c.var.userId, loanId),
+    ).bind(approverId, loanId),
     ...schedule.map((installment) =>
-      c.env.DB.prepare(
+      env.DB.prepare(
         "INSERT INTO installments (id, loan_id, installment_number, due_date, amount_due) VALUES (?, ?, ?, ?, ?)"
       ).bind(crypto.randomUUID(), loanId, installment.installmentNumber, installment.dueDate, installment.amountDue)
     ),
-    c.env.DB.prepare(
+    env.DB.prepare(
       "INSERT INTO transactions (id, loan_id, type, amount, payment_method, status) VALUES (?, ?, 'disbursement', ?, 'mock_gateway', 'completed')"
     ).bind(crypto.randomUUID(), loanId, loan.amount),
   ]);
 
   if (updateResult.meta.changes === 0) {
-    return c.json({ error: "Loan no longer pending" }, 409);
+    return { status: 409 as const, body: { error: "Loan no longer pending" } };
   }
 
   const docId = crypto.randomUUID();
@@ -203,7 +203,7 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
     termMonths: loan.term_months,
     schedule,
   });
-  await saveDocument(c.env.DB, c.env.DOCS_BUCKET, {
+  await saveDocument(env.DB, env.DOCS_BUCKET, {
     id: docId,
     userId: loan.borrower_id,
     documentType: "loan_agreement",
@@ -211,7 +211,32 @@ loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (
     pdfBytes,
   });
 
-  return c.json({ id: loanId, status: "active", installmentCount: schedule.length, documentId: docId });
+  return { status: 200 as const, body: { id: loanId, status: "active", installmentCount: schedule.length, documentId: docId } };
+}
+
+loans.post("/:id/approve", requireAuth, requireRole("officer", "admin"), async (c) => {
+  const r = await approveLoan(c.env, c.req.param("id")!, c.var.userId);
+  return c.json(r.body, r.status);
+});
+
+loans.post("/:id/cancel", requireAuth, async (c) => {
+  const loanId = c.req.param("id");
+  const userId = c.var.userId;
+  const result = await c.env.DB.prepare(
+    `UPDATE loans SET status = 'defaulted', cancelled_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+     WHERE id = ? AND borrower_id = ? AND status = 'pending' AND upfront_paid = 0`
+  )
+    .bind(loanId, userId)
+    .run();
+  if (result.meta.changes > 0) return c.json({ id: loanId, status: "defaulted", cancelled: true });
+
+  // Nothing changed: say why.
+  const loan = await c.env.DB.prepare("SELECT status, upfront_paid FROM loans WHERE id = ? AND borrower_id = ?")
+    .bind(loanId, userId)
+    .first<{ status: string; upfront_paid: number }>();
+  if (!loan) return c.json({ error: "Loan not found" }, 404);
+  if (loan.status !== "pending") return c.json({ error: "Only loans waiting for approval can be cancelled" }, 409);
+  return c.json({ error: "The deposit is already paid, so this loan can't be cancelled here. Contact Keel to cancel it." }, 409);
 });
 
 loans.post("/:id/reject", requireAuth, requireRole("officer", "admin"), async (c) => {

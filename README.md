@@ -193,28 +193,19 @@ Deploy `frontend/dist/` to **Cloudflare Pages** (or attach as Workers Assets). S
 
 ### Web UI flows
 
+The frontend is **Keel**, rebuilt from scratch (design spec: `tasks/keel-design-spec.md`, plans in `tasks/todo.md`). Set `DEMO_MODE=true` in `.dev.vars` to show demo buttons (fill forms, mark bank/ID done, approve your own loan).
+
 | Route | Who | What |
 |-------|-----|------|
-| `/login` | Public | Register or log in (Turnstile-protected) |
-| `/kyc` | Borrower | Start Didit identity verification |
-| `/dashboard` | Borrower | Apply for loans, connect bank (Plaid), pay upfront fees |
-| `/officer` | Officer / Admin | Approve or reject pending loans |
-
-See [`docs/frontend-pages.md`](./docs/frontend-pages.md) for page-level detail (some KYC steps may reference the older upload flow — the live API uses Didit via `POST /api/kyc/session`).
-
-**Borrower happy path**
-
-1. Register at `/login` → JWT stored in `localStorage`.
-2. Complete KYC at `/kyc` (Didit session).
-3. On `/dashboard`, connect a bank account via Plaid Link.
-4. Submit a loan application (`amount`, `term_months`).
-5. After officer approval, pay installments from the dashboard.
-
-**Officer happy path**
-
-1. Log in with an `officer` or `admin` account.
-2. Open `/officer` to see `pending` loans.
-3. Approve or reject each application.
+| `/` | Public | Landing page: parallax hero, how it works, repayment calculator |
+| `/signin` | Public | Sign in (Turnstile token from `VITE_TURNSTILE_TOKEN`) |
+| `/signup` | Public | Create an account, then signs in |
+| `/app/loans` | Borrower | Dashboard: next payment, payment strip, totals, upcoming, activity |
+| `/app/apply` | Borrower | Amount/term sliders with live quote (`?amount=` presets) |
+| `/app/loans/:id` | Borrower, officer | Progress steps, schedule, deposit, demo payments, cancel while pending, documents |
+| `/app/setup` | Borrower | Details, bank (Plaid), ID (Didit) |
+| `/app/queue` | Officer / Admin | Review queue: summary, risk, approve / decline |
+| `/system` | Public | Living design-system reference: tokens and components |
 
 ---
 

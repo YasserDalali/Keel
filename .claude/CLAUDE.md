@@ -45,6 +45,8 @@ wrangler d1 migrations apply microloans_db
 
 **Single Cloudflare Worker** (`api/src/index.ts`) serving a Hono router. No separate services. Frontend is a static SPA built separately (lives in `frontend/`; served via Cloudflare Pages or Workers Assets).
 
+**Frontend (Keel)** — `frontend/`: Vite 8 + React 19 + Tailwind v4 (tokens in `src/styles/tokens.css` `@theme`) + GSAP (ScrollTrigger, SplitText) + Lenis, all in `src/lib/motion.ts`. Primitives in `src/ui/`, landing sections in `src/marketing/`, auth in `src/auth/` + `src/lib/auth.tsx`. `/system` renders every token and primitive — add new ones there. Illustrations are WebP in `public/img/`; white/cream-backed art uses `mix-blend-multiply` (`Art blend`). Every animation has a `prefers-reduced-motion` path. Loan maths mirror the API in `src/lib/loan-terms.ts` (keep in sync with `LOAN_*` vars). Dev: `npm run dev` (worker :8787) + `npm run frontend:dev` (:5173, proxies `/api`); `window.__lenis` is exposed in dev for scripted scrolling.
+
 **Bindings** (declared in `wrangler.toml`, typed in `api/src/types.ts`):
 - `DB` — D1 (SQLite). Schema in `api/migrations/0001_initial_schema.sql`. Six tables: `users`, `profiles`, `loans`, `installments`, `transactions`, `audit_logs`.
 - `LOAN_CACHE` — KV. Used for JWT drafts, KYC upload drafts (1h TTL), and rate limiting.
@@ -83,6 +85,6 @@ Tests run inside `@cloudflare/vitest-pool-workers` (real miniflare runtime, not 
 
 ### Specs & plans
 
-- `docs/superpowers/specs/` — design specs (e.g. KYC/OCR pipeline).
-- `docs/superpowers/plans/` — implementation plans.
+- `tasks/keel-design-spec.md` — Keel design system + landing/auth spec (source of truth for tokens, copy, motion).
+- `tasks/todo.md` — current implementation plan. `tasks/gemini-prompts.md` — prompts that produced the illustrations.
 - `CLOUDFLARE_MICROLOAN_PLAN.md` — original architectural blueprint.

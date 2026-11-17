@@ -11,6 +11,7 @@ import docs from "./routes/docs";
 import kyc from "./routes/kyc";
 import webhooks from "./routes/webhooks";
 import documents from "./routes/documents";
+import demo from "./routes/demo";
 import type { Bindings, Variables } from "./types";
 import openApiSpec from "../openapi.json";
 
@@ -41,6 +42,7 @@ app.route("/api/config", config);
 app.route("/api/kyc", kyc);
 app.route("/api/webhooks", webhooks);
 app.route("/api/documents", documents);
+app.route("/api/demo", demo);
 app.route("/docs", docs);
 app.get("/", (c) => c.redirect("/docs"));
 app.get("/openapi.json", (c) => c.json(openApiSpec));

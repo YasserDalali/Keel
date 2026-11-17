@@ -1,0 +1,43 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "keel-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "frontend:dev"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "worker-api",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "worker:dev"
+      ],
+      "port": 8787
+    },
+    {
+      "name": "keel-frontend-alt",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && KEEL_API_URL=http://localhost:8788 npx vite --port 5174 --strictPort"
+      ],
+      "port": 5174
+    },
+    {
+      "name": "worker-api-alt",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "wrangler",
+        "dev",
+        "--port",
+        "8788"
+      ],
+      "port": 8788
+    }
+  ]
+}

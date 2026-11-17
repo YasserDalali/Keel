@@ -8,6 +8,7 @@ config.get("/", (c) =>
   c.json({
     stripePublishableKey: c.env.STRIPE_PUBLISHABLE_KEY,
     paypalClientId: c.env.PAYPAL_CLIENT_ID,
+    demoMode: c.env.DEMO_MODE === "true",
   })
 );
 
