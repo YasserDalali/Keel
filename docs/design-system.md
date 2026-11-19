@@ -181,7 +181,9 @@ These rules apply to the exploded stack and replace the 2D "Step circles" and co
 
 ## README art
 
-`images/build-readme-art.py` makes the README hero (`readme/hero.png`) and the pill badges (`readme/pill-*.png`) in the same style. The hero copies the layout of an engineering sheet: title on the left, a small exploded stack with leader labels on the right, and a strip of caps notes along the bottom. Each pill carries an icon in ink: a Simple Icons brand mark (Cloudflare, Hono, TypeScript, Vitest) or a Lucide icon. Pills are PNG so the Inter font survives on GitHub. Show them at `height="26"` so all seven fit on one row.
+`images/build-readme-art.py` makes the README hero (`readme/hero.png`) and the pill badges (`readme/pill-*.png`) in the same style. The hero copies the layout of an engineering sheet: title on the left, a small exploded stack with leader labels on the right, and a strip of caps notes along the bottom. Pills list the whole stack in four rows: platform, backend, frontend and services. Each pill carries an icon in ink: a Simple Icons brand mark, or a Lucide icon when no brand mark exists (Plaid, Didit, D1, KV, R2). Pills are PNG so the Inter font survives on GitHub. Show them at `height="26"`.
+
+README screenshots live in `images/screens/` as PNG, with transparent rounded corners (radius 24 to 28 px) and a 2 px `#d0d7de` border baked in. GitHub removes CSS, so the image itself must carry the rounding.
 
 README text follows the text rules above: paragraphs, not only lists, in STE style. Each sheet gets two to four short paragraphs, with the facts taken from the code.
 

@@ -2,12 +2,31 @@
 
 <p align="center">
   <a href="https://developers.cloudflare.com/workers/"><img alt="Cloudflare Workers" src="docs/images/readme/pill-cloudflare-workers.png" height="26"></a>
-  <a href="https://developers.cloudflare.com/d1/"><img alt="D1, KV, R2" src="docs/images/readme/pill-d1-kv-r2.png" height="26"></a>
-  <a href="https://hono.dev"><img alt="Hono" src="docs/images/readme/pill-hono.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/d1/"><img alt="D1" src="docs/images/readme/pill-d1.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/kv/"><img alt="KV" src="docs/images/readme/pill-kv.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/r2/"><img alt="R2" src="docs/images/readme/pill-r2.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/turnstile/"><img alt="Turnstile" src="docs/images/readme/pill-turnstile.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/workers/configuration/cron-triggers/"><img alt="Cron triggers" src="docs/images/readme/pill-cron-triggers.png" height="26"></a>
+</p>
+<p align="center">
   <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="docs/images/readme/pill-typescript.png" height="26"></a>
-  <a href="#why-domain-driven-design"><img alt="Domain-Driven Design" src="docs/images/readme/pill-domain-driven-design.png" height="26"></a>
+  <a href="https://hono.dev"><img alt="Hono" src="docs/images/readme/pill-hono.png" height="26"></a>
+  <a href="api/openapi.json"><img alt="OpenAPI" src="docs/images/readme/pill-openapi.png" height="26"></a>
   <a href="https://vitest.dev"><img alt="Vitest" src="docs/images/readme/pill-vitest.png" height="26"></a>
+  <a href="#why-domain-driven-design"><img alt="Domain-Driven Design" src="docs/images/readme/pill-domain-driven-design.png" height="26"></a>
+</p>
+<p align="center">
+  <a href="https://react.dev"><img alt="React" src="docs/images/readme/pill-react.png" height="26"></a>
+  <a href="https://vite.dev"><img alt="Vite" src="docs/images/readme/pill-vite.png" height="26"></a>
+  <a href="https://tailwindcss.com"><img alt="Tailwind CSS" src="docs/images/readme/pill-tailwind-css.png" height="26"></a>
+  <a href="https://gsap.com"><img alt="GSAP" src="docs/images/readme/pill-gsap.png" height="26"></a>
   <a href="docs/design-system.md"><img alt="Design system" src="docs/images/readme/pill-design-system.png" height="26"></a>
+</p>
+<p align="center">
+  <a href="https://developer.paypal.com"><img alt="PayPal" src="docs/images/readme/pill-paypal.png" height="26"></a>
+  <a href="https://plaid.com/docs/"><img alt="Plaid" src="docs/images/readme/pill-plaid.png" height="26"></a>
+  <a href="https://didit.me"><img alt="Didit" src="docs/images/readme/pill-didit.png" height="26"></a>
+  <a href="https://resend.com"><img alt="Resend" src="docs/images/readme/pill-resend.png" height="26"></a>
 </p>
 
 <br>
@@ -19,11 +38,11 @@
 Four actors use the system. A **visitor** creates an account and logs in. A **borrower** completes a profile, verifies their identity, links a bank, applies for a loan and repays it. An **officer** reviews applications and decides. A **scheduler** runs once a day and marks late payments as overdue. Three outside systems help: Didit checks identity, Plaid reads the bank account and PayPal moves the money.
 
 <p align="center">
-  <a href="https://microloans-platform.yasser-dalali-personal.workers.dev/"><img alt="Keel landing page: Capital for the business you already run. Loans from $500 to $10,000 for shops, workshops and market stalls." src="docs/images/screens/landing.jpg" width="100%"></a>
+  <a href="https://microloans-platform.yasser-dalali-personal.workers.dev/"><img alt="Keel landing page: Capital for the business you already run. Loans from $500 to $10,000 for shops, workshops and market stalls." src="docs/images/screens/landing.png" width="100%"></a>
 </p>
 <p align="center">
-  <img alt="Keel sign-up page with an illustrated shop front." src="docs/images/screens/signup.jpg" width="49%">
-  <img alt="The Keel design system page: colour tokens such as canvas, ink and accent." src="docs/images/screens/system.jpg" width="49%">
+  <img alt="Keel sign-up page with an illustrated shop front." src="docs/images/screens/signup.png" width="49%">
+  <img alt="The Keel design system page: colour tokens such as canvas, ink and accent." src="docs/images/screens/system.png" width="49%">
 </p>
 
 The live app runs at **[microloans-platform.yasser-dalali-personal.workers.dev](https://microloans-platform.yasser-dalali-personal.workers.dev/)** in demo mode. Demo mode adds buttons that fill the forms and skip the provider steps, so you can try the whole flow without real documents.

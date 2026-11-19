@@ -64,9 +64,20 @@ render('hero', W, H)
 
 # --- pills ----------------------------------------------------------------
 # (label, icon kind, icon name). Brand marks come from Simple Icons, the rest from Lucide. All drawn in ink.
-PILLS = [('Cloudflare Workers', 'si', 'cloudflare'), ('D1 · KV · R2', 'lu', 'database'), ('Hono', 'si', 'hono'),
-         ('TypeScript', 'si', 'typescript'), ('Domain-Driven Design', 'lu', 'boxes'), ('Vitest', 'si', 'vitest'),
-         ('Design system', 'lu', 'ruler')]
+# Four rows: platform, backend, frontend, services. Brand marks from Simple Icons, the rest from Lucide.
+PILL_ROWS = [
+    [('Cloudflare Workers', 'si', 'cloudflare'), ('D1', 'lu', 'database'), ('KV', 'lu', 'key-round'), ('R2', 'lu', 'archive'),
+     ('Turnstile', 'lu', 'shield-check'), ('Cron triggers', 'lu', 'clock')],
+    [('TypeScript', 'si', 'typescript'), ('Hono', 'si', 'hono'), ('OpenAPI', 'si', 'openapiinitiative'), ('Vitest', 'si', 'vitest'),
+     ('Domain-Driven Design', 'lu', 'boxes')],
+    [('React', 'si', 'react'), ('Vite', 'si', 'vite'), ('Tailwind CSS', 'si', 'tailwindcss'), ('GSAP', 'si', 'gsap'),
+     ('Design system', 'lu', 'ruler')],
+    [('PayPal', 'si', 'paypal'), ('Plaid', 'lu', 'landmark'), ('Didit', 'lu', 'scan-face'), ('Resend', 'si', 'resend')],
+]
+PILLS = [p for row in PILL_ROWS for p in row]
+for f in os.listdir(OUT):  # drop pills that are no longer in the list
+    if f.startswith('pill-'):
+        os.remove(os.path.join(OUT, f))
 for label, kind, icon in PILLS:
     text = label.upper()
     w, h = int(62 + len(text) * 9.4), 40
