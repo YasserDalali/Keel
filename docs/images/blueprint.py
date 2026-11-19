@@ -25,7 +25,7 @@ GAP = 195                          # vertical distance between slabs
 Z = (390, 195, 0)                  # top, middle, bottom slab
 K = 1.0                            # plane scale; < 1 fits a wider plane on the sheet
 
-# Camera. None = true isometric (CF-01, CF-02). Otherwise (azimuth, elevation) in degrees:
+# Camera. None = true isometric (CF-02, the README hero). Otherwise (azimuth, elevation) in degrees:
 # azimuth turns the plane (0 = x axis flat across the sheet, 45 = isometric), elevation tilts the camera
 # (35.26 = isometric, higher = more top-down). Keep azimuth inside (0, 90) so the +x and +y faces stay the visible ones.
 VIEW = None
@@ -112,8 +112,10 @@ def big_tile_inner(w, icon, title, sub, n, color=INK):
             f'<text x="{w/2}" y="118" class="s" text-anchor="middle">{sub}</text>')
 
 # --- sheet furniture (flat 2D) -------------------------------------------
+H = 1000  # sheet height; a sheet may set bp.H before header() for more room
+
 def header(title):
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, Helvetica, Arial, sans-serif">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 {H}" width="1600" height="{H}" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
 <pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9eef6" stroke-width="0.6"/></pattern>
 <pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d3dcea" stroke-width="0.9"/></pattern>
@@ -125,8 +127,8 @@ def header(title):
 .t{{fill:{INK};font-size:11px;letter-spacing:1.6px;font-weight:600}}.h{{fill:{INK};font-size:15px;font-weight:700;letter-spacing:.6px}}
 .s{{fill:{SOFT};font-size:12px}}.n{{fill:{ACC};font-size:9.5px;font-weight:700;text-anchor:middle}}
 </style>
-<rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
-<rect x="20" y="20" width="1560" height="960" class="ink"/><rect x="30" y="30" width="1540" height="940" class="thin"/>
+<rect width="1600" height="{H}" fill="#ffffff"/><rect width="1600" height="{H}" fill="url(#major)"/>
+<rect x="20" y="20" width="1560" height="{H-40}" class="ink"/><rect x="30" y="30" width="1540" height="{H-60}" class="thin"/>
 <text x="60" y="108" fill="{INK}" font-size="36" font-weight="600">{title}</text>
 <line x1="60" y1="132" x2="1540" y2="132" class="thin"/>'''
 
@@ -140,17 +142,17 @@ def leader(z, label, cap, icon=None):
             f'<circle cx="{X:.1f}" cy="{Y:.1f}" r="2.5" fill="{INK}"/>'
             f'<text x="330" y="{Y+18:.0f}" class="s">{cap}</text>')
 
-def key(lines, y0=760):
-    o = f'<text x="60" y="{y0}" class="t">KEY</text>'
+def key(lines, y0=760, x=60):
+    o = f'<text x="{x}" y="{y0}" class="t">KEY</text>'
     for i, k in enumerate(lines):
         y = y0 + 26 + i * 22
-        o += f'<text x="60" y="{y}" fill="{ACC}" font-size="12.5" font-weight="700">{i+1}</text><text x="82" y="{y}" class="s">{k}</text>'
+        o += f'<text x="{x}" y="{y}" fill="{ACC}" font-size="12.5" font-weight="700">{i+1}</text><text x="{x+22}" y="{y}" class="s">{k}</text>'
     return o
 
 def title_block(sheet, view='ISO VIEW', rev='REV A'):
-    return ('<rect x="1380" y="880" width="160" height="70" class="ink"/><line x1="1380" y1="915" x2="1540" y2="915" class="thin"/>'
-            f'<line x1="1460" y1="915" x2="1460" y2="950" class="thin"/><text x="1392" y="902" class="t">{sheet}</text>'
-            f'<text x="1392" y="938" class="s">{view}</text><text x="1472" y="938" class="s">{rev}</text></svg>')
+    return (f'<rect x="1380" y="{H-120}" width="160" height="70" class="ink"/><line x1="1380" y1="{H-85}" x2="1540" y2="{H-85}" class="thin"/>'
+            f'<line x1="1460" y1="{H-85}" x2="1460" y2="{H-50}" class="thin"/><text x="1392" y="{H-98}" class="t">{sheet}</text>'
+            f'<text x="1392" y="{H-62}" class="s">{view}</text><text x="1472" y="{H-62}" class="s">{rev}</text></svg>')
 
 def write(name, parts):
     open(f'{HERE}/{name}.svg', 'w').write('\n'.join(parts))
@@ -183,11 +185,11 @@ def chip(icon, title, sub, color=INK, size=14):
 def wire(d, style=CALL, end=True):
     return f'<path d="{d}" class="ink" style="{style}"' + (' marker-end="url(#ae)"/>' if end else '/>')
 
-def legend(items, y0=180, title='RELATIONS'):
-    o = f'<text x="60" y="{y0}" class="t">{title}</text>'
+def legend(items, y0=180, title='RELATIONS', x=60):
+    o = f'<text x="{x}" y="{y0}" class="t">{title}</text>'
     for i, (style, label, end) in enumerate(items):
         y = y0 + 28 + i * 26
-        o += wire(f'M60 {y} H104', style, end) + f'<text x="118" y="{y+4}" class="s">{label}</text>'
+        o += wire(f'M{x} {y} H{x+44}', style, end) + f'<text x="{x+58}" y="{y+4}" class="s">{label}</text>'
     return o
 
 def floor_labels(items, y=42):

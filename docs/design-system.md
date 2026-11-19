@@ -2,7 +2,7 @@
 
 Style for every diagram in `docs/`. Light-mode engineering drawing: white sheet, navy ink, one blue accent.
 
-**Default view: 3D exploded isometric** (see "3D view" below). Reference sheet: `images/cf-stack-3d.svg` (CF-01), generator `images/build-cf-stack-3d.py`.
+**Default view: 3D** (see "3D view" below). Reference sheet: `images/cf-domain-3d.svg` (CF-02), generator `images/build-cf-domain-3d.py`.
 Use the flat 2D view only when a sheet has too much text for slanted tile faces. 2D reference: `images/cf-stack.svg`, generator `images/build-cf-stack.py`.
 
 Every rule below applies to both views, unless the 3D section says otherwise.
@@ -113,12 +113,12 @@ Write the key and captions in Simplified Technical English (`/asd-ste100`):
 ## Build
 
 ```bash
-python3 docs/images/build-cf-stack-3d.py
+python3 docs/images/build-cf-domain-3d.py
 cd docs/images && google-chrome --headless --hide-scrollbars --force-device-scale-factor=2 \
-  --window-size=1600,1000 --screenshot="$PWD/cf-stack-3d.png" "file://$PWD/cf-stack-3d.svg"
+  --window-size=1600,1000 --screenshot="$PWD/cf-domain-3d.png" "file://$PWD/cf-domain-3d.svg"
 ```
 
-For the 2D sheet, use `build-cf-stack.py` and `cf-stack` in place of `build-cf-stack-3d.py` and `cf-stack-3d`.
+Every sheet builds the same way: run its `build-*.py`, then screenshot its SVG.
 
 Do not render with ImageMagick. It drops arrowheads and the background.
 
@@ -126,7 +126,7 @@ Do not render with ImageMagick. It drops arrowheads and the background.
 
 | Sheet | Subject |
 |---|---|
-| CF-01 | Cloudflare stack (done) |
+| CF-01 | Cloudflare stack, flat 2D (done: `cf-stack`) |
 | CF-02 | Bounded contexts and domain events (done: `cf-domain-3d`) |
 | CF-03 | Inside Lending: Loan aggregate, services, ports, status machine (done: `cf-lending-3d`) |
 | CF-04 | Inside Payments: use cases, gateway port, ledger, safety checks (done: `cf-payments-3d`) |
@@ -139,7 +139,7 @@ Give each sheet its own camera, so the set does not look the same. Set `bp.VIEW 
 
 | Sheet | View | Look |
 |---|---|---|
-| CF-01 | isometric (`VIEW = None`) | exploded stack |
+| CF-01 | flat 2D | the one 2D sheet |
 | CF-02 | isometric (`VIEW = None`) | one plane, diagonal |
 | CF-03 | `(18, 42)` | low and wide. Text runs almost flat |
 | CF-04 | `(8, 68)` | almost overhead, like a plan with depth |
@@ -155,13 +155,13 @@ Context sheets (CF-03, CF-04) put one platform per layer: application, domain, i
 
 ## 3D view (default)
 
-Exploded isometric view. Reference: `images/cf-stack-3d.svg`. Generator: `images/build-cf-stack-3d.py`.
+Isometric view. Reference: `images/cf-domain-3d.svg`. Generator: `images/build-cf-domain-3d.py`.
 
 All 3D sheets import `images/blueprint.py` (projection, slabs, tiles, badges, header, leaders, key, title block). A new sheet is one `build-<name>-3d.py` file that only places content.
 
 Two layouts:
 - **Single plane** (default, CF-02): all blocks stand on one ground slab and arrows show the relations. Small blocks (24 px high), wide gaps, so the arrows carry the picture. Arrows and step circles lie at roof height, drawn after every block. Columns run along x: upstream, core (with the bus), downstream. Each column stands on its own platform with a 70-unit gap. Column names lie on the platform floor at y=42, and blocks start at y=90 so the names stay clear. Turn the bus label with `rotate(-90)` so it reads upward. Put arrow joints in the middle of a gap, away from both platform edges. Set `bp.K` (plane scale) so the plane fits, and enlarge the roof text to match.
-- **Exploded stack** (CF-01): one slab per layer. Use it only when the subject is layers, not relations.
+- **Exploded stack** (the README hero): one slab per layer. Use it only when the subject is layers, not relations. CF-01 had a 3D exploded version. It was removed, and the flat sheet stays.
 
 Arrow styles on a single plane: solid = calls a port, dashed `6 4` = publishes an event, dotted `1.5 3.5` = reads tables. Show the legend top left.
 
@@ -181,4 +181,37 @@ These rules apply to the exploded stack and replace the 2D "Step circles" and co
 
 ## README art
 
-`images/build-readme-art.py` makes the README hero (`readme/hero.png`) and the pill badges (`readme/pill-*.png`) in the same style. The hero copies the layout of an engineering sheet: title on the left, a small exploded stack with leader labels on the right, and a strip of caps notes along the bottom. Pills are PNG so the Inter font survives on GitHub. Show them at `height="28"` so all seven fit on one row.
+`images/build-readme-art.py` makes the README hero (`readme/hero.png`) and the pill badges (`readme/pill-*.png`) in the same style. The hero copies the layout of an engineering sheet: title on the left, a small exploded stack with leader labels on the right, and a strip of caps notes along the bottom. Each pill carries an icon in ink: a Simple Icons brand mark (Cloudflare, Hono, TypeScript, Vitest) or a Lucide icon. Pills are PNG so the Inter font survives on GitHub. Show them at `height="26"` so all seven fit on one row.
+
+README text follows the text rules above: paragraphs, not only lists, in STE style. Each sheet gets two to four short paragraphs, with the facts taken from the code.
+
+## UML sheets (flat 2D)
+
+UML sheets use the same frame, palette and type as the blueprint sheets. They are flat, because UML notation must stay exact. The kit is `images/uml.py`. Render any sheet with `images/render.sh <name>`.
+
+| Sheet | Kind | Generator |
+|---|---|---|
+| UML-01 | Use cases | `build-uml-usecases.py` |
+| UML-02 | Entity-relationship (D1 tables) | `build-uml-erd.py` |
+| UML-03 | Class diagram (Lending) | `build-uml-lending-classes.py` |
+| UML-04, 05, 07 | Sequences: apply, approve, pay | `build-uml-sequences.py` |
+| UML-06 | Package diagram: layers and `api/src` | `build-uml-packages.py` |
+
+Rules:
+- Actors are stick figures. External systems are boxes with the «system» stereotype.
+- Class boxes have three parts: name (with stereotype), attributes, operations. Code text uses a monospace font.
+- Use blue only for the aggregate root, the aggregate's tables, domain events and notes that carry the main point.
+- Relations: a filled diamond means owns, a dashed open arrow means uses, a dashed hollow triangle means implements. Crow's foot means many, two bars mean one.
+- Sequence messages: a solid line with a filled head is a call. A dashed line with an open head is a return. A dashed blue line is a domain event. Each message has a step number in bold blue text, with no circle.
+- Message labels have a white halo, so they stay readable where they cross a lifeline.
+- Show only the members that carry a rule. A class diagram is not a copy of the source.
+
+## Spacing rules (learned the hard way)
+
+- A sheet can be taller than 1000 px: set `bp.H` before `header()`. The title block moves with it, and `render.sh` reads the height from the SVG.
+- 3D feature sheets are overviews. The class and sequence diagrams carry the detail, so keep only the wires that explain the layout.
+- Put each block on the same row as the block it calls, so each wire runs straight across a gap.
+- Leave at least 120 plane units between platforms. Wires need room, and so do their step numbers.
+- When a wire would cross the whole sheet, drop it and put the step number on the block instead.
+- Move the status machines, rules, keys and legends into a strip under the plane. The plane then takes the full width.
+- In an ERD, give each context its own column and route lines through the channels between columns. A far foreign key to `users` is a `→ users` label, not a line.

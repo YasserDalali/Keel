@@ -1,63 +1,166 @@
-<a href="docs/design-system.md"><img alt="Microloans: serverless lending on Cloudflare, modelled with Domain-Driven Design. An exploded drawing of three layers: edge, worker and bindings." src="docs/images/readme/hero.png" width="100%"></a>
+<a href="docs/design-system.md"><img alt="Keel: small business loans, serverless on Cloudflare, built with Domain-Driven Design. An exploded drawing of three layers: edge, worker and bindings." src="docs/images/readme/hero.png" width="100%"></a>
 
 <p align="center">
-  <a href="https://developers.cloudflare.com/workers/"><img alt="Cloudflare Workers" src="docs/images/readme/pill-cloudflare-workers.png" height="28"></a>
-  <a href="https://developers.cloudflare.com/d1/"><img alt="D1, KV, R2" src="docs/images/readme/pill-d1-kv-r2.png" height="28"></a>
-  <a href="https://hono.dev"><img alt="Hono" src="docs/images/readme/pill-hono.png" height="28"></a>
-  <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="docs/images/readme/pill-typescript.png" height="28"></a>
-  <a href="#the-business-domain"><img alt="Domain-Driven Design" src="docs/images/readme/pill-domain-driven-design.png" height="28"></a>
-  <a href="https://vitest.dev"><img alt="Vitest" src="docs/images/readme/pill-vitest.png" height="28"></a>
-  <a href="docs/design-system.md"><img alt="Design system" src="docs/images/readme/pill-design-system.png" height="28"></a>
+  <a href="https://developers.cloudflare.com/workers/"><img alt="Cloudflare Workers" src="docs/images/readme/pill-cloudflare-workers.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/d1/"><img alt="D1, KV, R2" src="docs/images/readme/pill-d1-kv-r2.png" height="26"></a>
+  <a href="https://hono.dev"><img alt="Hono" src="docs/images/readme/pill-hono.png" height="26"></a>
+  <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="docs/images/readme/pill-typescript.png" height="26"></a>
+  <a href="#why-domain-driven-design"><img alt="Domain-Driven Design" src="docs/images/readme/pill-domain-driven-design.png" height="26"></a>
+  <a href="https://vitest.dev"><img alt="Vitest" src="docs/images/readme/pill-vitest.png" height="26"></a>
+  <a href="docs/design-system.md"><img alt="Design system" src="docs/images/readme/pill-design-system.png" height="26"></a>
 </p>
 
 <br>
 
-Borrowers apply for a small loan, verify their identity, link a bank account and repay in monthly installments. Loan officers review each application and approve or decline it. The whole platform runs on one Cloudflare Worker. The business rules live in a domain model, split into seven bounded contexts that talk through domain events.
+## What the system does
 
-Every drawing below comes from the code. Each sheet is a short Python script in [`docs/images/`](docs/images/), and [`docs/design-system.md`](docs/design-system.md) holds the rules they follow.
+[Keel](https://microloans-platform.yasser-dalali-personal.workers.dev/) lends small amounts of money to small businesses: shops, workshops and market stalls. Loans go from $500 to $10,000. Keel does the work that a lender normally does by hand. It checks who the borrower is, it looks at their bank account, and it decides if the risk is acceptable. A loan officer then approves or declines the application. After approval, the system makes the repayment schedule, takes each payment and sends a receipt.
+
+Four actors use the system. A **visitor** creates an account and logs in. A **borrower** completes a profile, verifies their identity, links a bank, applies for a loan and repays it. An **officer** reviews applications and decides. A **scheduler** runs once a day and marks late payments as overdue. Three outside systems help: Didit checks identity, Plaid reads the bank account and PayPal moves the money.
+
+<p align="center">
+  <a href="https://microloans-platform.yasser-dalali-personal.workers.dev/"><img alt="Keel landing page: Capital for the business you already run. Loans from $500 to $10,000 for shops, workshops and market stalls." src="docs/images/screens/landing.jpg" width="100%"></a>
+</p>
+<p align="center">
+  <img alt="Keel sign-up page with an illustrated shop front." src="docs/images/screens/signup.jpg" width="49%">
+  <img alt="The Keel design system page: colour tokens such as canvas, ink and accent." src="docs/images/screens/system.jpg" width="49%">
+</p>
+
+The live app runs at **[microloans-platform.yasser-dalali-personal.workers.dev](https://microloans-platform.yasser-dalali-personal.workers.dev/)** in demo mode. Demo mode adds buttons that fill the forms and skip the provider steps, so you can try the whole flow without real documents.
+
+<p align="center">
+  <a href="docs/images/uml-usecases.png"><img alt="UML-01, use case diagram: the visitor, borrower, officer and scheduler, and the use cases they reach, grouped into account, scheduled, decisions, tracking, borrowing and onboarding. Didit, Plaid and PayPal are secondary actors." src="docs/images/uml-usecases.png" width="100%"></a>
+</p>
+
+The diagram groups the use cases by purpose. A line to a group means the actor can use every case inside it. A borrower sees only their own loans. The officer cases need the officer or admin role. Register and log in pass a Turnstile bot check first.
+
+## What this project focuses on
+
+This is a personal project. Its aim is to show how to build a real, complete product on serverless infrastructure, with a design that stays easy to change. These are the areas it focuses on:
+
+- **Serverless cloud infrastructure.** The platform runs on one Cloudflare Worker. The same design also suits other serverless functions: no long-running server, storage through managed services, and billing by use.
+- **Domain-Driven Design.** The business rules live in a domain model, in the words of the business. They do not live in routes or in SQL.
+- **Loose coupling.** The parts of the system talk through ports and domain events, not through direct calls into each other's code. Each part can change without breaking the others.
+- **Clean, typed code.** The code is strict TypeScript. Money is a value object in whole cents. Errors are named domain errors. Each use case is one small class.
+- **API practice.** The API returns clear status codes and named errors, and an OpenAPI document ([`api/openapi.json`](api/openapi.json)) describes it. Webhooks are verified and safe to receive twice.
+- **A friendly interface.** The web app (Keel) gives clear steps, plain words and fast feedback. Every animation has a reduced-motion path.
+
+These areas are **not** the focus, and the project keeps them small on purpose:
+
+- **Real money and compliance.** Providers run in sandbox mode. There is no real disbursement, no licence work and no legal review.
+- **Scale and multi-region data.** One D1 database is enough here. Sharding and replication are out of scope.
+- **Collections and defaults.** The model has a `defaulted` status, but no process sets it yet.
+- **A full admin back office.** Officers get a review queue, not a complete operations tool.
 
 <br>
 
-### The stack
+## The stack
 
 <p align="center">
-  <a href="docs/images/cf-stack.png"><img alt="CF-01, flat: clients, the Cloudflare edge, one Worker with its four layers, the D1, KV and R2 bindings, and the external providers." src="docs/images/cf-stack.png" width="100%"></a>
+  <a href="docs/images/cf-stack.png"><img alt="CF-01: clients, the Cloudflare edge, one Worker with its four layers, the D1, KV and R2 bindings, and the external providers." src="docs/images/cf-stack.png" width="100%"></a>
 </p>
 
-- **One Worker, one deploy.** The Worker serves the Hono API and the built frontend (static assets with an SPA fallback). There is no server to run or patch.
-- **Bindings, not connection strings.** D1 holds the relational data. KV keeps the token blacklist, a resend throttle and webhook dedup keys. R2 stores the generated PDFs. Each one is a binding in [`wrangler.toml`](wrangler.toml).
-- **Guards at the edge.** Turnstile checks register and log in. A cron trigger marks overdue installments every day at 06:00 UTC.
-- **Providers stay outside.** PayPal, Plaid, Didit and Resend sit behind adapters. Provider JSON never leaves the infrastructure layer.
+One Cloudflare Worker runs the whole platform. It serves the API through [Hono](https://hono.dev) and the built React frontend as static assets. Requests to `/api`, `/docs` and `/openapi.json` go to Hono. All other paths return the single-page app. The platform deploys as one unit with one command, `npm run deploy`. No machine stays on between requests, so the cost follows the use: requests, database reads and writes, and stored bytes.
 
-### The business domain
+The Worker reaches its storage through bindings that [`wrangler.toml`](wrangler.toml) declares. A binding is a typed handle that Cloudflare gives to the code, so the code never holds a connection string. **D1** is the relational database (SQLite). It holds users, profiles, loans, installments and the payment ledger. **KV** holds short-lived keys: the token blacklist for logout, a throttle for verification emails and dedup keys for Didit webhooks. **R2** stores the PDF documents, such as loan agreements, receipts and statements.
+
+Cloudflare's edge terminates TLS and absorbs DDoS traffic before the Worker runs. Turnstile checks each register and log-in request, and the check fails closed: if the check cannot run, the request stops. Sessions use HS256 JSON Web Tokens with three roles: borrower, officer and admin. Personal data in the profile, and the Plaid access token, are encrypted with AES-GCM before they reach D1. A cron trigger runs every day at 06:00 UTC and marks late installments as overdue.
+
+The frontend is React 19 with Vite 8 and Tailwind CSS v4. The tests run in Vitest inside the real Workers runtime (Miniflare), with real D1, KV and R2 bindings, not mocks.
+
+<br>
+
+## Why Domain-Driven Design
+
+A loan has many rules. An application needs a verified email, an approved identity check and a linked bank. A large loan needs a deposit before approval. A borrower can cancel only while the loan is pending and before any deposit is paid. The schedule must add up to the exact total, to the cent. If these rules live in routes and SQL, they spread across many files. Then a change to one rule can break another, and nobody can see all the rules in one place.
+
+Domain-Driven Design (DDD) puts the rules in one place: a model of the business, written in the business's own words. The model is plain TypeScript. It does not know about HTTP, about D1 or about PayPal. So you can test each rule in milliseconds, and you can read the code as a description of how lending works.
+
+DDD also splits a large system into **bounded contexts**. Each context owns one part of the business and its own words. In this project "user" means an account in Identity, and "applicant" means a person who asks for a loan in Lending. The two words do not mix, and each context can change its inside without asking the others.
 
 <p align="center">
   <a href="docs/images/cf-domain-3d.png"><img alt="CF-02: Identity and Borrower upstream, Lending and Payments in the core, Documents, Communication and Reporting downstream, joined by an event bus. A matrix shows which context handles each domain event." src="docs/images/cf-domain-3d.png" width="100%"></a>
 </p>
 
-- **Lending is the core.** It asks Identity and Borrower one question through its own port, `ApplicantGateway`, and never sees how they store anything.
-- **Contexts react to events.** Lending and Identity raise nine kinds of event. Payments, Documents and Communication subscribe. A failing handler is logged and never fails the command, so the effects are eventually consistent and every handler is idempotent.
-- **The dependency rule is tested.** [`api/test/architecture.spec.ts`](api/test/architecture.spec.ts) fails if a domain imports Hono or D1, or if one context reaches into another's infrastructure.
+The system has seven bounded contexts. **Identity** owns user accounts and email verification. **Borrower** owns the profile, the identity check and the bank link. **Lending** is the core domain: it owns the loan and its rules. **Payments** moves money and keeps the ledger. **Documents** makes the PDFs. **Communication** sends notifications and email. **Reporting** builds the read models for the dashboard and keeps the reminder settings.
 
-### Inside Lending
+The contexts are loosely coupled in two ways. First, when a context needs facts from another, it declares a **port** in its own words. Lending, for example, asks one question through `ApplicantGateway`. The composition root in `app/wiring/` connects that port to Identity and Borrower, so Lending never learns how they store their data. Second, changes travel as **domain events**. When a loan is approved, Lending does not call Payments, Documents and Communication. It records the event `loan-approved`, and each of them reacts on its own. The matrix on the sheet shows which context reacts to each of the nine events.
+
+### How the code is organised
+
+<p align="center">
+  <a href="docs/images/uml-packages.png"><img alt="UML-06: on the left, the layers of one context as rings, with the domain at the centre and every dependency pointing inward. On the right, the packages in api/src: seven contexts, shared, app, middleware and index.ts. At the bottom, the five rules the architecture test enforces." src="docs/images/uml-packages.png" width="100%"></a>
+</p>
+
+Each context has the same four layers, and the dependencies point inward only. The **domain** layer is pure TypeScript and imports nothing from Hono, D1 or another context. The **application** layer holds the use cases. A use case loads an aggregate, calls one method, saves it and publishes its events. It contains no business rules. The **infrastructure** layer talks to D1, R2 and the providers, and provider data never leaves it. The **interface** layer is the HTTP edge. It contains no SQL and no rules. It maps each named domain error to a status code in one place, [`app/http.ts`](api/src/app/http.ts).
+
+A test protects this structure. [`api/test/architecture.spec.ts`](api/test/architecture.spec.ts) fails when a domain layer imports Hono or D1, when a context reaches into the infrastructure of another context, or when a router contains SQL. So the structure does not decay over time.
+
+<br>
+
+## Where the data lives
+
+<p align="center">
+  <a href="docs/images/uml-erd.png"><img alt="UML-02, entity-relationship diagram of the D1 tables, grouped by the context that owns them, with keys, encrypted columns and relations." src="docs/images/uml-erd.png" width="100%"></a>
+</p>
+
+D1 holds twelve tables, and each table belongs to one context. The context name sits in the corner of each table. The two blue tables, `loans` and `installments`, hold the Loan aggregate. The repository writes them together in one batch, so a loan and its installments never disagree. If another request changed the loan first, the save fails and overwrites nothing.
+
+Some columns are marked `sealed`. They hold AES-GCM ciphertext: the name, phone, address and national ID in `profiles`, and the Plaid access token. The repository seals each value before the write and opens it after the read, so the database never sees plain personal data. Amounts are stored in dollars, and the domain converts them to whole cents in a `Money` value object. A unique index on `transactions.external_reference_id` makes sure that the ledger records each provider payment at most once.
+
+<br>
+
+## Feature: applying for a loan
 
 <p align="center">
   <a href="docs/images/cf-lending-3d.png"><img alt="CF-03: use cases, the Loan aggregate with its installments, deposit, terms and risk assessment, the domain services, and the D1 repository, queries and applicant gateway. With the loan status machine and the rules on the loan." src="docs/images/cf-lending-3d.png" width="100%"></a>
 </p>
 
-- **Rules live on the aggregate.** `loan.approve()` refuses unless the loan is pending and any deposit is paid. `loan.cancel()` refuses once a deposit is paid. Use cases only load, call and save.
-- **One save, one batch.** The repository writes the loan and its installments in one D1 batch. A stale write fails instead of overwriting newer data.
-- **Exact money.** Amounts are whole cents. The repayment schedule gives the rounding to the last installment, so the total is exact.
+The Lending context is the heart of the system. The blueprint above shows its three layers. The use cases sit on the left, the domain model in the middle and the adapters on the right. The aggregate boundary, the dashed blue line, marks what the Loan owns. The status machine on the left of the sheet shows each allowed change of status.
 
-### Inside Payments
+<p align="center">
+  <a href="docs/images/uml-lending-classes.png"><img alt="UML-03, class diagram of Lending: the ApplyForLoan use case, the Loan aggregate root that owns its installments, deposit, terms and risk assessment, the RiskPolicy, DepositPolicy and schedule services, and the repository and gateway ports with their adapters." src="docs/images/uml-lending-classes.png" width="100%"></a>
+</p>
+
+The class diagram shows the same model in more detail. The **Loan** is the aggregate root. It owns its installments, which are entities, and three value objects: `Deposit`, `LoanTerms` and `RiskAssessment`. Only the Loan changes its parts. Other code holds a loan by its id and calls one of its methods: `apply`, `approve`, `decline`, `cancel`, `payDeposit` or `recordPayment`. Each method checks its rules and records a domain event. The use cases depend on two ports, `ApplicantGateway` and `LoanRepository`. The adapters on the left implement them, so the domain never depends on D1.
+
+<p align="center">
+  <a href="docs/images/uml-seq-apply.png"><img alt="UML-04, sequence diagram: the borrower posts an application, the route checks the token, ApplyForLoan asks the applicant gateway, rejects the application if a check fails, scores the risk, creates the Loan, saves it in one batch and publishes loan-applied." src="docs/images/uml-seq-apply.png" width="100%"></a>
+</p>
+
+The sequence diagram follows one application from the browser to the database. The route checks the token and calls the use case. `ApplyForLoan` asks the `ApplicantGateway` for three facts: a verified email, an approved identity check and a bank safety score. If one of them is missing, the use case stops with a named error, and the route answers `403` or `428`. Next, `RiskPolicy` calculates a score: 60 % from the bank safety score and 40 % from the borrowing record. The score must reach `RISK_SCORE_THRESHOLD`. A loan above `LOAN_UPFRONT_THRESHOLD` must also pay a deposit of `LOAN_UPFRONT_PCT` before approval. Then `Loan.apply` creates the loan, the repository saves it, and the event bus tells Communication to alert the staff and email the borrower.
+
+## Feature: approving a loan
+
+<p align="center">
+  <a href="docs/images/uml-seq-approve.png"><img alt="UML-05, sequence diagram: an officer approves a loan, the Loan checks its rules and builds the schedule, the repository saves it, and the event bus delivers loan-approved to Payments, Communication and Documents in turn." src="docs/images/uml-seq-approve.png" width="100%"></a>
+</p>
+
+Approval shows why domain events matter. The officer's request needs the officer or admin role. `ApproveLoan` loads the Loan and calls `approve`. The Loan refuses unless it is pending and any deposit is paid. Then it builds the repayment schedule: equal monthly payments, each due on the same day of the month, or on the last day of a short month. The last payment takes the rounding, so the total is exact to the cent.
+
+After the save, one event, `loan-approved`, starts three reactions. Payments writes a disbursement entry to the ledger. Communication notifies the borrower and sends an email through Resend. Documents renders the loan agreement as a PDF and stores it in R2. Lending knows none of this: it only records the event. Each handler is isolated. If a handler fails, it writes a log entry and the approval still succeeds. So the effects are eventually consistent, and each handler must be safe to run twice.
+
+## Feature: paying an installment
 
 <p align="center">
   <a href="docs/images/cf-payments-3d.png"><img alt="CF-04: create, confirm and record use cases, the Lending ports, the payment gateway port, the settlement check and the append-only ledger, with the PayPal gateway and D1 ledger behind them." src="docs/images/cf-payments-3d.png" width="100%"></a>
 </p>
 
-- **The client never sets the amount.** Payments asks Lending what is due, opens a PayPal order for exactly that, and records what PayPal actually collected.
-- **Verify before use.** `verifySettlement` checks that the money arrived and that the order belongs to this loan, this user and this installment.
-- **Once per reference.** The ledger is append-only and records each provider reference at most once. A repeated confirm returns the first result.
+The Payments context takes money in through PayPal. The blueprint shows its layers. The use cases sit on the left, the ports and the settlement check in the middle, and the PayPal and D1 adapters on the right. Payments speaks to Lending only through its own ports, in its own words: `DepositQuotes`, `InstallmentQuotes` and `DepositCollector`.
+
+<p align="center">
+  <a href="docs/images/uml-seq-pay.png"><img alt="UML-07, sequence diagram: the borrower opens a PayPal order for the amount Lending quotes, approves it in PayPal, then confirms. If the order is already in the ledger the answer comes from the ledger; otherwise Payments captures the order, verifies the settlement, records the repayment once and applies it to the Loan." src="docs/images/uml-seq-pay.png" width="100%"></a>
+</p>
+
+A payment has two steps, and the borrower never sets the amount. In the first step, Payments asks Lending what is left on the installment. Then it opens a PayPal order for exactly that amount. The order carries its target: the loan, the user and the installment. In the second step, after the borrower approves the order in PayPal, the browser asks Payments to confirm it.
+
+Confirmation is where the safety checks run. A PayPal capture can run only once, so Payments first looks for the order in the ledger. If the order is there, Payments returns the first result and does not call PayPal again. If it is not, Payments captures the order, and the domain service `verifySettlement` checks two facts. PayPal must report the money as collected, and the order must belong to the same loan, user and installment. Payments then records the amount that PayPal collected, not an amount from the client. `RecordRepayment` writes the ledger entry once per provider reference and applies the payment to the Loan, which raises `installment-paid`. When the last installment is paid, the Loan becomes `repaid`.
+
+<br>
+
+## How the drawings are made
+
+Each sheet in this README comes from the code. A short Python script in [`docs/images/`](docs/images/) draws it as SVG, and headless Chrome renders it to PNG. The blueprint sheets use a small drawing kit, [`blueprint.py`](docs/images/blueprint.py), and the UML sheets use [`uml.py`](docs/images/uml.py). [`docs/design-system.md`](docs/design-system.md) holds the rules that every sheet follows: the palette, the type, the line styles, the icons and the text style. The icons come from [Lucide](https://lucide.dev) and [Simple Icons](https://simpleicons.org).
 
 <br>
 

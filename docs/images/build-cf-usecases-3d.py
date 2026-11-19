@@ -11,7 +11,7 @@ PW, PD = 1000, 640
 bp.fit(780, 1250, (60, 200, 1545, 850), xmin=-200, ymin=-250)
 from blueprint import INK, block, face, header, iso, lu, platform, si, title_block, wire, write
 
-o = [header('Microloans: use cases')]
+o = [header('Keel: use cases')]
 o.append(platform(0, PD, PW))
 SWAP = '<g transform="matrix(0,-1,1,0,0,1000)">'  # data (x, y) -> plane (y, 1000 - x)
 

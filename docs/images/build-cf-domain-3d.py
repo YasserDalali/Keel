@@ -7,7 +7,7 @@ from blueprint import ACC, INK, EVT, READ, card, face, floor_labels, header, key
 
 H, PD = bp.TILE_H, 520
 DY = 20  # extra back margin so the column titles clear the blocks
-o = [header('Microloans: the business domain')]
+o = [header('Keel: the business domain')]
 
 # Platforms: upstream x 0-250, core x 320-710, downstream x 780-1020.
 o += [platform(0, 250, PD), platform(320, 390, PD), platform(780, 240, PD)]

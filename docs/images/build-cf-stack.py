@@ -36,7 +36,7 @@ o.append('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" widt
 </style>
 <rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
 <rect x="20" y="20" width="1560" height="960" class="ink"/><rect x="30" y="30" width="1540" height="940" class="thin"/>
-<text x="60" y="108" fill="#14213d" font-size="36" font-weight="600">Microloans on Cloudflare</text>
+<text x="60" y="108" fill="#14213d" font-size="36" font-weight="600">Keel on Cloudflare</text>
 <line x1="60" y1="132" x2="1540" y2="132" class="thin"/>
 <text x="60" y="285" class="t">CLIENTS</text>''')
 o.append(card(60,300,240,110,lu('app-window',80,327,56),'BROWSER','Keel SPA',162))

@@ -1,4 +1,4 @@
-# README art in the blueprint style: the hero banner and the pill badges. Writes SVGs into readme/ and renders
+# README art for Keel in the blueprint style: the hero banner and the pill badges. Writes SVGs into readme/ and renders
 # each to PNG with headless Chrome (PNG keeps the Inter font; GitHub would fall back to another font in an SVG).
 import os, subprocess
 import blueprint as bp
@@ -30,10 +30,10 @@ def render(name, w, h):
 W, H = 1600, 560
 o = [head(W, H), f'<rect width="{W}" height="{H}" fill="#fff"/><rect width="{W}" height="{H}" fill="url(#major)"/>',
      f'<rect x="10" y="10" width="{W-20}" height="{H-20}" class="ink"/>',
-     '<text x="60" y="90" class="t">MICROLOANS · SHEET 00</text>',
-     f'<text x="60" y="172" fill="{INK}" font-size="68" font-weight="600" letter-spacing="-1">Microloans</text>',
-     f'<text x="60" y="222" fill="{INK}" font-size="24">Serverless lending on Cloudflare,</text>',
-     f'<text x="60" y="254" fill="{INK}" font-size="24">modelled with Domain-Driven Design.</text>']
+     '<text x="60" y="90" class="t">KEEL · SHEET 00</text>',
+     f'<text x="60" y="172" fill="{INK}" font-size="68" font-weight="600" letter-spacing="-1">Keel</text>',
+     f'<text x="60" y="222" fill="{INK}" font-size="24">Small business loans, serverless</text>',
+     f'<text x="60" y="254" fill="{INK}" font-size="24">on Cloudflare, built with DDD.</text>']
 
 TOP, MID, BOT = Z
 icons = {TOP: ('shield-check', 'bot', 'panels-top-left'), MID: ('list-checks', 'hand-coins', 'plug'),
@@ -63,13 +63,19 @@ open(os.path.join(OUT, 'hero.svg'), 'w').write('\n'.join(o))
 render('hero', W, H)
 
 # --- pills ----------------------------------------------------------------
-PILLS = ['Cloudflare Workers', 'D1 · KV · R2', 'Hono', 'TypeScript', 'Domain-Driven Design', 'Vitest', 'Design system']
-for label in PILLS:
+# (label, icon kind, icon name). Brand marks come from Simple Icons, the rest from Lucide. All drawn in ink.
+PILLS = [('Cloudflare Workers', 'si', 'cloudflare'), ('D1 · KV · R2', 'lu', 'database'), ('Hono', 'si', 'hono'),
+         ('TypeScript', 'si', 'typescript'), ('Domain-Driven Design', 'lu', 'boxes'), ('Vitest', 'si', 'vitest'),
+         ('Design system', 'lu', 'ruler')]
+for label, kind, icon in PILLS:
     text = label.upper()
-    w, h = int(48 + len(text) * 9.4), 40
-    svg = (head(w, h) + f'<rect x="1" y="1" width="{w-2}" height="{h-2}" rx="19" class="ink" style="fill:#fff"/>'
-           f'<circle cx="20" cy="20" r="4" fill="{ACC}"/>'
-           f'<text x="32" y="24.5" class="t" style="font-size:12px;letter-spacing:1.8px">{text}</text></svg>')
+    w, h = int(62 + len(text) * 9.4), 40
+    # ponytail: 2.2 px icon strokes looked heavy at pill size; Lucide icons draw at 1.5 px here, brand marks
+    # are solid shapes, so they shrink to 18 px to sit lighter.
+    bp.ICON_PX = 1.5
+    mark = bp.si(icon, 16, 11, 18) if kind == 'si' else lu(icon, 15, 10, 20)
+    svg = (head(w, h) + f'<rect x="1" y="1" width="{w-2}" height="{h-2}" rx="19" class="ink" style="fill:#fff"/>' + mark +
+           f'<text x="44" y="24.5" class="t" style="font-size:12px;letter-spacing:1.8px">{text}</text></svg>')
     slug = label.lower().replace(' · ', '-').replace(' ', '-')
     open(os.path.join(OUT, f'pill-{slug}.svg'), 'w').write(svg)
     render(f'pill-{slug}', w, h)
