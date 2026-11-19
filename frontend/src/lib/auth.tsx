@@ -1,10 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Navigate, Outlet } from "react-router";
 import { api, TOKEN_KEY } from "./api";
+
+/** Fired on sign-in and sign-out so module-level caches (notifications, reminders) drop the previous account's data. */
+export const SESSION_RESET = "keel:session-reset";
 import type { components } from "./api-types";
 import { AuthError } from "./auth-error";
 
-type Me = components["schemas"]["Me"];
+// emailVerified comes from the phase-5 API; openapi.json doesn't list it yet.
+export type Me = components["schemas"]["Me"] & { emailVerified?: boolean };
 // ponytail: static token (always-pass in dev); only accepted while TURNSTILE_SECRET is Cloudflare's test secret. Phase 2 renders the real widget.
 const TURNSTILE_TOKEN = import.meta.env.VITE_TURNSTILE_TOKEN ?? "XXXX.DUMMY.TOKEN.XXXX";
 
@@ -14,6 +18,8 @@ type Auth = {
   signIn(email: string, password: string): Promise<void>;
   signUp(email: string, password: string): Promise<void>;
   signOut(): Promise<void>;
+  /** Re-read the signed-in user, e.g. after verifying the email. */
+  refresh(): Promise<void>;
 };
 
 const Ctx = createContext<Auth | null>(null);
@@ -25,7 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadMe() {
     const { data } = await api.GET("/auth/me");
     if (!data) localStorage.removeItem(TOKEN_KEY); // expired or revoked
-    setUser(data ?? null);
+    setUser((data as Me | undefined) ?? null);
+    return data ?? null;
   }
 
   useEffect(() => {
@@ -36,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, response } = await api.POST("/auth/login", { body: { email, password, turnstileToken: TURNSTILE_TOKEN } });
     if (!data) throw new AuthError(response.status);
     localStorage.setItem(TOKEN_KEY, data.token);
+    window.dispatchEvent(new Event(SESSION_RESET));
     await loadMe();
   }
 
@@ -45,13 +53,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signIn(email, password);
   }
 
+  async function refresh() {
+    await loadMe();
+  }
+
   async function signOut() {
     await api.POST("/auth/logout").catch(() => {}); // token is dropped locally either way
     localStorage.removeItem(TOKEN_KEY);
+    window.dispatchEvent(new Event(SESSION_RESET));
     setUser(null);
   }
 
-  return <Ctx.Provider value={{ user, ready, signIn, signUp, signOut }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ user, ready, signIn, signUp, signOut, refresh }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {

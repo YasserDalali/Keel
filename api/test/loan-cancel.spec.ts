@@ -1,12 +1,12 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import app from "../src/index";
-import { signJwt } from "../src/auth/jwt";
-import { upsertPlaidItem } from "../src/plaid/items";
+import { signJwt } from "../src/contexts/identity/infrastructure/jwt";
+import { upsertPlaidItem } from "./support/fixtures";
 
 async function borrower() {
   const id = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO users (id, email, password_hash, role) VALUES (?, ?, 'h', 'borrower')").bind(id, `${id}@e.com`).run();
+  await env.DB.prepare("INSERT INTO users (id, email, password_hash, role, email_verified_at) VALUES (?, ?, 'h', 'borrower', CURRENT_TIMESTAMP)").bind(id, `${id}@e.com`).run();
   await upsertPlaidItem(env.DB, env.PII_ENCRYPTION_KEY, {
     userId: id, itemId: `item-${id}`, accessToken: "a", institutionName: "Test Bank", bankSafetyScore: 90, bankSignals: "{}",
   });
@@ -69,5 +69,18 @@ describe("risk score history", () => {
       .run();
 
     expect((await (await apply(u.headers)).json<{ riskScore: number }>()).riskScore).toBe(baseline);
+  });
+});
+
+describe("GET /api/loans/:id overdue", () => {
+  it("reports a past-due unpaid installment as overdue before the cron runs", async () => {
+    const u = await borrower();
+    const { id } = await (await apply(u.headers)).json<{ id: string }>();
+    await env.DB.prepare("UPDATE loans SET status = 'active', approved_at = CURRENT_TIMESTAMP WHERE id = ?").bind(id).run();
+    await env.DB.prepare("INSERT INTO installments (id, loan_id, installment_number, due_date, amount_due) VALUES (?, ?, 1, '2020-01-01', 175), (?, ?, 2, '2999-01-01', 175)")
+      .bind(crypto.randomUUID(), id, crypto.randomUUID(), id)
+      .run();
+    const body = await (await app.request(`/api/loans/${id}`, { headers: u.headers }, env)).json<{ installments: { status: string }[] }>();
+    expect(body.installments.map((i) => i.status)).toEqual(["overdue", "unpaid"]);
   });
 });

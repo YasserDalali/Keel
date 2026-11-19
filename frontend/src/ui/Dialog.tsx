@@ -19,7 +19,7 @@ export function Dialog({ open, onClose, title, children }: { open: boolean; onCl
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="m-auto w-[min(520px,calc(100vw-32px))] rounded-art bg-surface p-0 text-ink shadow-float-2 backdrop:bg-ink/40 backdrop:backdrop-blur-[2px] open:animate-[rise_400ms_var(--ease-out-expo)]"
+      className="m-auto max-h-[calc(100dvh-32px)] w-[min(520px,calc(100vw-32px))] overflow-y-auto rounded-art bg-surface p-0 text-ink shadow-float-2 backdrop:bg-ink/40 backdrop:backdrop-blur-[2px] open:animate-[rise_400ms_var(--ease-out-expo)]"
     >
       <div className="flex flex-col gap-6 p-6 sm:p-8" data-lenis-prevent>
         <div className="flex items-start justify-between gap-6">

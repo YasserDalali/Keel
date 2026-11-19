@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import { requireRole } from "../src/middleware/requireRole";
 import type { Bindings, Variables } from "../src/types";
 import app from "../src/index";
-import { signJwt } from "../src/auth/jwt";
-import { upsertPlaidItem } from "../src/plaid/items";
+import { signJwt } from "../src/contexts/identity/infrastructure/jwt";
+import { upsertPlaidItem } from "./support/fixtures";
 
 async function authHeaderFor(userId: string, role: "borrower" | "officer" | "admin"): Promise<Record<string, string>> {
   const token = await signJwt({ sub: userId, role }, env.JWT_SECRET, 3600);
@@ -13,7 +13,7 @@ async function authHeaderFor(userId: string, role: "borrower" | "officer" | "adm
 }
 
 async function insertTestUser(userId: string, email: string, role: "borrower" | "officer" | "admin"): Promise<void> {
-  await env.DB.prepare("INSERT INTO users (id, email, password_hash, role) VALUES (?, ?, 'unused', ?)")
+  await env.DB.prepare("INSERT INTO users (id, email, password_hash, role, email_verified_at) VALUES (?, ?, 'unused', ?, CURRENT_TIMESTAMP)")
     .bind(userId, email, role)
     .run();
 }
@@ -57,6 +57,22 @@ describe("POST /api/loans", () => {
     const body = await res.json();
     expect(body.status).toBe("pending");
     expect(typeof body.id).toBe("string");
+  });
+
+  it("refuses with 403 email_unverified until the email address is confirmed", async () => {
+    const borrowerId = crypto.randomUUID();
+    await insertTestUser(borrowerId, "unverified-borrower@example.com", "borrower");
+    await enableBorrowing(borrowerId);
+    await env.DB.prepare("UPDATE users SET email_verified_at = NULL WHERE id = ?").bind(borrowerId).run();
+    const headers = await authHeaderFor(borrowerId, "borrower");
+
+    const res = await app.request(
+      "/api/loans",
+      { method: "POST", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify({ amount: 1200, termMonths: 6 }) },
+      env
+    );
+    expect(res.status).toBe(403);
+    expect((await res.json<{ code: string }>()).code).toBe("email_unverified");
   });
 
   it("rejects a non-positive amount with 400", async () => {
@@ -295,7 +311,7 @@ describe("POST /api/loans/:id/installments/:installmentId/pay", () => {
         headers: { ...borrowerHeaders, "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 105, paymentMethod: "mock_gateway" }),
       },
-      env
+      { ...env, DEMO_MODE: "true" }
     );
 
     expect(payRes.status).toBe(200);
@@ -328,7 +344,7 @@ describe("POST /api/loans/:id/installments/:installmentId/pay", () => {
           headers: { ...borrowerHeaders, "Content-Type": "application/json" },
           body: JSON.stringify({ amount: 105, paymentMethod: "mock_gateway" }),
         },
-        env
+        { ...env, DEMO_MODE: "true" }
       );
     }
 

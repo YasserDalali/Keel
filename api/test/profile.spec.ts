@@ -1,8 +1,8 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import app from "../src/index";
-import { signJwt } from "../src/auth/jwt";
-import { getProfile } from "../src/profiles";
+import { signJwt } from "../src/contexts/identity/infrastructure/jwt";
+import { getProfile } from "./support/fixtures";
 
 async function user(role: "borrower" | "officer" = "borrower") {
   const id = crypto.randomUUID();
@@ -46,7 +46,7 @@ describe("GET /api/profile/:userId", () => {
     const officer = await user("officer");
     const borrower = await user();
 
-    const { upsertProfile } = await import("../src/profiles");
+    const { upsertProfile } = await import("./support/fixtures");
     await upsertProfile(env.DB, env.PII_ENCRYPTION_KEY, {
       userId: borrower.id,
       firstName: "Carol", lastName: "White",
@@ -161,5 +161,28 @@ describe("PUT /api/profile", () => {
       env
     );
     expect(res.status).toBe(401);
+  });
+});
+
+describe("GET /api/profile bank and KYC timestamps", () => {
+  it("adds the bank connection and kycUpdatedAt", async () => {
+    const u = await user();
+    const before = await (await app.request("/api/profile", { headers: u.headers }, env)).json<{ bank: unknown; kycUpdatedAt: unknown }>();
+    expect(before.bank).toBeNull();
+    expect(before.kycUpdatedAt).toBeNull();
+
+    const { upsertPlaidItem } = await import("./support/fixtures");
+    await upsertPlaidItem(env.DB, env.PII_ENCRYPTION_KEY, {
+      userId: u.id, itemId: "i", accessToken: "a", institutionName: "First Platypus Bank", bankSafetyScore: 72, bankSignals: "{}",
+    });
+    const { upsertVerificationStatus } = await import("./support/fixtures");
+    await upsertVerificationStatus(env.DB, u.id, "approved", "sess");
+
+    const after = await (await app.request("/api/profile", { headers: u.headers }, env)).json<{
+      bank: { institutionName: string; safetyScore: number; connectedAt: string | null }; kycUpdatedAt: string | null;
+    }>();
+    expect(after.bank).toMatchObject({ institutionName: "First Platypus Bank", safetyScore: 72 });
+    expect(after.bank.connectedAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
+    expect(after.kycUpdatedAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
   });
 });

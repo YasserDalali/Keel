@@ -44,7 +44,7 @@ export function DemoButton({ label, onClick, busy }: { label: string; onClick: (
       onClick={onClick}
       disabled={busy}
       aria-busy={busy || undefined}
-      className="inline-flex items-center gap-2 self-start rounded-control border border-dashed border-line-strong px-3 py-1.5 text-small text-ink-2 transition-colors duration-150 hover:border-ink hover:text-ink disabled:opacity-60"
+      className="inline-flex min-h-11 items-center gap-2 self-start rounded-control border border-dashed border-line-strong px-3 py-1.5 text-small text-ink-2 transition-colors duration-150 hover:border-ink hover:text-ink disabled:opacity-60"
     >
       <span aria-hidden className="text-label font-medium text-accent-700">Demo</span>
       {busy ? "Working…" : label}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { encryptField, decryptField } from "../src/crypto";
+import { encryptField, decryptField } from "../src/shared/crypto";
 
 function randomBase64Key(): string {
   const raw = crypto.getRandomValues(new Uint8Array(32));

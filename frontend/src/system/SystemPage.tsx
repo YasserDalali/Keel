@@ -3,6 +3,9 @@ import { Art } from "../ui/Art";
 import { Button } from "../ui/Button";
 import { Checkbox } from "../ui/Checkbox";
 import { Dialog } from "../ui/Dialog";
+import { Segmented } from "../ui/Segmented";
+import { Select } from "../ui/Select";
+import { MonthlyBars } from "../app/charts";
 import { DemoFill, demoProfile } from "../ui/DemoFill";
 import { Skeleton } from "../ui/Skeleton";
 import { Slider } from "../ui/Slider";
@@ -134,6 +137,10 @@ export default function SystemPage() {
         <AppStates />
       </Section>
 
+      <Section title="Choices and charts">
+        <ChoicesAndCharts />
+      </Section>
+
       <Section title="Links, figures, art">
         <div className="grid gap-12 sm:grid-cols-2">
           <div className="flex flex-col gap-8">
@@ -185,6 +192,29 @@ function AppStates() {
           </div>
         </Dialog>
       </div>
+    </div>
+  );
+}
+
+function ChoicesAndCharts() {
+  const [view, setView] = useState<"calendar" | "list">("calendar");
+  return (
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-wrap items-end gap-8">
+        <Segmented label="View" value={view} onChange={setView} options={[{ value: "calendar", label: "Calendar" }, { value: "list", label: "List" }]} />
+        <Select label="Loan" className="w-56" defaultValue="all">
+          <option value="all">All loans</option>
+          <option value="a">37AAEA46 · $2,400</option>
+        </Select>
+      </div>
+      <MonthlyBars
+        data={[
+          { month: "2026-09", due: 210, repaid: 210 },
+          { month: "2026-10", due: 210, repaid: 210 },
+          { month: "2026-11", due: 560, repaid: 400 },
+          { month: "2026-12", due: 560, repaid: 0 },
+        ]}
+      />
     </div>
   );
 }

@@ -19,12 +19,14 @@ export const BINDING_KEYS = [
   "LOAN_UPFRONT_THRESHOLD",
   "LOAN_UPFRONT_PCT",
   "RISK_SCORE_THRESHOLD",
+  "APP_URL",
 ] as const;
 
 /** Keys that may be left blank when an integration is not configured yet. */
 export const OPTIONAL_BINDING_KEYS = new Set<BindingKey>([
   "PAYPAL_CLIENT_ID",
   "PAYPAL_SECRET",
+  "APP_URL",
 ]);
 
 export type BindingKey = (typeof BINDING_KEYS)[number];

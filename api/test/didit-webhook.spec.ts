@@ -1,7 +1,7 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import app from "../src/index";
-import { canonicalWebhookBody, signWebhookBodyV2 } from "../src/didit/webhook-signature";
+import { canonicalWebhookBody, signWebhookBodyV2 } from "../src/contexts/borrower/infrastructure/didit-signature";
 
 async function insertUser(userId: string, email: string): Promise<void> {
   await env.DB.prepare(

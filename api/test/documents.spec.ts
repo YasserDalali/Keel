@@ -1,8 +1,8 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import app from "../src/index";
-import { signJwt } from "../src/auth/jwt";
-import { saveDocument } from "../src/documents/store";
+import { signJwt } from "../src/contexts/identity/infrastructure/jwt";
+import { saveDocument } from "../src/contexts/documents/infrastructure/d1-document-repository";
 
 async function insertUser(userId: string, email: string): Promise<void> {
   await env.DB.prepare(

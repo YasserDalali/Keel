@@ -76,8 +76,27 @@ export function StatStrip({ items }: { items: StatItem[] }) {
 
 /** Loan life as connected steps. Horizontal from sm up, vertical on phones. */
 export function Stepper({ steps }: { steps: Step[] }) {
+  const at = Math.max(0, steps.findIndex((s) => s.state === "current"));
+  const current = steps.find((s) => s.state === "current") ?? steps.at(-1)!;
+  const lastDone = [...steps].reverse().find((s) => s.state === "done" && s.date);
   return (
-    <ol className="grid gap-4 sm:auto-cols-fr sm:grid-flow-col sm:gap-0" aria-label="Loan progress">
+    <>
+    {/* phones: one compact line instead of five stacked steps */}
+    <div className="flex flex-col gap-3 sm:hidden">
+      <div className="flex gap-1.5" aria-hidden>
+        {steps.map((s) => (
+          <span key={s.key} className={`h-1.5 flex-1 rounded-full ${s.state === "done" ? "bg-accent-600" : s.state === "current" ? "bg-accent-300" : "bg-line-strong"}`} />
+        ))}
+      </div>
+      <p className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <span className="text-body font-medium">{current.label}</span>
+        <span className="tabular text-small text-ink-2">
+          Step {steps.indexOf(current) + 1 || at + 1} of {steps.length}
+          {lastDone && ` · ${lastDone.label} ${date(lastDone.date!)}`}
+        </span>
+      </p>
+    </div>
+    <ol className="hidden gap-4 sm:grid sm:auto-cols-fr sm:grid-flow-col sm:gap-0" aria-label="Loan progress">
       {steps.map((s, i) => (
         <li key={s.key} aria-current={s.state === "current" ? "step" : undefined} className="relative flex items-start gap-3 sm:flex-col sm:gap-3 sm:pr-4">
           {i > 0 && <span aria-hidden className={`absolute top-[7px] right-full hidden h-px w-full sm:block ${s.state === "todo" ? "bg-line" : "bg-accent-600"}`} style={{ width: "calc(100% - 16px)", right: "calc(100% - 8px)" }} />}
@@ -97,6 +116,7 @@ export function Stepper({ steps }: { steps: Step[] }) {
         </li>
       ))}
     </ol>
+    </>
   );
 }
 
@@ -124,11 +144,18 @@ export function Activity({ events, limit = 6 }: { events: Event[]; limit?: numbe
   );
 }
 
-/** Illustration on a mint tile. White art backgrounds melt into the tile (multiply). Decorative. */
-export function ArtTile({ src, className = "", position = "50% 60%" }: { src: string; className?: string; position?: string }) {
+/** Illustration on a mint tile. Tile art with a white backdrop melts in (multiply); `flat` is for pictures that carry their own mint backdrop, and `contain` shows a wide one whole. Decorative. */
+export function ArtTile({ src, className = "", position = "50% 60%", flat, contain }: { src: string; className?: string; position?: string; flat?: boolean; contain?: boolean }) {
   return (
     <div aria-hidden className={`relative overflow-hidden rounded-art bg-mint-50 ${className}`}>
-      <img src={src} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover mix-blend-multiply" style={{ objectPosition: position }} />
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className={`absolute inset-0 size-full ${contain ? "object-contain" : "object-cover"} ${flat ? "" : "mix-blend-multiply"}`}
+        style={{ objectPosition: position }}
+      />
     </div>
   );
 }

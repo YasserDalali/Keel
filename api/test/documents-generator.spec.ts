@@ -3,7 +3,7 @@ import {
   generateAccountOpenedPdf,
   generateLoanAgreementPdf,
   generatePaymentReceiptPdf,
-} from "../src/documents/generator";
+} from "../src/contexts/documents/infrastructure/pdf-generator";
 
 const PDF_MAGIC = "%PDF";
 

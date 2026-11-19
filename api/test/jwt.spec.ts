@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { signJwt, verifyJwt } from "../src/auth/jwt";
+import { signJwt, verifyJwt } from "../src/contexts/identity/infrastructure/jwt";
 
 describe("jwt sign and verify", () => {
   it("round-trips a valid token", async () => {

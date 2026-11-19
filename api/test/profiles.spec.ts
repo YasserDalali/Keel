@@ -1,6 +1,6 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { createProfile, getProfile, upsertVerificationStatus } from "../src/profiles";
+import { createProfile, getProfile, upsertVerificationStatus } from "./support/fixtures";
 
 async function insertUser(userId: string, email: string): Promise<void> {
   await env.DB.prepare(

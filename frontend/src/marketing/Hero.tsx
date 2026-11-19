@@ -10,6 +10,15 @@ const LINES = [
   { text: "business you", indent: "pl-[0.7em] lg:pl-[1.45em]" }, // em, so it scales with the type and works inside a fit-content block
   { text: "already run.", indent: "" },
 ];
+// Phones: the first three lines run huge (22vw, poster-style); the tail drops to half size on one line,
+// so the headline stays short enough for the street to show at the bottom of the first screen.
+const MOBILE_LINES = [
+  { text: "Capital", indent: "" },
+  { text: "for the", indent: "pl-[0.6em]" },
+  { text: "business", indent: "" },
+  { text: "you already run.", indent: "mt-[0.12em] text-[0.5em] leading-[1] tracking-[-0.025em]" },
+];
+const HEADLINE = "Capital for the business you already run.";
 
 /**
  * Three depth layers: street (back, lags), headline (middle), foliage (front, races past).
@@ -35,7 +44,6 @@ export function Hero() {
       gsap
         .timeline({ scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: 0.5 } })
         .to("[data-street]", { yPercent: 14, ease: "none" }, 0)
-        .to("[data-type]", { yPercent: 35, ease: "none" }, 0)
         .to("[data-foliage]", { yPercent: -35, ease: "none" }, 0)
         // the top leaves part like curtains and rise faster than the page: nearest layer
         .to("[data-corner='l']", { xPercent: -24, yPercent: -45, rotation: -5, ease: "none" }, 0)
@@ -59,24 +67,30 @@ export function Hero() {
         </div>
 
         {/* middle: the type */}
-        <div data-type className="relative z-10 pt-28 lg:pt-36">
+        <div className="relative z-10 pt-28 lg:pt-36">
           <Container>
             {/* the title sets the block width; the deck takes that width without widening it (w-0 + min-w-full) */}
             <div className="lg:mx-auto lg:w-fit">
-            <h1 className="text-[clamp(2.75rem,10vw,10.5rem)] leading-[0.9] font-semibold tracking-[-0.045em]">
+            <h1 aria-label={HEADLINE} className="text-[22vw] leading-[0.86] font-semibold tracking-[-0.055em] sm:text-[clamp(2.75rem,10vw,10.5rem)] sm:leading-[0.9] sm:tracking-[-0.045em]">
+              {MOBILE_LINES.map((l) => (
+                <span key={l.text} aria-hidden data-line className={`block overflow-hidden pb-[0.06em] sm:hidden ${l.indent}`}>
+                  <span className="block">{l.text}</span>
+                </span>
+              ))}
               {LINES.map((l) => (
-                <span key={l.text} data-line className={`block overflow-hidden pb-[0.06em] ${l.indent}`}>
+                <span key={l.text} aria-hidden data-line className={`hidden overflow-hidden pb-[0.06em] sm:block ${l.indent}`}>
                   <span className="block">{l.text}</span>
                 </span>
               ))}
             </h1>
 
             <div data-deck className="mt-8 flex flex-col gap-6 lg:mt-12 lg:w-0 lg:min-w-full xl:flex-row xl:items-end xl:justify-between xl:gap-10">
-              <p className="max-w-[44ch] text-body-lg text-ink-2">
-                Loans from $500 to $10,000 for shops, workshops and market stalls. Apply in ten minutes. A loan officer replies within two business days.
+              <p className="max-w-[44ch] text-body text-ink-2 sm:text-body-lg">
+                <span className="sm:hidden">$500 to $10,000 for your shop or stall. A decision in two business days.</span>
+                <span className="hidden sm:inline">Loans from $500 to $10,000 for shops, workshops and market stalls. Apply in ten minutes. A loan officer replies within two business days.</span>
               </p>
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-4 xl:shrink-0 xl:flex-nowrap">
-                <Button size="lg" href="#rates" onClick={(e) => { e.preventDefault(); scrollToId("rates"); }}>
+              <div className="flex flex-col items-stretch gap-x-8 gap-y-3 sm:flex-row sm:flex-wrap sm:items-center xl:shrink-0 xl:flex-nowrap">
+                <Button size="lg" className="w-full sm:w-auto" href="#rates" onClick={(e) => { e.preventDefault(); scrollToId("rates"); }}>
                   Check what you can borrow
                 </Button>
                 <Button variant="ghost" size="lg" href="#how" onClick={(e) => { e.preventDefault(); scrollToId("how"); }}>
@@ -95,7 +109,7 @@ export function Hero() {
           src="/img/hero-street.webp"
           alt=""
           fetchPriority="high"
-          className="relative -z-10 mt-6 -ml-[25%] block w-[150%] max-w-none sm:mx-auto sm:w-full lg:mt-4"
+          className="pointer-events-none relative z-20 mt-6 -ml-[25%] block w-[150%] max-w-none sm:mx-auto sm:w-full lg:-z-10 lg:mt-4"
         />
 
         {/* front: foliage */}
@@ -103,7 +117,7 @@ export function Hero() {
           data-foliage
           src="/img/hero-foliage.webp"
           alt=""
-          className="pointer-events-none absolute -bottom-[10%] -left-[4%] z-10 w-[108%] max-w-none lg:-bottom-[18%]"
+          className="pointer-events-none absolute -bottom-[10%] -left-[4%] z-30 w-[108%] max-w-none lg:z-10 lg:-bottom-[18%]"
         />
       </section>
 

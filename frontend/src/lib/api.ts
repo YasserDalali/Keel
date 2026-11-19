@@ -14,7 +14,7 @@ api.use({
 });
 
 export class ApiError extends Error {
-  constructor(message: string, readonly status: number) {
+  constructor(message: string, readonly status: number, readonly code?: string) {
     super(message);
   }
 }
@@ -32,7 +32,7 @@ export async function http<T>(path: string, init: Omit<RequestInit, "body"> & { 
     throw new ApiError("We couldn't reach Keel. Check your connection and try again.", 0);
   }
   const body = res.headers.get("Content-Type")?.includes("json") ? await res.json().catch(() => ({})) : {};
-  if (!res.ok) throw new ApiError(body.error ?? body.detail ?? `Something went wrong (${res.status}). Try again.`, res.status);
+  if (!res.ok) throw new ApiError(body.error ?? body.detail ?? `Something went wrong (${res.status}). Try again.`, res.status, body.code);
   return body as T;
 }
 

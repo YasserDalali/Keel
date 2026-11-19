@@ -1,9 +1,4 @@
 node_modules/
-.wrangler/
 dist/
-*.local
-.dev.vars
-.env
-.worktrees/
-.superpowers/
 frontend/vite-app/
+.*

@@ -1,5 +1,5 @@
 import type { Context, Next } from "hono";
-import { verifyJwt } from "../auth/jwt";
+import { verifyJwt } from "../contexts/identity/infrastructure/jwt";
 import type { Bindings, Variables } from "../types";
 
 export async function requireAuth(

@@ -28,7 +28,7 @@ export function loadRootEnvBindings(): Record<BindingKey, string> {
 
   for (const key of BINDING_KEYS) {
     const value = parsed[key];
-    if (value === undefined || (value === "" && !OPTIONAL_BINDING_KEYS.has(key))) {
+    if (!OPTIONAL_BINDING_KEYS.has(key) && (value === undefined || value === "")) {
       throw new Error(`Missing or empty ${key} in ${ROOT_ENV}`);
     }
     bindings[key] = value ?? "";

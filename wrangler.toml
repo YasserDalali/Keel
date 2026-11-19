@@ -3,9 +3,14 @@ main = "api/src/index.ts"
 compatibility_date = "2026-06-25"
 account_id = "3163500eb2f2f9b177791b4b3ce97aa9"
 
-# Frontend will be served separately (Workers Assets or Pages) once built.
-# The deprecated [site] block was removed — it has no assets to serve yet and
-# blocked API deploys on an empty ./frontend/dist.
+# Keel frontend (built to frontend/dist by `npm run deploy`) is served by this Worker as static assets, so /api is same-origin.
+# The Worker runs first (wrangler 3 can't list paths) and hands everything that isn't /api, /docs or /openapi.json to ASSETS,
+# which falls back to index.html for SPA routes. Upgrade to wrangler 4 to scope run_worker_first to the API paths.
+[assets]
+directory = "./frontend/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = true
 
 [[kv_namespaces]]
 binding = "LOAN_CACHE"
@@ -21,3 +26,17 @@ migrations_dir = "./api/migrations"
 [[r2_buckets]]
 binding = "DOCS_BUCKET"
 bucket_name = "microloans-documents"
+
+# Demo shortcuts (/api/demo, Demo buttons) are ON in this deployment by request. Remove this block to turn them off.
+[vars]
+DEMO_MODE = "true"
+# Public origin for email links.
+APP_URL = "https://microloans-platform.yasser-dalali-personal.workers.dev"
+# Transactional email goes through Resend: set the key with `wrangler secret put RESEND_API_KEY`.
+# Sender must be on a domain verified in Resend. Without MAIL_FROM, Resend's test sender (onboarding@resend.dev)
+# is used, which only delivers to the Resend account's own address. Without the key, emails are only recorded in email_outbox.
+# MAIL_FROM = "Keel <hello@yourdomain.com>"
+
+# Daily at 06:00 UTC: mark past-due installments overdue (scheduled handler in api/src/index.ts).
+[triggers]
+crons = ["0 6 * * *"]

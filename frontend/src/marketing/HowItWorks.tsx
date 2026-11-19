@@ -122,6 +122,32 @@ export function HowItWorks() {
           .from("[data-how-enter]", { y: 80, rotationX: 14, transformPerspective: 1000, autoAlpha: 0, duration: 0.8 }, 0.15);
       });
 
+      // phones: step text + one card pinned under the nav, swapping as you scroll
+      mm.add("(max-width: 1023px) and (prefers-reduced-motion: no-preference)", () => {
+        const panels = gsap.utils.toArray<HTMLElement>("[data-mpanel]");
+        const steps = gsap.utils.toArray<HTMLElement>("[data-mstep]");
+        const fills = gsap.utils.toArray<HTMLElement>("[data-mfill]");
+        gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 });
+        gsap.set(steps.slice(1), { autoAlpha: 0, y: 12 });
+        gsap.set(fills[0], { scaleX: 1 });
+
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.inOut", duration: 0.3 },
+          scrollTrigger: { trigger: "[data-mpin]", start: "top 88px", end: "+=220%", pin: true, scrub: 0.6 },
+        });
+        for (let i = 1; i < panels.length; i++) {
+          const at = i - 0.5;
+          tl.to(panels[i - 1], { autoAlpha: 0, y: -24 }, at)
+            .to(steps[i - 1], { autoAlpha: 0, y: -12 }, at)
+            .fromTo(panels[i], { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0 }, at + 0.05)
+            .fromTo(steps[i], { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0 }, at + 0.05)
+            .to(fills[i], { scaleX: 1 }, at)
+            .from(panels[i].querySelectorAll("[data-r]"), { autoAlpha: 0, y: 10, stagger: 0.03 }, at + 0.1);
+          if (i === 1) tl.from(panels[i].querySelectorAll("[data-bar]"), { scaleY: 0, stagger: 0.03 }, at + 0.12);
+        }
+        tl.to({}, { duration: 0.5 }); // hold the last card before unpinning
+      });
+
       mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
         const panels = gsap.utils.toArray<HTMLElement>("[data-panel]");
         const steps = gsap.utils.toArray<HTMLElement>("[data-step]");
@@ -154,10 +180,10 @@ export function HowItWorks() {
       <Container className="grid gap-12 py-24 lg:min-h-dvh lg:grid-cols-12 lg:items-center lg:gap-10 lg:py-28">
         <div className="lg:col-span-5">
           <h2 data-how-title className="text-h1 max-w-[12ch]">From application to first payment</h2>
-          <div className="relative mt-12 lg:pl-8">
+          <div className="relative mt-10 lg:mt-12 lg:pl-8">
             <span className="absolute top-0 bottom-0 left-0 hidden w-px bg-line lg:block" />
             <span data-rule className="absolute top-0 bottom-0 left-0 hidden w-[2px] origin-top bg-accent-600 lg:block" />
-            <ol data-how-list className="flex flex-col gap-10">
+            <ol data-how-list className="hidden flex-col gap-10 lg:flex motion-reduce:flex">
               {STEPS.map((s, i) => (
                 <li key={s.title} className="flex flex-col gap-6">
                   <div data-step className="flex gap-5">
@@ -167,10 +193,36 @@ export function HowItWorks() {
                       <p className="max-w-[38ch] text-body text-ink-2">{s.body}</p>
                     </div>
                   </div>
-                  <div className="lg:hidden motion-reduce:lg:block" aria-hidden>{PANELS[i]}</div>
+                  <div className="hidden motion-reduce:block" aria-hidden>{PANELS[i]}</div>
                 </li>
               ))}
             </ol>
+
+            <div data-mpin className="flex flex-col gap-6 lg:hidden motion-reduce:hidden">
+              <div className="grid">
+                {STEPS.map((s, i) => (
+                  <div key={s.title} data-mstep className="col-start-1 row-start-1 flex gap-5">
+                    <span className="tabular text-h3 text-ink-2">{String(i + 1).padStart(2, "0")}</span>
+                    <div className="flex flex-col gap-2">
+                      <h3 className="text-h3">{s.title}</h3>
+                      <p className="max-w-[38ch] text-body text-ink-2">{s.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-1.5" aria-hidden>
+                {STEPS.map((s) => (
+                  <span key={s.title} className="h-[3px] flex-1 overflow-hidden rounded-full bg-line">
+                    <span data-mfill className="block h-full origin-left scale-x-0 bg-accent-600" />
+                  </span>
+                ))}
+              </div>
+              <div className="grid" aria-hidden>
+                {PANELS.map((p, i) => (
+                  <div key={i} data-mpanel className="col-start-1 row-start-1 self-start">{p}</div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
         <div className="relative hidden lg:col-span-6 lg:col-start-7 lg:block motion-reduce:lg:hidden" aria-hidden>

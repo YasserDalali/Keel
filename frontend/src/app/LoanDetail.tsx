@@ -1,26 +1,28 @@
-import { lazy, Suspense, useState } from "react";
-import { Link, useLocation, useParams } from "react-router";
-import { http, TOKEN_KEY, useLoad } from "../lib/api";
+import { Fragment, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { http, useLoad } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { usd } from "../lib/format";
-import { date, INSTALLMENT, lifecycle, loanStatus, nextDue, progress, shortId, type Doc, type Installment, type Loan } from "../lib/loans";
+import { date, INSTALLMENT, lifecycle, loanStatus, nextDue, progress, shortId, type Installment, type Loan } from "../lib/loans";
 import { Button } from "../ui/Button";
-import { DemoButton } from "../ui/DemoFill";
+import { DemoButton, useDemo } from "../ui/DemoFill";
 import { Container } from "../ui/Container";
 import { Dialog } from "../ui/Dialog";
 import { Status } from "../ui/Status";
+import { useToast } from "../ui/Toast";
+import { celebrateApproval } from "./Notifications";
+import { openPdf, titleOf, type StatementDoc } from "./Statements";
 import { LoadError, PageSkeleton } from "./AppShell";
 import { ArtTile, PaymentStrip, Stepper } from "./visuals";
 
-const UpfrontDialog = lazy(() => import("./UpfrontDialog"));
 
 async function load(id: string) {
   const [{ loan, installments }, { documents }] = await Promise.all([
     http<{ loan: Loan; installments: Installment[] }>(`/loans/${id}`),
-    http<{ documents: Doc[] }>("/documents").catch(() => ({ documents: [] as Doc[] })),
+    http<{ documents: StatementDoc[] }>("/documents").catch(() => ({ documents: [] as StatementDoc[] })),
   ]);
   const refs = new Set([id, ...installments.map((i) => i.id)]);
-  return { loan, installments, documents: documents.filter((d) => d.referenceId && refs.has(d.referenceId)) };
+  return { loan, installments, documents: documents.filter((d) => d.loanId === id || (d.referenceId && refs.has(d.referenceId))) };
 }
 
 export default function LoanDetail() {
@@ -29,8 +31,9 @@ export default function LoanDetail() {
   const staff = user?.role !== "borrower";
   const justApplied = (useLocation().state as { justApplied?: boolean } | null)?.justApplied;
   const { data, error, loading, reload } = useLoad(() => load(id), [id]);
-  const [depositOpen, setDepositOpen] = useState(false);
-  const [paying, setPaying] = useState<ReturnType<typeof nextDue>>(null);
+  const navigate = useNavigate();
+  const [confirming, setConfirming] = useState<{ label: string; amount: number; to: string; detail: string } | null>(null);
+  const toast = useToast();
   const [notice, setNotice] = useState(justApplied ? "Application sent. A loan officer usually decides within two business days." : "");
 
   if (loading && !data) return <PageSkeleton />;
@@ -93,7 +96,7 @@ export default function LoanDetail() {
             <p className="max-w-[52ch] text-body text-ink-2">Loans over $5,000 need 5% upfront. A loan officer can approve this loan once it's paid.</p>
           </div>
           <div className="lg:col-span-4 lg:justify-self-end">
-            <Button size="lg" onClick={() => setDepositOpen(true)}>Pay deposit</Button>
+            <Button size="lg" onClick={() => setConfirming({ label: "your deposit", amount: loan.upfront_amount ?? 0, to: `/app/pay/${loan.id}`, detail: "Once it's paid, a loan officer can approve your loan." })}>Pay deposit</Button>
           </div>
         </section>
       )}
@@ -105,11 +108,11 @@ export default function LoanDetail() {
         <WhileYouWait
           loan={loan}
           onCancelled={() => { setNotice("Application cancelled."); reload(); }}
-          onApproved={() => { setNotice("Approved (demo). Your schedule is ready."); reload(); }}
+          onApproved={() => { setNotice("Approved (demo). Your schedule is ready."); celebrateApproval(toast, loan.id); reload(); }}
         />
       )}
 
-      <Schedule installments={installments} loan={loan} next={next} canPay={!staff && loan.status === "active"} onPay={setPaying} />
+      <Schedule installments={installments} loan={loan} next={next} canPay={!staff && loan.status === "active"} onPay={(i) => i && setConfirming({ label: `payment ${i.installment_number}`, amount: i.remaining, to: `/app/pay/${loan.id}?installment=${i.id}`, detail: `Due ${date(i.due_date)}. You'll review it and choose card or PayPal on the next page.` })} />
 
       {documents.length > 0 && (
         <section aria-labelledby="docs" className="flex flex-col gap-6">
@@ -119,7 +122,7 @@ export default function LoanDetail() {
               <li key={d.id} className="flex items-center justify-between gap-6 border-t border-line py-4 last:border-b">
                 <span className="flex flex-col">
                   <span className="text-body font-medium">
-                    {d.documentType === "loan_agreement" ? "Loan agreement" : `Receipt · payment ${instNumber.get(d.referenceId!) ?? ""}`}
+                    {d.title || (d.documentType === "payment_receipt" ? `Receipt · payment ${instNumber.get(d.referenceId!) ?? ""}` : titleOf(d))}
                   </span>
                   <span className="text-small text-ink-2">{date(d.createdAt)} · PDF</span>
                 </span>
@@ -130,32 +133,13 @@ export default function LoanDetail() {
         </section>
       )}
 
-      {depositOpen && (
-        <Suspense fallback={null}>
-          <UpfrontDialog
-            loanId={loan.id}
-            amount={loan.upfront_amount ?? 0}
-            open
-            onClose={() => setDepositOpen(false)}
-            onPaid={() => {
-              setDepositOpen(false);
-              setNotice("Deposit paid. Your application is with a loan officer.");
-              reload();
-            }}
-          />
-        </Suspense>
-      )}
-
-      <PayDialog
-        loanId={loan.id}
-        installment={paying}
-        onClose={() => setPaying(null)}
-        onPaid={(n) => {
-          setPaying(null);
-          setNotice(`Payment ${n} recorded. A receipt is in your documents.`);
-          reload();
-        }}
-      />
+      <Dialog open={!!confirming} onClose={() => setConfirming(null)} title={confirming ? `Pay ${usd(confirming.amount)} for ${confirming.label}?` : ""}>
+        <p className="text-body text-ink-2">{confirming?.detail}</p>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="secondary" onClick={() => setConfirming(null)}>Not now</Button>
+          <Button onClick={() => { const to = confirming!.to; setConfirming(null); navigate(to); }}>Continue to payment</Button>
+        </div>
+      </Dialog>
     </Container>
   );
 }
@@ -170,7 +154,8 @@ function Figure({ label, value, strong }: { label: string; value: string; strong
 }
 
 function Schedule({ installments, loan, next, canPay, onPay }: {
-  installments: Installment[]; loan: Loan; next: ReturnType<typeof nextDue>; canPay: boolean; onPay: (i: ReturnType<typeof nextDue>) => void;
+  installments: Installment[]; loan: Loan; next: ReturnType<typeof nextDue>; canPay: boolean;
+  onPay: (i: ReturnType<typeof nextDue>) => void;
 }) {
   if (!installments.length) {
     const s = loanStatus(loan);
@@ -198,33 +183,46 @@ function Schedule({ installments, loan, next, canPay, onPay }: {
       <table className="w-full border-collapse text-left">
         <thead>
           <tr className="text-label text-ink-2">
-            <th scope="col" className="w-12 pb-3 font-medium">#</th>
+            <th scope="col" className="w-9 pb-3 font-medium sm:w-12">#</th>
             <th scope="col" className="pb-3 font-medium">Due</th>
             <th scope="col" className="pb-3 text-right font-medium">Amount</th>
             <th scope="col" className="hidden pb-3 pl-8 font-medium sm:table-cell">Status</th>
-            <th scope="col" className="pb-3"><span className="sr-only">Action</span></th>
+            <th scope="col" className="hidden pb-3 sm:table-cell"><span className="sr-only">Action</span></th>
           </tr>
         </thead>
         <tbody>
           {installments.map((i) => {
             const st = INSTALLMENT[i.status];
             const isNext = next?.id === i.id;
+            const actions = isNext && canPay && (
+              <Button onClick={() => onPay(next)} className="w-full sm:w-auto">Pay {usd(next!.remaining)}</Button>
+            );
             return (
-              <tr key={i.id} className={`border-t border-line last:border-b ${isNext ? "bg-surface" : ""}`}>
+              <Fragment key={i.id}>
+              <tr className={`border-t border-line ${isNext && actions ? "" : "last:border-b"} ${isNext ? "bg-surface" : ""}`}>
                 <td className="tabular py-4 text-small text-ink-3 sm:pl-2">{String(i.installment_number).padStart(2, "0")}</td>
                 <td className="tabular py-4 text-body">
-                  {date(i.due_date)}
-                  <Status tone={st.tone} className="mt-1 flex sm:hidden">{st.label}</Status>
+                  <span className="whitespace-nowrap">{date(i.due_date)}</span>
+                  <span className="mt-1 block sm:hidden"><Status tone={st.tone}>{st.label}</Status></span>
                 </td>
                 <td className="tabular py-4 text-right text-body">
                   {usd(i.amount_due)}
                   {i.status === "partial" && <span className="block text-small text-ink-2">{usd(i.amount_paid)} paid</span>}
                 </td>
                 <td className="hidden py-4 pl-8 sm:table-cell"><Status tone={st.tone}>{st.label}</Status></td>
-                <td className="py-4 pr-2 text-right">
-                  {isNext && canPay && <Button variant="secondary" onClick={() => onPay(next)}>Pay {usd(next!.remaining)}</Button>}
+                <td className="hidden py-4 pr-2 text-right sm:table-cell">
+                  {actions && <span className="flex flex-col items-end gap-2">{actions}</span>}
                 </td>
               </tr>
+              {/* phones: the pay actions get their own full-width row under the next payment */}
+              {actions && (
+                <tr className="bg-surface sm:hidden">
+                  <td colSpan={3} className="px-2 pb-4">
+                    <span className="flex flex-col gap-3">{actions}</span>
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             );
           })}
         </tbody>
@@ -266,10 +264,14 @@ function WhileYouWait({ loan, onCancelled, onApproved }: { loan: Loan; onCancell
             <Button variant="secondary" onClick={() => { setErr(""); setConfirm(true); }}>Cancel application</Button>
           </div>
         )}
-        <DemoButton label="Approve this loan" onClick={() => run("approve")} busy={busy === "approve"} />
+        {loan.upfront_required === 1 && loan.upfront_paid !== 1 ? (
+          <DemoNote>Demo approve unlocks once the deposit is paid.</DemoNote>
+        ) : (
+          <DemoButton label="Approve this loan" onClick={() => run("approve")} busy={busy === "approve"} />
+        )}
         {err && !confirm && <p role="alert" className="text-body text-danger">{err}</p>}
       </div>
-      <ArtTile src="/img/tile-cart.webp" className="hidden aspect-[4/3] lg:col-span-4 lg:col-start-9 lg:block" />
+      <ArtTile flat contain src="/img/app-loans.webp" className="hidden aspect-[16/9] lg:col-span-4 lg:col-start-9 lg:block" />
 
       <Dialog open={confirm} onClose={() => setConfirm(false)} title="Cancel this application?">
         <p className="text-body text-ink-2">
@@ -287,46 +289,7 @@ function WhileYouWait({ loan, onCancelled, onApproved }: { loan: Loan; onCancell
   );
 }
 
-function PayDialog({ loanId, installment, onClose, onPaid }: { loanId: string; installment: ReturnType<typeof nextDue>; onClose: () => void; onPaid: (n: number) => void }) {
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-  async function pay() {
-    if (!installment) return;
-    setBusy(true);
-    setErr("");
-    try {
-      await http(`/loans/${loanId}/installments/${installment.id}/pay`, { method: "POST", json: { amount: installment.remaining, paymentMethod: "mock_gateway" } });
-      onPaid(installment.installment_number);
-    } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <Dialog open={!!installment} onClose={onClose} title={installment ? `Pay ${usd(installment.remaining)} for payment ${installment.installment_number}` : ""}>
-      <p className="text-body text-ink-2">
-        This is a demo payment: no money moves, but the payment is recorded on your schedule and a receipt is issued. It can't be undone.
-      </p>
-      {err && <p role="alert" className="text-body text-danger">{err}</p>}
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button variant="secondary" onClick={onClose}>Cancel</Button>
-        <Button onClick={pay} loading={busy}>Record demo payment</Button>
-      </div>
-    </Dialog>
-  );
-}
-
-async function openPdf(id: string) {
-  // ponytail: popup opened before the fetch so blockers allow it; the blob URL is never revoked (one per click, freed on tab close).
-  const tab = window.open("", "_blank");
-  const res = await fetch(`/api/documents/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}` } });
-  if (!res.ok) {
-    tab?.close();
-    alert("That document couldn't be opened. Try again.");
-    return;
-  }
-  const url = URL.createObjectURL(await res.blob());
-  if (tab) tab.location.href = url;
-  else location.href = url;
+/** Shown only in demo mode, where the Demo buttons would be. */
+function DemoNote({ children }: { children: string }) {
+  return useDemo() ? <p className="text-small text-ink-2">{children}</p> : null;
 }

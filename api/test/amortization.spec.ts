@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateInstallments } from "../src/loans/amortization";
+import { generateInstallments } from "../src/contexts/lending/domain/repayment-schedule";
 
 describe("generateInstallments", () => {
   it("produces one installment per term month", () => {

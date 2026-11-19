@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { bankSafetyScore, behaviorScore, finalScore } from "../src/plaid/scoring";
-import type { PlaidAccount } from "../src/plaid/client";
+import { bankSafetyScore } from "../src/contexts/borrower/domain/bank-safety";
+import { behaviorScore, finalScore } from "../src/contexts/lending/domain/risk";
+import type { PlaidAccount } from "../src/contexts/borrower/infrastructure/plaid-client";
 
 function acct(type: string, available: number | null): PlaidAccount {
   return { name: "x", type, subtype: null, balances: { available, current: available } };
@@ -31,20 +32,20 @@ describe("bankSafetyScore", () => {
 describe("behaviorScore", () => {
   it("gives a clean approved user a high score", () => {
     expect(
-      behaviorScore({ kycStatus: "approved", fullyPaidCount: 0, defaultedCount: 0, overdueInstallmentCount: 0 })
+      behaviorScore({ kycStatus: "approved", fullyPaidLoans: 0, defaultedLoans: 0, overdueInstallments: 0 })
     ).toBe(85);
   });
 
   it("returns 0 when KYC is rejected", () => {
     expect(
-      behaviorScore({ kycStatus: "rejected", fullyPaidCount: 5, defaultedCount: 0, overdueInstallmentCount: 0 })
+      behaviorScore({ kycStatus: "rejected", fullyPaidLoans: 5, defaultedLoans: 0, overdueInstallments: 0 })
     ).toBe(0);
   });
 
   it("rewards repayment history up to a cap and punishes defaults", () => {
     // 70 + 15 + min(25,20) - 30 = 75
     expect(
-      behaviorScore({ kycStatus: "approved", fullyPaidCount: 5, defaultedCount: 1, overdueInstallmentCount: 0 })
+      behaviorScore({ kycStatus: "approved", fullyPaidLoans: 5, defaultedLoans: 1, overdueInstallments: 0 })
     ).toBe(75);
   });
 });

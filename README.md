@@ -22,7 +22,6 @@ Every drawing below comes from the code. Each sheet is a short Python script in 
 
 <p align="center">
   <a href="docs/images/cf-stack.png"><img alt="CF-01, flat: clients, the Cloudflare edge, one Worker with its four layers, the D1, KV and R2 bindings, and the external providers." src="docs/images/cf-stack.png" width="49%"></a>
-  <a href="docs/images/cf-stack-3d.png"><img alt="CF-01, exploded: the edge, the Worker and the bindings as three stacked layers." src="docs/images/cf-stack-3d.png" width="49%"></a>
 </p>
 
 - **One Worker, one deploy.** The Worker serves the Hono API and the built frontend (static assets with an SPA fallback). There is no server to run or patch.

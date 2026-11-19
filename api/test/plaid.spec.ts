@@ -1,7 +1,7 @@
 import { env, fetchMock } from "cloudflare:test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import app from "../src/index";
-import { signJwt } from "../src/auth/jwt";
+import { signJwt } from "../src/contexts/identity/infrastructure/jwt";
 
 beforeAll(() => fetchMock.activate());
 beforeEach(() => fetchMock.assertNoPendingInterceptors());

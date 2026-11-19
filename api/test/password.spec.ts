@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashPassword, verifyPassword } from "../src/auth/password";
+import { hashPassword, verifyPassword } from "../src/contexts/identity/infrastructure/password";
 
 describe("password hashing", () => {
   it("verifies a correct password against its hash", async () => {

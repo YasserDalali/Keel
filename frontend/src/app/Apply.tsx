@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams } from "react-router";
 import { ApiError, http, useLoad } from "../lib/api";
 import { usd } from "../lib/format";
 import { MAX_AMOUNT, MAX_TERM, MIN_AMOUNT, MIN_TERM, quote, UPFRONT_PCT, UPFRONT_THRESHOLD } from "../lib/loan-terms";
-import { readiness, type Profile } from "../lib/loans";
+import { date, readiness } from "../lib/loans";
+import type { ProfileView } from "../lib/profile";
 import { Button } from "../ui/Button";
+import { Checkbox } from "../ui/Checkbox";
 import { Container } from "../ui/Container";
 import { Slider } from "../ui/Slider";
 import { TextLink } from "../ui/TextLink";
@@ -34,19 +36,21 @@ type Problem = { text: string; fix?: { label: string; to: string } };
 function problem(e: unknown): Problem {
   if (!(e instanceof ApiError)) return { text: "Something went wrong. Try again." };
   if (e.status === 428) return { text: "Connect your bank before applying.", fix: { label: "Connect your bank", to: "/app/setup?step=bank" } };
+  if (e.code === "email_unverified") return { text: "Confirm your email address before applying. Check your inbox for the link, or resend it from the banner at the top." };
   if (e.status === 403 && /KYC/i.test(e.message)) return { text: "Verify your ID before applying.", fix: { label: "Verify your ID", to: "/app/setup?step=identity" } };
   if (e.status === 403) return { text: "We can't offer a loan right now based on your bank activity and history. Paying off any open loan on time helps next time." };
   return { text: e.message };
 }
 
 export default function Apply() {
-  const { data: profile, error, loading } = useLoad(() => http<Profile>("/profile"));
+  const { data: profile, error, loading } = useLoad(() => http<ProfileView>("/profile"));
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [amount, setAmount] = useState(() => initialAmount(params.get("amount")));
   const [term, setTerm] = useState(12);
   const [busy, setBusy] = useState(false);
   const [issue, setIssue] = useState<Problem | null>(null);
+  const [bankOk, setBankOk] = useState(false);
   const q = quote(amount, term);
 
   if (loading && !profile) return <PageSkeleton />;
@@ -75,7 +79,7 @@ export default function Apply() {
           One flat 5% fee, shown in dollars. A loan officer reviews your application, usually within two business days.
         </p>
         <div className="mt-4 hidden flex-col gap-8 lg:flex">
-          <ArtTile src="/img/tile-cart.webp" className="aspect-[4/3] w-full max-w-[420px]" />
+          <ArtTile flat src="/img/app-empty-loans.webp" className="aspect-[3/4] w-full max-w-[360px]" position="50% 50%" />
           <section aria-labelledby="next-steps" className="flex flex-col gap-4">
             <h2 id="next-steps" className="text-label text-ink-2">What happens next</h2>
             <ol className="flex flex-col">
@@ -121,6 +125,8 @@ export default function Apply() {
               `Over ${usd(UPFRONT_THRESHOLD)}, ${UPFRONT_PCT * 100}% (${usd(q.upfront)}) is paid upfront once you apply, before the money is sent.`}
           </p>
 
+          <BankConfirm profile={profile} confirmed={bankOk} onChange={setBankOk} />
+
           {issue && (
             <p role="alert" className="mt-4 text-body text-danger">
               {issue.text} {issue.fix && <TextLink to={issue.fix.to} className="font-medium">{issue.fix.label}</TextLink>}
@@ -128,11 +134,50 @@ export default function Apply() {
           )}
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
-            <Button type="submit" size="lg" loading={busy}>Apply for {usd(amount)}</Button>
-            <p className="text-small text-ink-2">Nothing is charged when you apply.</p>
+            <Button type="submit" size="lg" loading={busy} disabled={!bankOk}>Apply for {usd(amount)}</Button>
+            <p className="text-small text-ink-2">{bankOk ? "Nothing is charged when you apply." : "Confirm your bank above to continue."}</p>
           </div>
         </form>
       )}
     </Container>
+  );
+}
+
+/** The bank Keel will pay into and read from, confirmed before every application. */
+function BankConfirm({ profile, confirmed, onChange }: { profile: ProfileView; confirmed: boolean; onChange: (v: boolean) => void }) {
+  const bank = profile.bank;
+  const score = bank?.safetyScore ?? profile.bankSafetyScore ?? null;
+  return (
+    <section aria-labelledby="bank-confirm" className="mt-10 flex flex-col gap-5 border-t border-line pt-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 id="bank-confirm" className="text-h3">Confirm your bank</h2>
+        <TextLink to="/app/setup?step=bank" className="text-small font-medium text-accent-700">Use a different bank</TextLink>
+      </div>
+      <div className="grid grid-cols-[2.75rem_1fr] items-center gap-4 rounded-control border border-line bg-canvas p-4">
+        <span aria-hidden className="flex size-11 items-center justify-center rounded-control bg-ink text-body font-semibold text-canvas">
+          {(bank?.institutionName ?? "B").slice(0, 1)}
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate text-body font-medium">{bank?.institutionName ?? "Your connected bank"}</span>
+          <span className="text-small text-ink-2">
+            Read-only connection{bank?.connectedAt ? ` · connected ${date(bank.connectedAt)}` : ""}
+          </span>
+        </span>
+        {score != null && (
+          <span className="col-span-2 flex flex-col gap-2 border-t border-line pt-3">
+            <span className="flex justify-between text-small">
+              <span className="text-ink-2">Bank safety score</span>
+              <span className="tabular text-ink">{Math.round(score)} of 100</span>
+            </span>
+            <span aria-hidden className="h-[3px] overflow-hidden rounded-full bg-line">
+              <span className="block h-full origin-left bg-accent-600" style={{ transform: `scaleX(${Math.min(1, Math.max(0, score / 100))})` }} />
+            </span>
+          </span>
+        )}
+      </div>
+      <Checkbox checked={confirmed} onChange={(e) => onChange(e.target.checked)}>
+        This is the account my business uses.
+      </Checkbox>
+    </section>
   );
 }
