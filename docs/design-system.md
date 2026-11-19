@@ -185,7 +185,7 @@ These rules apply to the exploded stack and replace the 2D "Step circles" and co
 
 README screenshots live in `images/screens/` as PNG, with transparent rounded corners (radius 24 to 28 px) and a 2 px `#d0d7de` border baked in. GitHub removes CSS, so the image itself must carry the rounding.
 
-README text follows the text rules above: paragraphs, not only lists, in STE style. Each sheet gets two to four short paragraphs, with the facts taken from the code.
+README text follows the text rules above: paragraphs, not only lists, in STE style. Each sheet gets two to four short paragraphs, with the facts taken from the code. The Q&A section gives each answer a technical paragraph and a business paragraph (cost, complexity).
 
 ## UML sheets (flat 2D)
 
@@ -197,7 +197,8 @@ UML sheets use the same frame, palette and type as the blueprint sheets. They ar
 | UML-02 | Entity-relationship (D1 tables) | `build-uml-erd.py` |
 | UML-03 | Class diagram (Lending) | `build-uml-lending-classes.py` |
 | UML-04, 05, 07 | Sequences: apply, approve, pay | `build-uml-sequences.py` |
-| UML-06 | Package diagram: layers and `api/src` | `build-uml-packages.py` |
+| UML-06 | Package diagram: three stacked rounded 3D slabs on the left, flat packages on the right | `build-uml-packages.py` |
+| UML-08 | Event bus: 3D flow on top, flat comparison table below | `build-uml-eventbus.py` |
 
 Rules:
 - Actors are stick figures. External systems are boxes with the «system» stereotype.
@@ -217,3 +218,24 @@ Rules:
 - When a wire would cross the whole sheet, drop it and put the step number on the block instead.
 - Move the status machines, rules, keys and legends into a strip under the plane. The plane then takes the full width.
 - In an ERD, give each context its own column and route lines through the channels between columns. A far foreign key to `users` is a `→ users` label, not a line.
+
+## Mixing 3D and flat on one sheet
+
+UML sheets may carry a 3D part. Keep tables, keys and notes flat so they stay readable.
+- Set the camera for the 3D part (`bp.VIEW`, or `None` for isometric) and call `bp.fit(...)` with a box that holds only that part. Draw everything else after it, in flat coordinates.
+- In a vertical stack, each upper slab hides the back of the one below. Put tiles in the front band of the slab: plane y greater than `PD - G + TILE_H`, where `G` is the gap between slabs. Otherwise the upper slab clips the icons.
+- Draw links between slabs along the front-left edge, from the bottom of one slab to the top of the next. Put the label to the left of the arrow, away from the tiles.
+- Name the layers on leader lines at the left, as in the stack sheets.
+
+## Camera angle and readable text
+
+Text lies on the 3D faces, so it takes on the shear of the plane's depth axis. At azimuth 22 the depth axis leans about 33 degrees and text is hard to read. At azimuth 7 to 10 it leans 6 to 8 degrees, which is fine.
+- For a sheet with lots of text on 3D faces, use a near-frontal camera: azimuth 5 to 10, elevation 48 to 55. Examples: `(7, 52)` in UML-08, `(8, 50)` in UML-06, `(8, 68)` in CF-04.
+- Use a higher azimuth only for shapes with little text.
+
+## Rounded slabs
+
+UML-06 draws rounded slabs with `rslab()` in `build-uml-packages.py`: the outline is a polygon, each side that faces the camera is a shaded quad, and the top face is drawn last.
+- Stack three slabs for nested layers. The outer layer is the bottom slab and the core is the top slab, so an arrow that goes up is an arrow that points inward.
+- Each slab is smaller than the one below, so the lower slab shows a front strip. Put its label in that strip.
+- Draw each up arrow at the front edge of the slab above: from the lower slab's top face up to the underside of the upper slab. Put its label to the side, flat.

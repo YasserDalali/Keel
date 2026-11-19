@@ -105,10 +105,22 @@ The system has seven bounded contexts. **Identity** owns user accounts and email
 
 The contexts are loosely coupled in two ways. First, when a context needs facts from another, it declares a **port** in its own words. Lending, for example, asks one question through `ApplicantGateway`. The composition root in `app/wiring/` connects that port to Identity and Borrower, so Lending never learns how they store their data. Second, changes travel as **domain events**. When a loan is approved, Lending does not call Payments, Documents and Communication. It records the event `loan-approved`, and each of them reacts on its own. The matrix on the sheet shows which context reacts to each of the nine events.
 
+### The event bus
+
+<p align="center">
+  <a href="docs/images/uml-eventbus.png"><img alt="UML-08: in a 3D view, when a loan is approved the use case saves the Loan and publishes loan-approved to the in-memory EventBus, which calls the Payments, Communication and Documents handlers. Below, a flat table compares the in-process bus with Cloudflare Queues, RabbitMQ and Kafka." src="docs/images/uml-eventbus.png" width="100%"></a>
+</p>
+
+The event bus is the post office between the contexts. A context can **publish** an event, such as `loan-approved`. Other contexts can **subscribe** to that event, and the bus calls their handlers. The publisher does not know who listens. The code is about 25 lines in [`api/src/shared/events.ts`](api/src/shared/events.ts). It is a `Map` of event types to lists of handlers, and it lives in memory, inside the Worker.
+
+Keel does not use Kafka or RabbitMQ, for four reasons. First, both are servers that must stay on all day, and Keel has no machine that runs between requests. Second, a consumer needs a long-running process, and a Worker lives for one request. Third, Keel produces a handful of events per loan, and Kafka is built for thousands per second. Fourth, all seven contexts already run in one process, so a network hop between them adds cost and gives nothing back.
+
+The price is durability. If the Worker stops after the save and before a handler runs, that reaction is lost, and nothing retries a handler that fails. For an email or a PDF this is acceptable. For money it is not, so the ledger protects itself: it records each provider reference once, and a repeat does no harm. When the project needs stronger guarantees, [Cloudflare Queues](https://developers.cloudflare.com/queues/) is the next step. The contexts only know `publish` and `subscribe`, so the bus can change without any change to Lending, Payments or Documents.
+
 ### How the code is organised
 
 <p align="center">
-  <a href="docs/images/uml-packages.png"><img alt="UML-06: on the left, the layers of one context as rings, with the domain at the centre and every dependency pointing inward. On the right, the packages in api/src: seven contexts, shared, app, middleware and index.ts. At the bottom, the five rules the architecture test enforces." src="docs/images/uml-packages.png" width="100%"></a>
+  <a href="docs/images/uml-packages.png"><img alt="UML-06: on the left, the nested layers of one context lifted into three stacked rounded 3D slabs with arrows going up: the outer slab split into interface and infrastructure, the application slab above it, and the domain on top. On the right, the packages in api/src: seven contexts, shared, app, middleware and index.ts. At the bottom, the five rules the architecture test enforces." src="docs/images/uml-packages.png" width="100%"></a>
 </p>
 
 Each context has the same four layers, and the dependencies point inward only. The **domain** layer is pure TypeScript and imports nothing from Hono, D1 or another context. The **application** layer holds the use cases. A use case loads an aggregate, calls one method, saves it and publishes its events. It contains no business rules. The **infrastructure** layer talks to D1, R2 and the providers, and provider data never leaves it. The **interface** layer is the HTTP edge. It contains no SQL and no rules. It maps each named domain error to a status code in one place, [`app/http.ts`](api/src/app/http.ts).
@@ -177,9 +189,58 @@ Confirmation is where the safety checks run. A PayPal capture can run only once,
 
 <br>
 
-## How the drawings are made
+## What you can learn from this project
 
-Each sheet in this README comes from the code. A short Python script in [`docs/images/`](docs/images/) draws it as SVG, and headless Chrome renders it to PNG. The blueprint sheets use a small drawing kit, [`blueprint.py`](docs/images/blueprint.py), and the UML sheets use [`uml.py`](docs/images/uml.py). [`docs/design-system.md`](docs/design-system.md) holds the rules that every sheet follows: the palette, the type, the line styles, the icons and the text style. The icons come from [Lucide](https://lucide.dev) and [Simple Icons](https://simpleicons.org).
+These notes answer the questions that a reader of this code is likely to ask. Each answer gives the technical reason and then the business view: what the choice costs, and what it saves.
+
+### Architecture
+
+**Why one Worker, and not microservices?**
+Keel has seven bounded contexts, but they run in one Worker. The boundaries are in the code, and a test enforces them, so nothing needs a network between the contexts. There is one deploy, one log and one place to debug. For the business, every extra service means another deploy pipeline, another set of alerts and another failure mode. For a small team this cost is high and the benefit is low. If one context ever needs to scale alone, it can leave the Worker, because it already talks to the others only through ports and events.
+
+**Why Domain-Driven Design for a small app?**
+The lending rules are the part of the system that changes most, and they are the costliest to get wrong. DDD keeps them in one place, in plain TypeScript, and tests them in milliseconds without a database. The price is more files and more indirection at the start. A simple CRUD app would not repay it. For the business, the payoff is that a new rule, such as a different deposit threshold, changes one method and not five routes.
+
+**Why ports and adapters?**
+Each context declares what it needs, in its own words, as an interface. An adapter in the infrastructure layer then supplies it. So the domain never imports D1, PayPal or another context. This also limits lock-in: all Cloudflare-specific and provider-specific code sits in one layer, so a move to another database or payment provider touches adapters, not rules.
+
+### Cloud and cost
+
+**Why Cloudflare Workers, and not containers or virtual machines?**
+A Worker starts in milliseconds, runs near the user and needs no server patching. There is no idle machine, so the bill follows use: requests, database reads and writes, and stored bytes. Check Cloudflare's pricing page for current numbers. The trade-offs are real. A Worker lives for one request, so there are no background consumers, and the platform ties the project to Cloudflare's bindings. The adapters limit that second cost.
+
+**Why D1 (SQLite) and not Postgres?**
+Loans, installments and the ledger are relational data that needs constraints and atomic writes. D1 gives this as a managed service, and a D1 batch saves a loan and its installments together or not at all. There is no database server to run, size or back up. The limit is scale: one D1 database fits this project, but heavy write load or multi-region writes would need another design. The README lists scale as out of scope on purpose.
+
+**Why KV and R2 as well?**
+Each store does one job well. KV is fast for small keys that expire: the logout blacklist, a throttle for verification emails and dedup keys for webhooks. R2 stores the PDF files cheaply and sends no egress fees. D1 would work for both, but it would carry data that does not need SQL. Using the right store keeps the database small and the bill low.
+
+### Code quality
+
+**Why no ORM?**
+The repositories use plain SQL with bound parameters. The domain model does not match the tables. For example, the `loans` table stores declined and cancelled loans as `defaulted`, and only the repository knows this. An ORM would still need a mapper, and it adds weight to the Worker bundle. Plain SQL keeps the mapping in one visible place.
+
+**Why store money in whole cents?**
+Floating-point numbers cannot hold 0.1 exactly, and small errors add up across a schedule. The `Money` value object keeps whole cents, and the schedule gives the rounding to the last installment, so the total is exact. For the business, a one-cent error in a ledger is an audit problem. One honest flaw: the D1 columns hold dollars as `REAL`, and the repository converts at the boundary. Integer cents in the database would be cleaner, and the schema would need a migration to get there.
+
+**How do you test a Worker?**
+Vitest runs inside the real Workers runtime (Miniflare), with real D1, KV and R2 bindings, not mocks. The domain rules have pure tests with no database. An architecture test fails when a layer breaks the dependency rule. For the business, this gives fast feedback and catches structure problems before they reach a reviewer.
+
+### Safety and money
+
+**How does the system avoid taking a payment twice?**
+Four layers work together. The ledger has a unique index on the provider reference, so it records each payment once. A PayPal capture runs only once, so a repeat gets its answer from the ledger. Payments records the amount PayPal collected, not an amount from the browser. The Didit webhook carries an HMAC signature and a dedup key in KV, so a repeated or forged call does nothing. A duplicate charge is among the most expensive bugs a lender can ship.
+
+**How does Keel protect passwords and personal data?**
+Passwords use PBKDF2 with 100,000 iterations and SHA-256, through the Web Crypto API that every Worker has. The profile fields and the Plaid access token use AES-GCM, so the database holds only ciphertext. Sessions use signed tokens, and a logout puts the token on a KV blacklist. Turnstile checks register and log in, and it fails closed. For the business, encryption at rest limits the damage of a leak.
+
+### Looking ahead
+
+**What would change first at a larger scale?**
+Four things, in this order. First, Cloudflare Queues for domain events, for durability and retries. Second, integer cents in the database. Third, the `audit_logs` table has no writer yet, so something should write to it. Fourth, a process that sets the `defaulted` status, and a collections flow. The business rule behind this list: build each item when the risk it covers becomes real, not before. Each item costs time and adds moving parts.
+
+**What does the frontend show?**
+Keel's interface has a living design-system page at `/system`, with every colour token and component. Each animation has a reduced-motion path. The wording is plain, and each step in the application flow has one clear action. For the business, a consistent interface is cheaper to extend, and clear steps reduce the support questions that a lender gets.
 
 <br>
 
