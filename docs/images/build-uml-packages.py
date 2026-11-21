@@ -146,7 +146,7 @@ o.append(line('M1010 482 V518', 'dashed', end='open') + text(1020, 505, 'uses', 
 o.append(line('M1370 670 V642', 'dashed', end='open') + text(1380, 660, 'uses', style='font-size:11px'))
 
 # --- bottom: the rules the architecture test enforces -------------------------------
-o.append(f'<line x1="60" y1="860" x2="1540" y2="860" class="thin" style="stroke:#d3dcea"/>')
+o.append(f'<line x1="60" y1="860" x2="1540" y2="860" class="thin" style="stroke:#d9dcdb"/>')
 o.append(text(60, 890, 'GUARDED BY api/test/architecture.spec.ts', 't'))
 rules = ['Domain code depends only on the shared kernel and its own domain.',
          'Domain code never touches the platform: no Hono, no D1, no fetch.',

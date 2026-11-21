@@ -5,7 +5,7 @@ import uml
 from uml import actor, line, note, package, system_box, text, usecase
 
 o = uml.sheet('What the system does')
-o.append(f'<rect x="280" y="215" width="890" height="585" style="fill:none;stroke:#14213d;stroke-width:2"/>')
+o.append(f'<rect x="280" y="215" width="890" height="585" style="fill:none;stroke:#14271f;stroke-width:2"/>')
 o.append(text(296, 238, 'KEEL', 't', style='font-size:11px'))
 
 W = 250

@@ -1,32 +1,32 @@
-<a href="docs/design-system.md"><img alt="Keel: small business loans, serverless on Cloudflare, built with Domain-Driven Design. An exploded drawing of three layers: edge, worker and bindings." src="docs/images/readme/hero.png" width="100%"></a>
+<a href="docs/design-system.md"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/hero-dark.png"><img alt="Keel: small business loans, serverless on Cloudflare, built with Domain-Driven Design. An exploded drawing of three layers: edge, worker and bindings." src="docs/images/readme/hero.png" width="100%"></picture></a>
 
 <p align="center">
-  <a href="https://developers.cloudflare.com/workers/"><img alt="Cloudflare Workers" src="docs/images/readme/pill-cloudflare-workers.png" height="26"></a>
-  <a href="https://developers.cloudflare.com/d1/"><img alt="D1" src="docs/images/readme/pill-d1.png" height="26"></a>
-  <a href="https://developers.cloudflare.com/kv/"><img alt="KV" src="docs/images/readme/pill-kv.png" height="26"></a>
-  <a href="https://developers.cloudflare.com/r2/"><img alt="R2" src="docs/images/readme/pill-r2.png" height="26"></a>
-  <a href="https://developers.cloudflare.com/turnstile/"><img alt="Turnstile" src="docs/images/readme/pill-turnstile.png" height="26"></a>
-  <a href="https://developers.cloudflare.com/workers/configuration/cron-triggers/"><img alt="Cron triggers" src="docs/images/readme/pill-cron-triggers.png" height="26"></a>
+  <a href="https://developers.cloudflare.com/workers/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-cloudflare-workers-dark.png"><img alt="Cloudflare Workers" src="docs/images/readme/pill-cloudflare-workers.png" height="26"></picture></a>
+  <a href="https://developers.cloudflare.com/d1/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-d1-dark.png"><img alt="D1" src="docs/images/readme/pill-d1.png" height="26"></picture></a>
+  <a href="https://developers.cloudflare.com/kv/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-kv-dark.png"><img alt="KV" src="docs/images/readme/pill-kv.png" height="26"></picture></a>
+  <a href="https://developers.cloudflare.com/r2/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-r2-dark.png"><img alt="R2" src="docs/images/readme/pill-r2.png" height="26"></picture></a>
+  <a href="https://developers.cloudflare.com/turnstile/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-turnstile-dark.png"><img alt="Turnstile" src="docs/images/readme/pill-turnstile.png" height="26"></picture></a>
+  <a href="https://developers.cloudflare.com/workers/configuration/cron-triggers/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-cron-triggers-dark.png"><img alt="Cron triggers" src="docs/images/readme/pill-cron-triggers.png" height="26"></picture></a>
 </p>
 <p align="center">
-  <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="docs/images/readme/pill-typescript.png" height="26"></a>
-  <a href="https://hono.dev"><img alt="Hono" src="docs/images/readme/pill-hono.png" height="26"></a>
-  <a href="api/openapi.json"><img alt="OpenAPI" src="docs/images/readme/pill-openapi.png" height="26"></a>
-  <a href="https://vitest.dev"><img alt="Vitest" src="docs/images/readme/pill-vitest.png" height="26"></a>
-  <a href="#why-domain-driven-design"><img alt="Domain-Driven Design" src="docs/images/readme/pill-domain-driven-design.png" height="26"></a>
+  <a href="https://www.typescriptlang.org"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-typescript-dark.png"><img alt="TypeScript" src="docs/images/readme/pill-typescript.png" height="26"></picture></a>
+  <a href="https://hono.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-hono-dark.png"><img alt="Hono" src="docs/images/readme/pill-hono.png" height="26"></picture></a>
+  <a href="api/openapi.json"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-openapi-dark.png"><img alt="OpenAPI" src="docs/images/readme/pill-openapi.png" height="26"></picture></a>
+  <a href="https://vitest.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-vitest-dark.png"><img alt="Vitest" src="docs/images/readme/pill-vitest.png" height="26"></picture></a>
+  <a href="#why-domain-driven-design"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-domain-driven-design-dark.png"><img alt="Domain-Driven Design" src="docs/images/readme/pill-domain-driven-design.png" height="26"></picture></a>
 </p>
 <p align="center">
-  <a href="https://react.dev"><img alt="React" src="docs/images/readme/pill-react.png" height="26"></a>
-  <a href="https://vite.dev"><img alt="Vite" src="docs/images/readme/pill-vite.png" height="26"></a>
-  <a href="https://tailwindcss.com"><img alt="Tailwind CSS" src="docs/images/readme/pill-tailwind-css.png" height="26"></a>
-  <a href="https://gsap.com"><img alt="GSAP" src="docs/images/readme/pill-gsap.png" height="26"></a>
-  <a href="docs/design-system.md"><img alt="Design system" src="docs/images/readme/pill-design-system.png" height="26"></a>
+  <a href="https://react.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-react-dark.png"><img alt="React" src="docs/images/readme/pill-react.png" height="26"></picture></a>
+  <a href="https://vite.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-vite-dark.png"><img alt="Vite" src="docs/images/readme/pill-vite.png" height="26"></picture></a>
+  <a href="https://tailwindcss.com"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-tailwind-css-dark.png"><img alt="Tailwind CSS" src="docs/images/readme/pill-tailwind-css.png" height="26"></picture></a>
+  <a href="https://gsap.com"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-gsap-dark.png"><img alt="GSAP" src="docs/images/readme/pill-gsap.png" height="26"></picture></a>
+  <a href="docs/design-system.md"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-design-system-dark.png"><img alt="Design system" src="docs/images/readme/pill-design-system.png" height="26"></picture></a>
 </p>
 <p align="center">
-  <a href="https://developer.paypal.com"><img alt="PayPal" src="docs/images/readme/pill-paypal.png" height="26"></a>
-  <a href="https://plaid.com/docs/"><img alt="Plaid" src="docs/images/readme/pill-plaid.png" height="26"></a>
-  <a href="https://didit.me"><img alt="Didit" src="docs/images/readme/pill-didit.png" height="26"></a>
-  <a href="https://resend.com"><img alt="Resend" src="docs/images/readme/pill-resend.png" height="26"></a>
+  <a href="https://developer.paypal.com"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-paypal-dark.png"><img alt="PayPal" src="docs/images/readme/pill-paypal.png" height="26"></picture></a>
+  <a href="https://plaid.com/docs/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-plaid-dark.png"><img alt="Plaid" src="docs/images/readme/pill-plaid.png" height="26"></picture></a>
+  <a href="https://didit.me"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-didit-dark.png"><img alt="Didit" src="docs/images/readme/pill-didit.png" height="26"></picture></a>
+  <a href="https://resend.com"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/pill-resend-dark.png"><img alt="Resend" src="docs/images/readme/pill-resend.png" height="26"></picture></a>
 </p>
 
 <br>
@@ -38,17 +38,17 @@
 Four actors use the system. A **visitor** creates an account and logs in. A **borrower** completes a profile, verifies their identity, links a bank, applies for a loan and repays it. An **officer** reviews applications and decides. A **scheduler** runs once a day and marks late payments as overdue. Three outside systems help: Didit checks identity, Plaid reads the bank account and PayPal moves the money.
 
 <p align="center">
-  <a href="https://microloans-platform.yasser-dalali-personal.workers.dev/"><img alt="Keel landing page: Capital for the business you already run. Loans from $500 to $10,000 for shops, workshops and market stalls." src="docs/images/screens/landing.png" width="100%"></a>
+  <a href="https://microloans-platform.yasser-dalali-personal.workers.dev/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/screens/landing-dark.png"><img alt="Keel landing page: Capital for the business you already run. Loans from $500 to $10,000 for shops, workshops and market stalls." src="docs/images/screens/landing.png" width="100%"></picture></a>
 </p>
 <p align="center">
-  <img alt="Keel sign-up page with an illustrated shop front." src="docs/images/screens/signup.png" width="49%">
-  <img alt="The Keel design system page: colour tokens such as canvas, ink and accent." src="docs/images/screens/system.png" width="49%">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/screens/signup-dark.png"><img alt="Keel sign-up page with an illustrated shop front." src="docs/images/screens/signup.png" width="49%"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/screens/system-dark.png"><img alt="The Keel design system page: colour tokens such as canvas, ink and accent." src="docs/images/screens/system.png" width="49%"></picture>
 </p>
 
 The live app runs at **[microloans-platform.yasser-dalali-personal.workers.dev](https://microloans-platform.yasser-dalali-personal.workers.dev/)** in demo mode. Demo mode adds buttons that fill the forms and skip the provider steps, so you can try the whole flow without real documents.
 
 <p align="center">
-  <a href="docs/images/uml-usecases.png"><img alt="UML-01, use case diagram: the visitor, borrower, officer and scheduler, and the use cases they reach, grouped into account, scheduled, decisions, tracking, borrowing and onboarding. Didit, Plaid and PayPal are secondary actors." src="docs/images/uml-usecases.png" width="100%"></a>
+  <a href="docs/images/uml-usecases.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-usecases-dark.png"><img alt="UML-01, use case diagram: the visitor, borrower, officer and scheduler, and the use cases they reach, grouped into account, scheduled, decisions, tracking, borrowing and onboarding. Didit, Plaid and PayPal are secondary actors." src="docs/images/uml-usecases.png" width="100%"></picture></a>
 </p>
 
 The diagram groups the use cases by purpose. A line to a group means the actor can use every case inside it. A borrower sees only their own loans. The officer cases need the officer or admin role. Register and log in pass a Turnstile bot check first.
@@ -76,7 +76,7 @@ These areas are **not** the focus, and the project keeps them small on purpose:
 ## The stack
 
 <p align="center">
-  <a href="docs/images/cf-stack.png"><img alt="CF-01: clients, the Cloudflare edge, one Worker with its four layers, the D1, KV and R2 bindings, and the external providers." src="docs/images/cf-stack.png" width="100%"></a>
+  <a href="docs/images/cf-stack.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/cf-stack-dark.png"><img alt="CF-01: clients, the Cloudflare edge, one Worker with its four layers, the D1, KV and R2 bindings, and the external providers." src="docs/images/cf-stack.png" width="100%"></picture></a>
 </p>
 
 One Cloudflare Worker runs the whole platform. It serves the API through [Hono](https://hono.dev) and the built React frontend as static assets. Requests to `/api`, `/docs` and `/openapi.json` go to Hono. All other paths return the single-page app. The platform deploys as one unit with one command, `npm run deploy`. No machine stays on between requests, so the cost follows the use: requests, database reads and writes, and stored bytes.
@@ -98,7 +98,7 @@ Domain-Driven Design (DDD) puts the rules in one place: a model of the business,
 DDD also splits a large system into **bounded contexts**. Each context owns one part of the business and its own words. In this project "user" means an account in Identity, and "applicant" means a person who asks for a loan in Lending. The two words do not mix, and each context can change its inside without asking the others.
 
 <p align="center">
-  <a href="docs/images/cf-domain-3d.png"><img alt="CF-02: Identity and Borrower upstream, Lending and Payments in the core, Documents, Communication and Reporting downstream, joined by an event bus. A matrix shows which context handles each domain event." src="docs/images/cf-domain-3d.png" width="100%"></a>
+  <a href="docs/images/cf-domain-3d.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/cf-domain-3d-dark.png"><img alt="CF-02: Identity and Borrower upstream, Lending and Payments in the core, Documents, Communication and Reporting downstream, joined by an event bus. A matrix shows which context handles each domain event." src="docs/images/cf-domain-3d.png" width="100%"></picture></a>
 </p>
 
 The system has seven bounded contexts. **Identity** owns user accounts and email verification. **Borrower** owns the profile, the identity check and the bank link. **Lending** is the core domain: it owns the loan and its rules. **Payments** moves money and keeps the ledger. **Documents** makes the PDFs. **Communication** sends notifications and email. **Reporting** builds the read models for the dashboard and keeps the reminder settings.
@@ -108,7 +108,7 @@ The contexts are loosely coupled in two ways. First, when a context needs facts 
 ### The event bus
 
 <p align="center">
-  <a href="docs/images/uml-eventbus.png"><img alt="UML-08: in a 3D view, when a loan is approved the use case saves the Loan and publishes loan-approved to the in-memory EventBus, which calls the Payments, Communication and Documents handlers. Below, a flat table compares the in-process bus with Cloudflare Queues, RabbitMQ and Kafka." src="docs/images/uml-eventbus.png" width="100%"></a>
+  <a href="docs/images/uml-eventbus.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-eventbus-dark.png"><img alt="UML-08: in a 3D view, when a loan is approved the use case saves the Loan and publishes loan-approved to the in-memory EventBus, which calls the Payments, Communication and Documents handlers. Below, a flat table compares the in-process bus with Cloudflare Queues, RabbitMQ and Kafka." src="docs/images/uml-eventbus.png" width="100%"></picture></a>
 </p>
 
 The event bus is the post office between the contexts. A context can **publish** an event, such as `loan-approved`. Other contexts can **subscribe** to that event, and the bus calls their handlers. The publisher does not know who listens. The code is about 25 lines in [`api/src/shared/events.ts`](api/src/shared/events.ts). It is a `Map` of event types to lists of handlers, and it lives in memory, inside the Worker.
@@ -120,7 +120,7 @@ The price is durability. If the Worker stops after the save and before a handler
 ### How the code is organised
 
 <p align="center">
-  <a href="docs/images/uml-packages.png"><img alt="UML-06: on the left, the nested layers of one context lifted into three stacked rounded 3D slabs with arrows going up: the outer slab split into interface and infrastructure, the application slab above it, and the domain on top. On the right, the packages in api/src: seven contexts, shared, app, middleware and index.ts. At the bottom, the five rules the architecture test enforces." src="docs/images/uml-packages.png" width="100%"></a>
+  <a href="docs/images/uml-packages.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-packages-dark.png"><img alt="UML-06: on the left, the nested layers of one context lifted into three stacked rounded 3D slabs with arrows going up: the outer slab split into interface and infrastructure, the application slab above it, and the domain on top. On the right, the packages in api/src: seven contexts, shared, app, middleware and index.ts. At the bottom, the five rules the architecture test enforces." src="docs/images/uml-packages.png" width="100%"></picture></a>
 </p>
 
 Each context has the same four layers, and the dependencies point inward only. The **domain** layer is pure TypeScript and imports nothing from Hono, D1 or another context. The **application** layer holds the use cases. A use case loads an aggregate, calls one method, saves it and publishes its events. It contains no business rules. The **infrastructure** layer talks to D1, R2 and the providers, and provider data never leaves it. The **interface** layer is the HTTP edge. It contains no SQL and no rules. It maps each named domain error to a status code in one place, [`app/http.ts`](api/src/app/http.ts).
@@ -132,10 +132,10 @@ A test protects this structure. [`api/test/architecture.spec.ts`](api/test/archi
 ## Where the data lives
 
 <p align="center">
-  <a href="docs/images/uml-erd.png"><img alt="UML-02, entity-relationship diagram of the D1 tables, grouped by the context that owns them, with keys, encrypted columns and relations." src="docs/images/uml-erd.png" width="100%"></a>
+  <a href="docs/images/uml-erd.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-erd-dark.png"><img alt="UML-02, entity-relationship diagram of the D1 tables, grouped by the context that owns them, with keys, encrypted columns and relations." src="docs/images/uml-erd.png" width="100%"></picture></a>
 </p>
 
-D1 holds twelve tables, and each table belongs to one context. The context name sits in the corner of each table. The two blue tables, `loans` and `installments`, hold the Loan aggregate. The repository writes them together in one batch, so a loan and its installments never disagree. If another request changed the loan first, the save fails and overwrites nothing.
+D1 holds twelve tables, and each table belongs to one context. The context name sits in the corner of each table. The two green tables, `loans` and `installments`, hold the Loan aggregate. The repository writes them together in one batch, so a loan and its installments never disagree. If another request changed the loan first, the save fails and overwrites nothing.
 
 Some columns are marked `sealed`. They hold AES-GCM ciphertext: the name, phone, address and national ID in `profiles`, and the Plaid access token. The repository seals each value before the write and opens it after the read, so the database never sees plain personal data. Amounts are stored in dollars, and the domain converts them to whole cents in a `Money` value object. A unique index on `transactions.external_reference_id` makes sure that the ledger records each provider payment at most once.
 
@@ -144,19 +144,19 @@ Some columns are marked `sealed`. They hold AES-GCM ciphertext: the name, phone,
 ## Feature: applying for a loan
 
 <p align="center">
-  <a href="docs/images/cf-lending-3d.png"><img alt="CF-03: use cases, the Loan aggregate with its installments, deposit, terms and risk assessment, the domain services, and the D1 repository, queries and applicant gateway. With the loan status machine and the rules on the loan." src="docs/images/cf-lending-3d.png" width="100%"></a>
+  <a href="docs/images/cf-lending-3d.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/cf-lending-3d-dark.png"><img alt="CF-03: use cases, the Loan aggregate with its installments, deposit, terms and risk assessment, the domain services, and the D1 repository, queries and applicant gateway. With the loan status machine and the rules on the loan." src="docs/images/cf-lending-3d.png" width="100%"></picture></a>
 </p>
 
-The Lending context is the heart of the system. The blueprint above shows its three layers. The use cases sit on the left, the domain model in the middle and the adapters on the right. The aggregate boundary, the dashed blue line, marks what the Loan owns. The status machine on the left of the sheet shows each allowed change of status.
+The Lending context is the heart of the system. The blueprint above shows its three layers. The use cases sit on the left, the domain model in the middle and the adapters on the right. The aggregate boundary, the dashed green line, marks what the Loan owns. The status machine on the left of the sheet shows each allowed change of status.
 
 <p align="center">
-  <a href="docs/images/uml-lending-classes.png"><img alt="UML-03, class diagram of Lending: the ApplyForLoan use case, the Loan aggregate root that owns its installments, deposit, terms and risk assessment, the RiskPolicy, DepositPolicy and schedule services, and the repository and gateway ports with their adapters." src="docs/images/uml-lending-classes.png" width="100%"></a>
+  <a href="docs/images/uml-lending-classes.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-lending-classes-dark.png"><img alt="UML-03, class diagram of Lending: the ApplyForLoan use case, the Loan aggregate root that owns its installments, deposit, terms and risk assessment, the RiskPolicy, DepositPolicy and schedule services, and the repository and gateway ports with their adapters." src="docs/images/uml-lending-classes.png" width="100%"></picture></a>
 </p>
 
 The class diagram shows the same model in more detail. The **Loan** is the aggregate root. It owns its installments, which are entities, and three value objects: `Deposit`, `LoanTerms` and `RiskAssessment`. Only the Loan changes its parts. Other code holds a loan by its id and calls one of its methods: `apply`, `approve`, `decline`, `cancel`, `payDeposit` or `recordPayment`. Each method checks its rules and records a domain event. The use cases depend on two ports, `ApplicantGateway` and `LoanRepository`. The adapters on the left implement them, so the domain never depends on D1.
 
 <p align="center">
-  <a href="docs/images/uml-seq-apply.png"><img alt="UML-04, sequence diagram: the borrower posts an application, the route checks the token, ApplyForLoan asks the applicant gateway, rejects the application if a check fails, scores the risk, creates the Loan, saves it in one batch and publishes loan-applied." src="docs/images/uml-seq-apply.png" width="100%"></a>
+  <a href="docs/images/uml-seq-apply.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-seq-apply-dark.png"><img alt="UML-04, sequence diagram: the borrower posts an application, the route checks the token, ApplyForLoan asks the applicant gateway, rejects the application if a check fails, scores the risk, creates the Loan, saves it in one batch and publishes loan-applied." src="docs/images/uml-seq-apply.png" width="100%"></picture></a>
 </p>
 
 The sequence diagram follows one application from the browser to the database. The route checks the token and calls the use case. `ApplyForLoan` asks the `ApplicantGateway` for three facts: a verified email, an approved identity check and a bank safety score. If one of them is missing, the use case stops with a named error, and the route answers `403` or `428`. Next, `RiskPolicy` calculates a score: 60 % from the bank safety score and 40 % from the borrowing record. The score must reach `RISK_SCORE_THRESHOLD`. A loan above `LOAN_UPFRONT_THRESHOLD` must also pay a deposit of `LOAN_UPFRONT_PCT` before approval. Then `Loan.apply` creates the loan, the repository saves it, and the event bus tells Communication to alert the staff and email the borrower.
@@ -164,7 +164,7 @@ The sequence diagram follows one application from the browser to the database. T
 ## Feature: approving a loan
 
 <p align="center">
-  <a href="docs/images/uml-seq-approve.png"><img alt="UML-05, sequence diagram: an officer approves a loan, the Loan checks its rules and builds the schedule, the repository saves it, and the event bus delivers loan-approved to Payments, Communication and Documents in turn." src="docs/images/uml-seq-approve.png" width="100%"></a>
+  <a href="docs/images/uml-seq-approve.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-seq-approve-dark.png"><img alt="UML-05, sequence diagram: an officer approves a loan, the Loan checks its rules and builds the schedule, the repository saves it, and the event bus delivers loan-approved to Payments, Communication and Documents in turn." src="docs/images/uml-seq-approve.png" width="100%"></picture></a>
 </p>
 
 Approval shows why domain events matter. The officer's request needs the officer or admin role. `ApproveLoan` loads the Loan and calls `approve`. The Loan refuses unless it is pending and any deposit is paid. Then it builds the repayment schedule: equal monthly payments, each due on the same day of the month, or on the last day of a short month. The last payment takes the rounding, so the total is exact to the cent.
@@ -174,13 +174,13 @@ After the save, one event, `loan-approved`, starts three reactions. Payments wri
 ## Feature: paying an installment
 
 <p align="center">
-  <a href="docs/images/cf-payments-3d.png"><img alt="CF-04: create, confirm and record use cases, the Lending ports, the payment gateway port, the settlement check and the append-only ledger, with the PayPal gateway and D1 ledger behind them." src="docs/images/cf-payments-3d.png" width="100%"></a>
+  <a href="docs/images/cf-payments-3d.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/cf-payments-3d-dark.png"><img alt="CF-04: create, confirm and record use cases, the Lending ports, the payment gateway port, the settlement check and the append-only ledger, with the PayPal gateway and D1 ledger behind them." src="docs/images/cf-payments-3d.png" width="100%"></picture></a>
 </p>
 
 The Payments context takes money in through PayPal. The blueprint shows its layers. The use cases sit on the left, the ports and the settlement check in the middle, and the PayPal and D1 adapters on the right. Payments speaks to Lending only through its own ports, in its own words: `DepositQuotes`, `InstallmentQuotes` and `DepositCollector`.
 
 <p align="center">
-  <a href="docs/images/uml-seq-pay.png"><img alt="UML-07, sequence diagram: the borrower opens a PayPal order for the amount Lending quotes, approves it in PayPal, then confirms. If the order is already in the ledger the answer comes from the ledger; otherwise Payments captures the order, verifies the settlement, records the repayment once and applies it to the Loan." src="docs/images/uml-seq-pay.png" width="100%"></a>
+  <a href="docs/images/uml-seq-pay.png"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/uml-seq-pay-dark.png"><img alt="UML-07, sequence diagram: the borrower opens a PayPal order for the amount Lending quotes, approves it in PayPal, then confirms. If the order is already in the ledger the answer comes from the ledger; otherwise Payments captures the order, verifies the settlement, records the repayment once and applies it to the Loan." src="docs/images/uml-seq-pay.png" width="100%"></picture></a>
 </p>
 
 A payment has two steps, and the borrower never sets the amount. In the first step, Payments asks Lending what is left on the installment. Then it opens a PayPal order for exactly that amount. The order carries its target: the loan, the user and the installment. In the second step, after the borrower approves the order in PayPal, the browser asks Payments to confirm it.

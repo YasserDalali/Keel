@@ -1,6 +1,6 @@
 # Blueprint design system (documentation diagrams)
 
-Style for every diagram in `docs/`. Light-mode engineering drawing: white sheet, navy ink, one blue accent.
+Style for every diagram in `docs/`. Light-mode engineering drawing: white sheet, Keel green-black ink, one green accent.
 
 **Default view: 3D** (see "3D view" below). Reference sheet: `images/cf-domain-3d.svg` (CF-02), generator `images/build-cf-domain-3d.py`.
 Use the flat 2D view only when a sheet has too much text for slanted tile faces. 2D reference: `images/cf-stack.svg`, generator `images/build-cf-stack.py`.
@@ -13,20 +13,24 @@ Every rule below applies to both views, unless the 3D section says otherwise.
 |---|---|
 | Size | 1600 × 1000, render PNG at 2× (3200 × 2000) |
 | Background | `#ffffff` |
-| Grid | 20 px minor `#e9eef6` 0.6 px, 100 px major `#d3dcea` 0.9 px |
+| Grid | 20 px minor `#eceeed` 0.6 px, 100 px major `#d9dcdb` 0.9 px |
 | Frame | Outer rect 20 px inset, 1.5 px. Inner rect 30 px inset, 1 px |
 | Title | 36 px, weight 600, top left at y=108. 1 px rule below at y=132 |
 | Title block | Bottom right. Sheet id, sheet number, revision |
 
 ## Colour
 
-| Token | Hex | Use |
-|---|---|---|
-| ink | `#14213d` | Lines, headings, icons |
-| ink-soft | `#4a5670` | Captions |
-| accent | `#1f4fe0` | Step circles, the domain box. Nothing else |
-| accent-tint | `#f1f5ff` | Fill of the domain box |
-| paper | `#ffffff` | Box fill |
+The palette inherits from the app. Every colour below is a Keel token or a mix of Keel's ink with white, so the docs and the product look like one family. The tokens live in `frontend/src/styles/tokens.css`. If the app palette changes, change `blueprint.py` and the `DARK` map, then rebuild.
+
+| Token | Hex | From Keel | Use |
+|---|---|---|---|
+| ink | `#14271f` | `ink` | Lines, headings, icons |
+| ink-soft | `#5d6963` | `ink-2` | Captions |
+| accent | `#1f7a4d` | `accent-600` | Step circles, the domain and aggregate. Nothing else |
+| accent-tint | `#edf7f1` | `accent-50` | Fill of the domain and aggregate |
+| paper | `#ffffff` | none | Sheet and box fill. Pure white, not Keel's canvas |
+| faces and grid | `#e5e7e6`, `#f3f4f4`, `#eceeed`, `#d9dcdb` | `ink` at 5 to 16 % on white | Shaded sides, grid, soft rules |
+| note paper | `#f7f6f2` | `canvas` | Notes |
 
 ## Type
 
@@ -120,7 +124,7 @@ cd docs/images && google-chrome --headless --hide-scrollbars --force-device-scal
 
 Every sheet builds the same way: run its `build-*.py`, then screenshot its SVG.
 
-Do not render with ImageMagick. It drops arrowheads and the background.
+Do not render with ImageMagick. It drops arrowheads and the background. `render.sh <name>` renders both the light and the dark PNG.
 
 ## Planned sheets
 
@@ -151,7 +155,7 @@ Give each sheet its own camera, so the set does not look the same. Set `bp.VIEW 
 
 Keep the azimuth between 0 and 90, because the side faces assume it. A low azimuth makes the roof text easier to read. A high elevation flattens the blocks but makes the plane taller, so give it more height or move the key into the left column.
 
-Context sheets (CF-03, CF-04) put one platform per layer: application, domain, infrastructure. Draw the aggregate boundary as a blue dashed rectangle on the domain floor. A fourth arrow style, dash-dot `9 3 2 3`, means "implements a port". When an arrow runs through the back margin, put the floor labels at the front (`floor_labels(..., y=PD - 8)`).
+Context sheets (CF-03, CF-04) put one platform per layer: application, domain, infrastructure. Draw the aggregate boundary as a green dashed rectangle on the domain floor. A fourth arrow style, dash-dot `9 3 2 3`, means "implements a port". When an arrow runs through the back margin, put the floor labels at the front (`floor_labels(..., y=PD - 8)`).
 
 ## 3D view (default)
 
@@ -170,7 +174,7 @@ These rules apply to the exploded stack and replace the 2D "Step circles" and co
 - Projection: 30° isometric. `X = ox + (x − y)·0.866`, `Y = oy + (x + y)·0.5 − z`.
 - One slab per layer, stacked top to bottom in request order: edge, worker, bindings. Slab 460 × 200, 10 px thick, 195 px apart.
 - Tiles are extruded 12 px. Draw their text and icons on the top face with `matrix(0.866, 0.5, −0.866, 0.5, …)`.
-- Shading: right face `#e3e9f2`, left face `#f2f5fa`, top face white with the minor grid.
+- Shading: right face `#e5e7e6`, left face `#f3f4f4`, top face white with the minor grid.
 - Fill with `style="fill:…"`, not the `fill` attribute. The `.ink` class sets `fill:none` and wins over the attribute.
 - Draw from bottom to top: lower slab, risers, upper slab. Upper layers hide lower ones.
 - Risers: 1 px dashed lines at the left and right slab corners only.
@@ -203,9 +207,9 @@ UML sheets use the same frame, palette and type as the blueprint sheets. They ar
 Rules:
 - Actors are stick figures. External systems are boxes with the «system» stereotype.
 - Class boxes have three parts: name (with stereotype), attributes, operations. Code text uses a monospace font.
-- Use blue only for the aggregate root, the aggregate's tables, domain events and notes that carry the main point.
+- Use green only for the aggregate root, the aggregate's tables, domain events and notes that carry the main point.
 - Relations: a filled diamond means owns, a dashed open arrow means uses, a dashed hollow triangle means implements. Crow's foot means many, two bars mean one.
-- Sequence messages: a solid line with a filled head is a call. A dashed line with an open head is a return. A dashed blue line is a domain event. Each message has a step number in bold blue text, with no circle.
+- Sequence messages: a solid line with a filled head is a call. A dashed line with an open head is a return. A dashed green line is a domain event. Each message has a step number in bold green text, with no circle.
 - Message labels have a white halo, so they stay readable where they cross a lifeline.
 - Show only the members that carry a rule. A class diagram is not a copy of the source.
 
@@ -239,3 +243,26 @@ UML-06 draws rounded slabs with `rslab()` in `build-uml-packages.py`: the outlin
 - Stack three slabs for nested layers. The outer layer is the bottom slab and the core is the top slab, so an arrow that goes up is an arrow that points inward.
 - Each slab is smaller than the one below, so the lower slab shows a front strip. Put its label in that strip.
 - Draw each up arrow at the front edge of the slab above: from the lower slab's top face up to the underside of the upper slab. Put its label to the side, flat.
+
+## Dark theme
+
+Every sheet ships in two files: `name.svg` and `name-dark.svg`, with a PNG for each. Draw the sheet once, in the light palette. `blueprint.write_text()` makes the dark file from the same drawing by swapping each palette colour, so the two files cannot drift apart.
+
+| Role | Light | Dark | Dark comes from |
+|---|---|---|---|
+| Page and box fill | `#ffffff`, `#fff` | `#0d1117` | The GitHub dark page |
+| Ink and icons | `#14271f` | `#f2f1ec` | Keel `canvas`, a little lighter |
+| Soft text | `#5d6963` | `#a6b1ab` | Keel `ink-3`, lighter |
+| Accent | `#1f7a4d` | `#7fd1ae` | Keel `mint` |
+| Accent tint | `#edf7f1` | `#102220` | Keel `accent-600` at 16 % on the page |
+| Shaded faces | `#e5e7e6`, `#f3f4f4` | `#182426`, `#131b1f` | Keel `mint` at 10 % and 5 % |
+| Grid | `#eceeed`, `#d9dcdb` | `#141d20`, `#1c2a2b` | Keel `mint` at 6 % and 13 % |
+| Empty marks | `#bcc0be` | `#263b38` | Keel `mint` at 22 % |
+| Note paper | `#f7f6f2` | `#24282d` | Keel `canvas` at 10 % |
+
+Rules:
+- Use only palette colours in a sheet. A colour that is not in the table stays the same in both themes. Add it to `DARK` in `blueprint.py` first.
+- Sheets have rounded corners (24 px) and a transparent corner in the PNG, so they sit cleanly on either page colour. Pills and the hero follow the same rule. `render.sh` renders with a transparent background.
+- In the README, wrap each image in `<picture>` with a `prefers-color-scheme: dark` source. GitHub picks the file from the viewer's theme setting. A bare SVG cannot do this, because the colour scheme in an SVG follows the operating system and not the GitHub setting.
+- Product screenshots keep the real (light) interface in both themes. Only the border changes: `#d0d7de` in light, `#30363d` in dark.
+- To check the dark theme without GitHub, load the page in Chromium with the colour scheme set to dark (for example Playwright's `colorScheme: 'dark'`). The `--blink-settings` flag does not change it.

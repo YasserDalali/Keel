@@ -1,52 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
-<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9eef6" stroke-width="0.6"/></pattern>
-<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d3dcea" stroke-width="0.9"/></pattern>
-<marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="#14213d"/></marker>
+<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#eceeed" stroke-width="0.6"/></pattern>
+<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d9dcdb" stroke-width="0.9"/></pattern>
+<marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="#14271f"/></marker>
+<clipPath id="sheetclip"><rect width="1600" height="1000" rx="24"/></clipPath>
 </defs>
 <style>
-.ink{stroke:#14213d;fill:none;stroke-width:1.5;stroke-linejoin:round}.thin{stroke:#14213d;fill:none;stroke-width:1}
-.acc{stroke:#1f4fe0;fill:none;stroke-width:2}.dash{stroke:#14213d;fill:none;stroke-width:1;stroke-dasharray:4 3}
-.t{fill:#14213d;font-size:11px;letter-spacing:1.6px;font-weight:600}.h{fill:#14213d;font-size:15px;font-weight:700;letter-spacing:.6px}
-.s{fill:#4a5670;font-size:12px}.n{fill:#1f4fe0;font-size:9.5px;font-weight:700;text-anchor:middle}
+.ink{stroke:#14271f;fill:none;stroke-width:1.5;stroke-linejoin:round}.thin{stroke:#14271f;fill:none;stroke-width:1}
+.acc{stroke:#1f7a4d;fill:none;stroke-width:2}.dash{stroke:#14271f;fill:none;stroke-width:1;stroke-dasharray:4 3}
+.t{fill:#14271f;font-size:11px;letter-spacing:1.6px;font-weight:600}.h{fill:#14271f;font-size:15px;font-weight:700;letter-spacing:.6px}
+.s{fill:#5d6963;font-size:12px}.n{fill:#1f7a4d;font-size:9.5px;font-weight:700;text-anchor:middle}
 </style>
-<rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
-<rect x="20" y="20" width="1560" height="960" class="ink"/><rect x="30" y="30" width="1540" height="940" class="thin"/>
-<text x="60" y="108" fill="#14213d" font-size="36" font-weight="600">What the system does</text>
+<g clip-path="url(#sheetclip)"><rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
+<rect x="20" y="20" width="1560" height="960" rx="14" class="ink"/><rect x="30" y="30" width="1540" height="940" rx="8" class="thin"/>
+<text x="60" y="108" fill="#14271f" font-size="36" font-weight="600">What the system does</text>
 <line x1="60" y1="132" x2="1540" y2="132" class="thin"/>
 <defs>
-<marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#14213d" stroke-width="1.3"/></marker>
-<marker id="dia" viewBox="0 0 18 10" refX="17" refY="5" markerWidth="18" markerHeight="10" orient="auto-start-reverse"><path d="M1 5L9 1L17 5L9 9z" fill="#14213d"/></marker>
-<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#14213d" stroke-width="1.4"/></marker>
-<marker id="one" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M6 1V13M10 1V13" stroke="#14213d" stroke-width="1.3"/></marker>
-<marker id="many" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path d="M15 1L3 8L15 15M3 8H15M1 2V14" fill="none" stroke="#14213d" stroke-width="1.3"/></marker>
+<marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#14271f" stroke-width="1.3"/></marker>
+<marker id="dia" viewBox="0 0 18 10" refX="17" refY="5" markerWidth="18" markerHeight="10" orient="auto-start-reverse"><path d="M1 5L9 1L17 5L9 9z" fill="#14271f"/></marker>
+<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#14271f" stroke-width="1.4"/></marker>
+<marker id="one" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M6 1V13M10 1V13" stroke="#14271f" stroke-width="1.3"/></marker>
+<marker id="many" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path d="M15 1L3 8L15 15M3 8H15M1 2V14" fill="none" stroke="#14271f" stroke-width="1.3"/></marker>
 </defs>
-<rect x="280" y="215" width="890" height="585" style="fill:none;stroke:#14213d;stroke-width:2"/>
+<rect x="280" y="215" width="890" height="585" style="fill:none;stroke:#14271f;stroke-width:2"/>
 <text x="296" y="238" class="t" text-anchor="start" style="font-size:11px">KEEL</text>
 <rect x="300" y="250" width="250" height="225" rx="10" class="dash" style="fill:#fff"/><text x="314" y="272" class="t" text-anchor="start" style="font-size:10.5px">ACCOUNT</text>
-<ellipse cx="425.0" cy="312" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="316.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Register</text>
-<ellipse cx="425.0" cy="362" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="366.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Log in</text>
-<ellipse cx="425.0" cy="412" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="416.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Verify email</text>
+<ellipse cx="425.0" cy="312" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="316.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Register</text>
+<ellipse cx="425.0" cy="362" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="366.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Log in</text>
+<ellipse cx="425.0" cy="412" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="416.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Verify email</text>
 <rect x="600" y="250" width="250" height="225" rx="10" class="dash" style="fill:#fff"/><text x="614" y="272" class="t" text-anchor="start" style="font-size:10.5px">SCHEDULED</text>
-<ellipse cx="725.0" cy="312" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="316.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Mark overdue</text>
+<ellipse cx="725.0" cy="312" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="316.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Mark overdue</text>
 <rect x="900" y="250" width="250" height="225" rx="10" class="dash" style="fill:#fff"/><text x="914" y="272" class="t" text-anchor="start" style="font-size:10.5px">DECISIONS</text>
-<ellipse cx="1025.0" cy="312" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="316.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Review applicant</text>
-<ellipse cx="1025.0" cy="362" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="366.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Approve loan</text>
-<ellipse cx="1025.0" cy="412" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="416.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Decline loan</text>
+<ellipse cx="1025.0" cy="312" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="316.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Review applicant</text>
+<ellipse cx="1025.0" cy="362" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="366.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Approve loan</text>
+<ellipse cx="1025.0" cy="412" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="416.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Decline loan</text>
 <rect x="300" y="505" width="250" height="280" rx="10" class="dash" style="fill:#fff"/><text x="314" y="527" class="t" text-anchor="start" style="font-size:10.5px">TRACKING</text>
-<ellipse cx="425.0" cy="567" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="571.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">View schedule</text>
-<ellipse cx="425.0" cy="617" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="621.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Download documents</text>
-<ellipse cx="425.0" cy="667" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="671.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Read notifications</text>
-<ellipse cx="425.0" cy="717" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="721.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Set reminders</text>
+<ellipse cx="425.0" cy="567" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="571.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">View schedule</text>
+<ellipse cx="425.0" cy="617" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="621.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Download documents</text>
+<ellipse cx="425.0" cy="667" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="671.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Read notifications</text>
+<ellipse cx="425.0" cy="717" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="425.0" y="721.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Set reminders</text>
 <rect x="600" y="505" width="250" height="280" rx="10" class="dash" style="fill:#fff"/><text x="614" y="527" class="t" text-anchor="start" style="font-size:10.5px">BORROWING</text>
-<ellipse cx="725.0" cy="567" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="571.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Apply for loan</text>
-<ellipse cx="725.0" cy="617" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="621.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Pay deposit</text>
-<ellipse cx="725.0" cy="667" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="671.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Pay installment</text>
-<ellipse cx="725.0" cy="717" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="721.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Cancel application</text>
+<ellipse cx="725.0" cy="567" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="571.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Apply for loan</text>
+<ellipse cx="725.0" cy="617" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="621.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Pay deposit</text>
+<ellipse cx="725.0" cy="667" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="671.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Pay installment</text>
+<ellipse cx="725.0" cy="717" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="725.0" y="721.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Cancel application</text>
 <rect x="900" y="505" width="250" height="280" rx="10" class="dash" style="fill:#fff"/><text x="914" y="527" class="t" text-anchor="start" style="font-size:10.5px">ONBOARDING</text>
-<ellipse cx="1025.0" cy="567" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="571.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Complete profile</text>
-<ellipse cx="1025.0" cy="617" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="621.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Verify identity</text>
-<ellipse cx="1025.0" cy="667" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="671.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14213d">Link bank</text>
+<ellipse cx="1025.0" cy="567" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="571.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Complete profile</text>
+<ellipse cx="1025.0" cy="617" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="621.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Verify identity</text>
+<ellipse cx="1025.0" cy="667" rx="105" ry="20" class="ink" style="fill:#fff"/><text x="1025.0" y="671.5" class="s" text-anchor="middle" style="font-size:13px;fill:#14271f">Link bank</text>
 <circle cx="160" cy="352" r="9" class="ink" style="fill:#fff"/><path d="M160 361 V384 M144 370 H176 M160 384 L148 400 M160 384 L172 400" class="ink"/><text x="160" y="420" class="h" text-anchor="middle" style="font-size:14px">VISITOR</text><text x="160" y="437" class="s" text-anchor="middle" style="">Not signed in</text>
 <path d="M190 362 H298" class="ink" style=""/>
 <circle cx="725" cy="162" r="9" class="ink" style="fill:#fff"/><path d="M725 171 V194 M709 180 H741 M725 194 L713 210 M725 194 L737 210" class="ink"/><text x="725" y="230" class="h" text-anchor="middle" style="font-size:14px"></text><text x="725" y="247" class="s" text-anchor="middle" style=""></text>
@@ -60,7 +61,7 @@
 <path d="M425 842 V787" class="ink" style=""/>
 <path d="M725 842 V787" class="ink" style=""/>
 <path d="M1025 842 V787" class="ink" style=""/>
-<rect x="1230" y="590" width="190" height="48" class="ink" style="fill:#fff"/><svg x="1242" y="602" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14213d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2" />
+<rect x="1230" y="590" width="190" height="48" class="ink" style="fill:#fff"/><svg x="1242" y="602" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14271f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2" />
   <path d="M17 3h2a2 2 0 0 1 2 2v2" />
   <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
   <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
@@ -68,19 +69,19 @@
   <path d="M9 9h.01" />
   <path d="M15 9h.01" />
 </svg><text x="1274" y="610" class="s" text-anchor="start" style="font-size:10px">«system»</text><text x="1274" y="627" class="h" text-anchor="start" style="font-size:13px">DIDIT</text>
-<rect x="1230" y="650" width="190" height="48" class="ink" style="fill:#fff"/><svg x="1242" y="662" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14213d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7" />
+<rect x="1230" y="650" width="190" height="48" class="ink" style="fill:#fff"/><svg x="1242" y="662" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14271f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7" />
   <path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z" />
   <path d="M14 18v-7" />
   <path d="M18 18v-7" />
   <path d="M3 22h18" />
   <path d="M6 18v-7" />
 </svg><text x="1274" y="670" class="s" text-anchor="start" style="font-size:10px">«system»</text><text x="1274" y="687" class="h" text-anchor="start" style="font-size:13px">PLAID</text>
-<rect x="1230" y="768" width="190" height="48" class="ink" style="fill:#fff"/><svg x="1242" y="780" width="24" height="24" viewBox="0 0 24 24"><path fill="#14213d" d="M15.607 4.653H8.941L6.645 19.251H1.82L4.862 0h7.995c3.754 0 6.375 2.294 6.473 5.513-.648-.478-2.105-.86-3.722-.86m6.57 5.546c0 3.41-3.01 6.853-6.958 6.853h-2.493L11.595 24H6.74l1.845-11.538h3.592c4.208 0 7.346-3.634 7.153-6.949a5.24 5.24 0 0 1 2.848 4.686M9.653 5.546h6.408c.907 0 1.942.222 2.363.541-.195 2.741-2.655 5.483-6.441 5.483H8.714Z"/></svg><text x="1274" y="788" class="s" text-anchor="start" style="font-size:10px">«system»</text><text x="1274" y="805" class="h" text-anchor="start" style="font-size:13px">PAYPAL</text>
+<rect x="1230" y="768" width="190" height="48" class="ink" style="fill:#fff"/><svg x="1242" y="780" width="24" height="24" viewBox="0 0 24 24"><path fill="#14271f" d="M15.607 4.653H8.941L6.645 19.251H1.82L4.862 0h7.995c3.754 0 6.375 2.294 6.473 5.513-.648-.478-2.105-.86-3.722-.86m6.57 5.546c0 3.41-3.01 6.853-6.958 6.853h-2.493L11.595 24H6.74l1.845-11.538h3.592c4.208 0 7.346-3.634 7.153-6.949a5.24 5.24 0 0 1 2.848 4.686M9.653 5.546h6.408c.907 0 1.942.222 2.363.541-.195 2.741-2.655 5.483-6.441 5.483H8.714Z"/></svg><text x="1274" y="788" class="s" text-anchor="start" style="font-size:10px">«system»</text><text x="1274" y="805" class="h" text-anchor="start" style="font-size:13px">PAYPAL</text>
 <path d="M1230 614 L1130.0 617" class="ink" style=""/><path d="M1230 674 L1130.0 667" class="ink" style=""/>
 <path d="M1230 792 H875 V617 H830.0" class="ink" style=""/><path d="M875 667 H830.0" class="ink" style=""/>
-<path d="M40 560 H248 L260 572 V630 H40 Z" style="fill:#fffdf5;stroke:#14213d;stroke-width:1.2"/><path d="M248 560 V572 H260" style="fill:none;stroke:#14213d;stroke-width:1.2"/><text x="52" y="582" class="s" text-anchor="start" style="font-size:12px;fill:#14213d">A line to a package means</text><text x="52" y="600" class="s" text-anchor="start" style="font-size:12px;fill:#14213d">the actor can use every</text><text x="52" y="618" class="s" text-anchor="start" style="font-size:12px;fill:#14213d">use case inside it.</text>
+<path d="M40 560 H248 L260 572 V630 H40 Z" style="fill:#f7f6f2;stroke:#14271f;stroke-width:1.2"/><path d="M248 560 V572 H260" style="fill:none;stroke:#14271f;stroke-width:1.2"/><text x="52" y="582" class="s" text-anchor="start" style="font-size:12px;fill:#14271f">A line to a package means</text><text x="52" y="600" class="s" text-anchor="start" style="font-size:12px;fill:#14271f">the actor can use every</text><text x="52" y="618" class="s" text-anchor="start" style="font-size:12px;fill:#14271f">use case inside it.</text>
 <text x="60" y="900" class="t" text-anchor="start" style="">NOTES</text>
 <text x="60" y="924" class="s" text-anchor="start" style="">Register and Log in pass a Turnstile check first.</text>
 <text x="60" y="944" class="s" text-anchor="start" style="">Officer cases need the officer or admin role.</text>
 <text x="60" y="964" class="s" text-anchor="start" style="">A borrower sees only their own loans.</text>
-<rect x="1380" y="880" width="160" height="70" class="ink"/><line x1="1380" y1="915" x2="1540" y2="915" class="thin"/><line x1="1460" y1="915" x2="1460" y2="950" class="thin"/><text x="1392" y="902" class="t">UML-01 USE CASES</text><text x="1392" y="938" class="s">UML</text><text x="1472" y="938" class="s">REV A</text></svg>
+<rect x="1380" y="880" width="160" height="70" class="ink"/><line x1="1380" y1="915" x2="1540" y2="915" class="thin"/><line x1="1460" y1="915" x2="1460" y2="950" class="thin"/><text x="1392" y="902" class="t">UML-01 USE CASES</text><text x="1392" y="938" class="s">UML</text><text x="1472" y="938" class="s">REV A</text></g></svg>

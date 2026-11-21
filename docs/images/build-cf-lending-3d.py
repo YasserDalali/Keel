@@ -13,7 +13,7 @@ o = [header('Keel: inside Lending')]
 # Three platforms with wide gaps: application 0-260, domain 380-900, infrastructure 1020-1260
 o += [platform(0, 260, PD), platform(380, 520, PD), platform(1020, 240, PD)]
 o.append(floor_labels(((30, 'APPLICATION'), (410, 'DOMAIN'), (1050, 'INFRASTRUCTURE')), y=PD - 12))
-o.append(face(0) + '<rect x="395" y="68" width="490" height="420" class="dash" style="stroke:#1f4fe0"/>'
+o.append(face(0) + '<rect x="395" y="68" width="490" height="420" class="dash" style="stroke:#1f7a4d"/>'
          f'<text x="500" y="478" class="t" style="fill:{ACC};font-size:12px">AGGREGATE BOUNDARY</text></g>')
 
 COMMANDS = ['ApplyForLoan', 'ApproveLoan', 'DeclineLoan', 'CancelLoan', 'PayDeposit', 'RecordInstallmentPayment',
@@ -59,7 +59,7 @@ def node(x, y, w, label, dashed=False):
 def edge_label(x, y, text):
     return f'<text x="{x}" y="{y}" class="s" text-anchor="middle" style="font-size:10px">{text}</text>'
 
-o.append(f'<line x1="60" y1="{Y-30}" x2="1540" y2="{Y-30}" class="thin" style="stroke:#d3dcea"/>')
+o.append(f'<line x1="60" y1="{Y-30}" x2="1540" y2="{Y-30}" class="thin" style="stroke:#d9dcdb"/>')
 o.append(f'<text x="60" y="{Y}" class="t">LOAN STATUS</text>')
 b = Y + 18
 o += [node(60, b, 80, 'PENDING'), node(200, b, 76, 'ACTIVE'), node(336, b, 76, 'REPAID'),

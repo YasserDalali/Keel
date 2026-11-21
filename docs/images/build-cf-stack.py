@@ -6,12 +6,12 @@ HERE=os.path.dirname(os.path.abspath(__file__))
 SI=HERE+'/icons/simple-icons/'; LU=HERE+'/icons/lucide/'
 def si(n,x,y,sz):
     d=re.search(r' d="([^"]+)"',open(SI+n+'.svg').read()).group(1)
-    return f'<svg x="{x}" y="{y}" width="{sz}" height="{sz}" viewBox="0 0 24 24"><path fill="#14213d" d="{d}"/></svg>'
+    return f'<svg x="{x}" y="{y}" width="{sz}" height="{sz}" viewBox="0 0 24 24"><path fill="#14271f" d="{d}"/></svg>'
 def lu(n,x,y,sz,sw=None):
     sw=sw or round(ICON_PX*24/sz,3)
     t=open(LU+n+'.svg').read().split('stroke-linejoin="round"')[1]
     inner=re.search(r'>\s*(<(?:path|ellipse|circle|rect|line|polyline)[\s\S]*)</svg>',t).group(1)
-    return f'<svg x="{x}" y="{y}" width="{sz}" height="{sz}" viewBox="0 0 24 24" fill="none" stroke="#14213d" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round">{inner}</svg>'
+    return f'<svg x="{x}" y="{y}" width="{sz}" height="{sz}" viewBox="0 0 24 24" fill="none" stroke="#14271f" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round">{inner}</svg>'
 def box(x,y,w,h,title,sub,icon,tx=None):
     tx=tx or x+(w-0)//1
     return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" class="box"/>{icon}'
@@ -23,20 +23,21 @@ def num(n,cx,cy):
 o=[]
 o.append('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
-<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9eef6" stroke-width="0.6"/></pattern>
-<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d3dcea" stroke-width="0.9"/></pattern>
-<marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="#14213d"/></marker>
-<marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M10 1L0 5L10 9z" fill="#14213d"/></marker>
+<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#eceeed" stroke-width="0.6"/></pattern>
+<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d9dcdb" stroke-width="0.9"/></pattern>
+<marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="#14271f"/></marker>
+<marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M10 1L0 5L10 9z" fill="#14271f"/></marker>
+<clipPath id="sheetclip"><rect width="1600" height="1000" rx="24"/></clipPath>
 </defs>
 <style>
-.ink{stroke:#14213d;fill:none;stroke-width:1.5}.box{stroke:#14213d;fill:#fff;stroke-width:1.5}.thin{stroke:#14213d;fill:none;stroke-width:1}
-.dash{stroke:#14213d;fill:none;stroke-width:1.2;stroke-dasharray:7 5}.acc{stroke:#1f4fe0;fill:none;stroke-width:2}
-.t{fill:#14213d;font-size:11px;letter-spacing:1.6px;font-weight:600}.h{fill:#14213d;font-size:16px;font-weight:700;letter-spacing:.6px}
-.s{fill:#4a5670;font-size:12.5px}.n{fill:#1f4fe0;font-size:9.5px;font-weight:700;text-anchor:middle}
+.ink{stroke:#14271f;fill:none;stroke-width:1.5}.box{stroke:#14271f;fill:#fff;stroke-width:1.5}.thin{stroke:#14271f;fill:none;stroke-width:1}
+.dash{stroke:#14271f;fill:none;stroke-width:1.2;stroke-dasharray:7 5}.acc{stroke:#1f7a4d;fill:none;stroke-width:2}
+.t{fill:#14271f;font-size:11px;letter-spacing:1.6px;font-weight:600}.h{fill:#14271f;font-size:16px;font-weight:700;letter-spacing:.6px}
+.s{fill:#5d6963;font-size:12.5px}.n{fill:#1f7a4d;font-size:9.5px;font-weight:700;text-anchor:middle}
 </style>
-<rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
-<rect x="20" y="20" width="1560" height="960" class="ink"/><rect x="30" y="30" width="1540" height="940" class="thin"/>
-<text x="60" y="108" fill="#14213d" font-size="36" font-weight="600">Keel on Cloudflare</text>
+<g clip-path="url(#sheetclip)"><rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
+<rect x="20" y="20" width="1560" height="960" rx="14" class="ink"/><rect x="30" y="30" width="1540" height="940" rx="8" class="thin"/>
+<text x="60" y="108" fill="#14271f" font-size="36" font-weight="600">Keel on Cloudflare</text>
 <line x1="60" y1="132" x2="1540" y2="132" class="thin"/>
 <text x="60" y="285" class="t">CLIENTS</text>''')
 o.append(card(60,300,240,110,lu('app-window',80,327,56),'BROWSER','Keel SPA',162))
@@ -52,8 +53,8 @@ o.append('<rect x="440" y="330" width="720" height="240" class="box" stroke-widt
  '<text x="488" y="358" class="h">WORKER</text><text x="1140" y="358" class="s" text-anchor="end">Hono</text><line x1="440" y1="372" x2="1160" y2="372" class="thin"/>')
 layers=[(460,'INTERFACE','Routes',False),(638,'APPLICATION','Use cases',False),(816,'DOMAIN','Aggregates',True),(994,'INFRASTRUCTURE','Adapters',False)]
 for x,t,sub,hi in layers:
-    cls='acc' if hi else 'ink'; fill=' fill="#f1f5ff"' if hi else ''
-    col='style="fill:#1f4fe0"' if hi else ''
+    cls='acc' if hi else 'ink'; fill=' fill="#edf7f1"' if hi else ''
+    col='style="fill:#1f7a4d"' if hi else ''
     fs='style="letter-spacing:.6px;font-size:10px"' if t=='INFRASTRUCTURE' else col
     o.append(f'<rect x="{x}" y="395" width="140" height="90" class="{cls}"{fill}/><text x="{x+70}" y="436" class="t" text-anchor="middle" {fs}>{t}</text><text x="{x+70}" y="460" class="s" text-anchor="middle">{sub}</text>')
 o.append('<path d="M600 440 H636" class="ink" marker-end="url(#ae)"/><path d="M778 440 H814" class="ink" marker-end="url(#ae)"/><path d="M992 440 H958" class="ink" marker-end="url(#ae)"/>')
@@ -81,8 +82,10 @@ keys=['The edge screens each request.','Turnstile checks the bot token.','Assets
       'KV keeps the token blacklist, a throttle and webhook dedup keys.','Domain events write PDF files to R2.','Adapters call providers. Providers send webhooks to Hono.']
 for i,k in enumerate(keys):
     col,row=divmod(i,4); x=60+col*470; y=862+row*24
-    o.append(f'<text x="{x}" y="{y}" fill="#1f4fe0" font-size="12.5" font-weight="700">{i+1}</text><text x="{x+22}" y="{y}" class="s">{k}</text>')
+    o.append(f'<text x="{x}" y="{y}" fill="#1f7a4d" font-size="12.5" font-weight="700">{i+1}</text><text x="{x+22}" y="{y}" class="s">{k}</text>')
 # title block
 o.append('<rect x="1380" y="880" width="160" height="70" class="ink"/><line x1="1380" y1="915" x2="1540" y2="915" class="thin"/><line x1="1460" y1="915" x2="1460" y2="950" class="thin"/>'
- '<text x="1392" y="902" class="t">CF-01 STACK</text><text x="1392" y="938" class="s">SHEET 1</text><text x="1472" y="938" class="s">REV A</text></svg>')
-open(HERE+'/cf-stack.svg','w').write('\n'.join(o))
+ '<text x="1392" y="902" class="t">CF-01 STACK</text><text x="1392" y="938" class="s">SHEET 1</text><text x="1472" y="938" class="s">REV A</text></g></svg>')
+import sys; sys.path.insert(0, HERE)
+from blueprint import write_text
+write_text(HERE+'/cf-stack', '\n'.join(o))

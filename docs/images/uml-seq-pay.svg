@@ -1,117 +1,118 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
-<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9eef6" stroke-width="0.6"/></pattern>
-<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d3dcea" stroke-width="0.9"/></pattern>
-<marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="#14213d"/></marker>
+<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#eceeed" stroke-width="0.6"/></pattern>
+<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d9dcdb" stroke-width="0.9"/></pattern>
+<marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="#14271f"/></marker>
+<clipPath id="sheetclip"><rect width="1600" height="1000" rx="24"/></clipPath>
 </defs>
 <style>
-.ink{stroke:#14213d;fill:none;stroke-width:1.5;stroke-linejoin:round}.thin{stroke:#14213d;fill:none;stroke-width:1}
-.acc{stroke:#1f4fe0;fill:none;stroke-width:2}.dash{stroke:#14213d;fill:none;stroke-width:1;stroke-dasharray:4 3}
-.t{fill:#14213d;font-size:11px;letter-spacing:1.6px;font-weight:600}.h{fill:#14213d;font-size:15px;font-weight:700;letter-spacing:.6px}
-.s{fill:#4a5670;font-size:12px}.n{fill:#1f4fe0;font-size:9.5px;font-weight:700;text-anchor:middle}
+.ink{stroke:#14271f;fill:none;stroke-width:1.5;stroke-linejoin:round}.thin{stroke:#14271f;fill:none;stroke-width:1}
+.acc{stroke:#1f7a4d;fill:none;stroke-width:2}.dash{stroke:#14271f;fill:none;stroke-width:1;stroke-dasharray:4 3}
+.t{fill:#14271f;font-size:11px;letter-spacing:1.6px;font-weight:600}.h{fill:#14271f;font-size:15px;font-weight:700;letter-spacing:.6px}
+.s{fill:#5d6963;font-size:12px}.n{fill:#1f7a4d;font-size:9.5px;font-weight:700;text-anchor:middle}
 </style>
-<rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
-<rect x="20" y="20" width="1560" height="960" class="ink"/><rect x="30" y="30" width="1540" height="940" class="thin"/>
-<text x="60" y="108" fill="#14213d" font-size="36" font-weight="600">Paying an installment through PayPal</text>
+<g clip-path="url(#sheetclip)"><rect width="1600" height="1000" fill="#ffffff"/><rect width="1600" height="1000" fill="url(#major)"/>
+<rect x="20" y="20" width="1560" height="960" rx="14" class="ink"/><rect x="30" y="30" width="1540" height="940" rx="8" class="thin"/>
+<text x="60" y="108" fill="#14271f" font-size="36" font-weight="600">Paying an installment through PayPal</text>
 <line x1="60" y1="132" x2="1540" y2="132" class="thin"/>
 <defs>
-<marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#14213d" stroke-width="1.3"/></marker>
-<marker id="dia" viewBox="0 0 18 10" refX="17" refY="5" markerWidth="18" markerHeight="10" orient="auto-start-reverse"><path d="M1 5L9 1L17 5L9 9z" fill="#14213d"/></marker>
-<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#14213d" stroke-width="1.4"/></marker>
-<marker id="one" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M6 1V13M10 1V13" stroke="#14213d" stroke-width="1.3"/></marker>
-<marker id="many" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path d="M15 1L3 8L15 15M3 8H15M1 2V14" fill="none" stroke="#14213d" stroke-width="1.3"/></marker>
+<marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#14271f" stroke-width="1.3"/></marker>
+<marker id="dia" viewBox="0 0 18 10" refX="17" refY="5" markerWidth="18" markerHeight="10" orient="auto-start-reverse"><path d="M1 5L9 1L17 5L9 9z" fill="#14271f"/></marker>
+<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#14271f" stroke-width="1.4"/></marker>
+<marker id="one" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M6 1V13M10 1V13" stroke="#14271f" stroke-width="1.3"/></marker>
+<marker id="many" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path d="M15 1L3 8L15 15M3 8H15M1 2V14" fill="none" stroke="#14271f" stroke-width="1.3"/></marker>
 </defs>
 <line x1="150.0" y1="211" x2="150.0" y2="870" class="dash"/>
-<rect x="78.0" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="78.0" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="150.0" y="185" class="h" text-anchor="middle" style="font-size:13px;">BORROWER</text>
 <text x="150.0" y="202" class="s" text-anchor="middle" style="font-size:10.5px">browser</text>
 <line x1="328.57142857142856" y1="211" x2="328.57142857142856" y2="870" class="dash"/>
-<rect x="256.57142857142856" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="256.57142857142856" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="328.57142857142856" y="185" class="h" text-anchor="middle" style="font-size:13px;">ROUTE</text>
 <text x="328.57142857142856" y="202" class="s" text-anchor="middle" style="font-size:10.5px">/api/payments/paypal</text>
 <line x1="507.14285714285717" y1="211" x2="507.14285714285717" y2="870" class="dash"/>
-<rect x="435.14285714285717" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="435.14285714285717" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="507.14285714285717" y="185" class="h" text-anchor="middle" style="font-size:13px;">Payments</text>
 <text x="507.14285714285717" y="202" class="s" text-anchor="middle" style="font-size:10.5px">create, confirm</text>
 <line x1="685.7142857142858" y1="211" x2="685.7142857142858" y2="870" class="dash"/>
-<rect x="613.7142857142858" y="165" width="144" height="46" style="fill:#f1f5ff;stroke:#1f4fe0;stroke-width:1.5"/>
-<text x="685.7142857142858" y="185" class="h" text-anchor="middle" style="font-size:13px;fill:#1f4fe0">Lending</text>
+<rect x="613.7142857142858" y="165" width="144" height="46" style="fill:#edf7f1;stroke:#1f7a4d;stroke-width:1.5"/>
+<text x="685.7142857142858" y="185" class="h" text-anchor="middle" style="font-size:13px;fill:#1f7a4d">Lending</text>
 <text x="685.7142857142858" y="202" class="s" text-anchor="middle" style="font-size:10.5px">quote, apply</text>
 <line x1="864.2857142857143" y1="211" x2="864.2857142857143" y2="870" class="dash"/>
-<rect x="792.2857142857143" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="792.2857142857143" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="864.2857142857143" y="185" class="h" text-anchor="middle" style="font-size:13px;">PayPalGateway</text>
 <text x="864.2857142857143" y="202" class="s" text-anchor="middle" style="font-size:10.5px">adapter</text>
 <line x1="1042.857142857143" y1="211" x2="1042.857142857143" y2="870" class="dash"/>
-<rect x="970.8571428571429" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="970.8571428571429" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="1042.857142857143" y="185" class="h" text-anchor="middle" style="font-size:13px;">PayPal API</text>
 <text x="1042.857142857143" y="202" class="s" text-anchor="middle" style="font-size:10.5px">external</text>
 <line x1="1221.4285714285716" y1="211" x2="1221.4285714285716" y2="870" class="dash"/>
-<rect x="1149.4285714285716" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="1149.4285714285716" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="1221.4285714285716" y="185" class="h" text-anchor="middle" style="font-size:13px;">PaymentLedger</text>
 <text x="1221.4285714285716" y="202" class="s" text-anchor="middle" style="font-size:10.5px">D1, append-only</text>
 <line x1="1400.0" y1="211" x2="1400.0" y2="870" class="dash"/>
-<rect x="1328.0" y="165" width="144" height="46" style="fill:#fff;stroke:#14213d;stroke-width:1.5"/>
+<rect x="1328.0" y="165" width="144" height="46" style="fill:#fff;stroke:#14271f;stroke-width:1.5"/>
 <text x="1400.0" y="185" class="h" text-anchor="middle" style="font-size:13px;">RecordRepayment</text>
 <text x="1400.0" y="202" class="s" text-anchor="middle" style="font-size:10.5px">use case</text>
-<text x="60" y="237" class="t" text-anchor="start" style="font-size:10.5px;fill:#1f4fe0">1  OPEN AN ORDER</text>
+<text x="60" y="237" class="t" text-anchor="start" style="font-size:10.5px;fill:#1f7a4d">1  OPEN AN ORDER</text>
 <path d="M156.0 269 H322.57142857142856" class="ink" style="" marker-end="url(#ae)"/>
-<text x="251.28571428571428" y="262" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">installment-order</text>
-<text x="187.18571428571428" y="262" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">1</text>
+<text x="251.28571428571428" y="262" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">installment-order</text>
+<text x="187.18571428571428" y="262" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">1</text>
 <path d="M334.57142857142856 297 H501.14285714285717" class="ink" style="" marker-end="url(#ae)"/>
-<text x="429.8571428571429" y="290" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">CreateInstallmentPayment</text>
-<text x="342.6571428571429" y="290" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">2</text>
+<text x="429.8571428571429" y="290" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">CreateInstallmentPayment</text>
+<text x="342.6571428571429" y="290" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">2</text>
 <path d="M513.1428571428571 325 H679.7142857142858" class="ink" style="" marker-end="url(#ae)"/>
-<text x="608.4285714285714" y="318" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">quote(loan, installment)</text>
-<text x="521.2285714285715" y="318" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">3</text>
+<text x="608.4285714285714" y="318" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">quote(loan, installment)</text>
+<text x="521.2285714285715" y="318" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">3</text>
 <path d="M679.7142857142858 353 H513.1428571428571" class="ink" style="stroke-dasharray:6 4;" marker-end="url(#open)"/>
-<text x="608.4285714285714" y="346" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">remaining</text>
-<text x="570.7285714285714" y="346" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">4</text>
+<text x="608.4285714285714" y="346" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">remaining</text>
+<text x="570.7285714285714" y="346" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">4</text>
 <path d="M513.1428571428571 381 H858.2857142857143" class="ink" style="" marker-end="url(#ae)"/>
-<text x="697.7142857142858" y="374" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">open(remaining, target)</text>
-<text x="613.8142857142858" y="374" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">5</text>
+<text x="697.7142857142858" y="374" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">open(remaining, target)</text>
+<text x="613.8142857142858" y="374" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">5</text>
 <path d="M870.2857142857143 409 H1036.857142857143" class="ink" style="" marker-end="url(#ae)"/>
-<text x="965.5714285714287" y="402" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">create order</text>
-<text x="917.9714285714286" y="402" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">6</text>
+<text x="965.5714285714287" y="402" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">create order</text>
+<text x="917.9714285714286" y="402" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">6</text>
 <path d="M322.57142857142856 437 H156.0" class="ink" style="stroke-dasharray:6 4;" marker-end="url(#open)"/>
-<text x="251.28571428571428" y="430" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">{ orderId, amount }</text>
-<text x="180.5857142857143" y="430" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">7</text>
-<text x="60" y="465" class="t" text-anchor="start" style="font-size:10.5px;fill:#1f4fe0">2  THE BORROWER APPROVES IN PAYPAL, THEN CONFIRMS</text>
+<text x="251.28571428571428" y="430" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">{ orderId, amount }</text>
+<text x="180.5857142857143" y="430" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">7</text>
+<text x="60" y="465" class="t" text-anchor="start" style="font-size:10.5px;fill:#1f7a4d">2  THE BORROWER APPROVES IN PAYPAL, THEN CONFIRMS</text>
 <path d="M156.0 497 H322.57142857142856" class="ink" style="" marker-end="url(#ae)"/>
-<text x="251.28571428571428" y="490" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">installment-capture { orderId }</text>
-<text x="140.98571428571427" y="490" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">8</text>
+<text x="251.28571428571428" y="490" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">installment-capture { orderId }</text>
+<text x="140.98571428571427" y="490" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">8</text>
 <path d="M334.57142857142856 525 H501.14285714285717" class="ink" style="" marker-end="url(#ae)"/>
-<text x="429.8571428571429" y="518" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">ConfirmInstallmentPayment</text>
-<text x="339.3571428571429" y="518" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">9</text>
+<text x="429.8571428571429" y="518" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">ConfirmInstallmentPayment</text>
+<text x="339.3571428571429" y="518" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">9</text>
 <path d="M513.1428571428571 573 H1215.4285714285716" class="ink" style="" marker-end="url(#ae)"/>
-<text x="876.2857142857143" y="566" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">hasRepayment(orderId)</text>
-<text x="798.9857142857144" y="566" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">10</text>
+<text x="876.2857142857143" y="566" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">hasRepayment(orderId)</text>
+<text x="798.9857142857144" y="566" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">10</text>
 <path d="M1215.4285714285716 601 H513.1428571428571" class="ink" style="stroke-dasharray:6 4;" marker-end="url(#open)"/>
-<text x="876.2857142857143" y="594" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">yes: answer from the ledger</text>
-<text x="779.1857142857143" y="594" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">11</text>
+<text x="876.2857142857143" y="594" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">yes: answer from the ledger</text>
+<text x="779.1857142857143" y="594" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">11</text>
 <line x1="417.14285714285717" y1="617" x2="1490.0" y2="617" class="dash"/><text x="427.14285714285717" y="632" class="s" text-anchor="start" style="font-family:'DejaVu Sans Mono',monospace;font-size:11px">[else]</text>
 <path d="M513.1428571428571 639 H858.2857142857143" class="ink" style="" marker-end="url(#ae)"/>
-<text x="697.7142857142858" y="632" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">settle(orderId)</text>
-<text x="640.2142857142858" y="632" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">12</text>
+<text x="697.7142857142858" y="632" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">settle(orderId)</text>
+<text x="640.2142857142858" y="632" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">12</text>
 <path d="M870.2857142857143 667 H1036.857142857143" class="ink" style="" marker-end="url(#ae)"/>
-<text x="965.5714285714287" y="660" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">capture order</text>
-<text x="914.6714285714287" y="660" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">13</text>
+<text x="965.5714285714287" y="660" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">capture order</text>
+<text x="914.6714285714287" y="660" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">13</text>
 <path d="M858.2857142857143 695 H513.1428571428571" class="ink" style="stroke-dasharray:6 4;" marker-end="url(#open)"/>
-<text x="697.7142857142858" y="688" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">collected amount, target</text>
-<text x="610.5142857142857" y="688" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">14</text>
+<text x="697.7142857142858" y="688" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">collected amount, target</text>
+<text x="610.5142857142857" y="688" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">14</text>
 <path d="M513.1428571428571 723 H547.1428571428571 V739 H515.1428571428571" class="ink" style="" marker-end="url(#ae)"/>
-<text x="567.1428571428571" y="735" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">15</text>
-<text x="579.1428571428571" y="735" class="s" text-anchor="start" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">verifySettlement()</text>
+<text x="567.1428571428571" y="735" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">15</text>
+<text x="579.1428571428571" y="735" class="s" text-anchor="start" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">verifySettlement()</text>
 <path d="M513.1428571428571 761 H1394.0" class="ink" style="" marker-end="url(#ae)"/>
-<text x="965.5714285714286" y="754" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">execute(collected amount)</text>
-<text x="875.0714285714286" y="754" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">16</text>
+<text x="965.5714285714286" y="754" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">execute(collected amount)</text>
+<text x="875.0714285714286" y="754" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">16</text>
 <path d="M1394.0 789 H1227.4285714285716" class="ink" style="" marker-end="url(#ae)"/>
-<text x="1322.7142857142858" y="782" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">recordRepayment(ref): once</text>
-<text x="1228.9142857142858" y="782" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">17</text>
+<text x="1322.7142857142858" y="782" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">recordRepayment(ref): once</text>
+<text x="1228.9142857142858" y="782" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">17</text>
 <path d="M1394.0 817 H691.7142857142858" class="ink" style="" marker-end="url(#ae)"/>
-<text x="1054.857142857143" y="810" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">recordPayment(): Loan, save, event</text>
-<text x="934.6571428571428" y="810" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">18</text>
-<rect x="417.14285714285717" y="539" width="1072.857142857143" height="294" style="fill:none;stroke:#14213d;stroke-width:1"/><path d="M417.14285714285717 559 H464.14285714285717 L472.14285714285717 551 V539" style="fill:#fff;stroke:#14213d;stroke-width:1"/><text x="425.14285714285717" y="554" class="t" text-anchor="start" style="font-size:10px">alt</text><text x="480.14285714285717" y="554" class="s" text-anchor="start" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;font-size:11px">[orderId already recorded]</text>
+<text x="1054.857142857143" y="810" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">recordPayment(): Loan, save, event</text>
+<text x="934.6571428571428" y="810" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">18</text>
+<rect x="417.14285714285717" y="539" width="1072.857142857143" height="294" style="fill:none;stroke:#14271f;stroke-width:1"/><path d="M417.14285714285717 559 H464.14285714285717 L472.14285714285717 551 V539" style="fill:#fff;stroke:#14271f;stroke-width:1"/><text x="425.14285714285717" y="554" class="t" text-anchor="start" style="font-size:10px">alt</text><text x="480.14285714285717" y="554" class="s" text-anchor="start" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;font-size:11px">[orderId already recorded]</text>
 <path d="M322.57142857142856 851 H156.0" class="ink" style="stroke-dasharray:6 4;" marker-end="url(#open)"/>
-<text x="251.28571428571428" y="844" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14213d">{ status, documentId }</text>
-<text x="170.68571428571428" y="844" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f4fe0">19</text>
-<rect x="1380" y="880" width="160" height="70" class="ink"/><line x1="1380" y1="915" x2="1540" y2="915" class="thin"/><line x1="1460" y1="915" x2="1460" y2="950" class="thin"/><text x="1392" y="902" class="t">UML-07 PAY</text><text x="1392" y="938" class="s">UML</text><text x="1472" y="938" class="s">REV A</text></svg>
+<text x="251.28571428571428" y="844" class="s" text-anchor="middle" style="font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:11px;fill:#14271f">{ status, documentId }</text>
+<text x="170.68571428571428" y="844" class="s" text-anchor="end" style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-size:12px;font-weight:700;fill:#1f7a4d">19</text>
+<rect x="1380" y="880" width="160" height="70" class="ink"/><line x1="1380" y1="915" x2="1540" y2="915" class="thin"/><line x1="1460" y1="915" x2="1460" y2="950" class="thin"/><text x="1392" y="902" class="t">UML-07 PAY</text><text x="1392" y="938" class="s">UML</text><text x="1472" y="938" class="s">REV A</text></g></svg>

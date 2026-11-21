@@ -2,6 +2,7 @@
 # each to PNG with headless Chrome (PNG keeps the Inter font; GitHub would fall back to another font in an SVG).
 import os, subprocess
 import blueprint as bp
+from blueprint import write_text
 bp.OX, bp.OY, bp.K = 1170, 262, 0.5
 from blueprint import ACC, INK, PD, SOFT, Z, iso, lu, risers, slab, tile
 
@@ -11,8 +12,8 @@ os.makedirs(OUT, exist_ok=True)
 def head(w, h):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
-<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9eef6" stroke-width="0.6"/></pattern>
-<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d3dcea" stroke-width="0.9"/></pattern>
+<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#eceeed" stroke-width="0.6"/></pattern>
+<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d9dcdb" stroke-width="0.9"/></pattern>
 </defs>
 <style>
 .ink{{stroke:{INK};fill:none;stroke-width:1.5;stroke-linejoin:round}}.thin{{stroke:{INK};fill:none;stroke-width:1}}
@@ -21,15 +22,18 @@ def head(w, h):
 </style>'''
 
 def render(name, w, h):
-    svg, png = os.path.join(OUT, name + '.svg'), os.path.join(OUT, name + '.png')
-    subprocess.run(['google-chrome', '--headless', '--no-sandbox', '--disable-gpu', '--hide-scrollbars',
-                    '--force-device-scale-factor=2', f'--window-size={w},{h}', f'--screenshot={png}', f'file://{svg}'],
-                   check=True, capture_output=True)
+    """Render the light and the dark file to PNG. Transparent background, so rounded corners show the page."""
+    for suffix in ('', '-dark'):
+        svg, png = os.path.join(OUT, name + suffix + '.svg'), os.path.join(OUT, name + suffix + '.png')
+        subprocess.run(['google-chrome', '--headless', '--no-sandbox', '--disable-gpu', '--hide-scrollbars',
+                        '--default-background-color=00000000', '--force-device-scale-factor=2', f'--window-size={w},{h}',
+                        f'--screenshot={png}', f'file://{svg}'], check=True, capture_output=True)
 
 # --- hero -----------------------------------------------------------------
 W, H = 1600, 560
-o = [head(W, H), f'<rect width="{W}" height="{H}" fill="#fff"/><rect width="{W}" height="{H}" fill="url(#major)"/>',
-     f'<rect x="10" y="10" width="{W-20}" height="{H-20}" class="ink"/>',
+o = [head(W, H), f'<clipPath id="heroclip"><rect width="{W}" height="{H}" rx="24"/></clipPath><g clip-path="url(#heroclip)">',
+     f'<rect width="{W}" height="{H}" fill="#fff"/><rect width="{W}" height="{H}" fill="url(#major)"/>',
+     f'<rect x="10" y="10" width="{W-20}" height="{H-20}" rx="16" class="ink"/>',
      '<text x="60" y="90" class="t">KEEL · SHEET 00</text>',
      f'<text x="60" y="172" fill="{INK}" font-size="68" font-weight="600" letter-spacing="-1">Keel</text>',
      f'<text x="60" y="222" fill="{INK}" font-size="24">Small business loans, serverless</text>',
@@ -58,8 +62,8 @@ foot = [(60, 500, 'A FULL LENDING PLATFORM'), (60, 517, 'ON ONE CLOUDFLARE WORKE
         (1060, 500, 'DDD   →'), (1150, 500, 'SEVEN BOUNDED CONTEXTS,'), (1150, 517, 'TALKING THROUGH DOMAIN EVENTS.')]
 for x, y, line in foot:
     o.append(f'<text x="{x}" y="{y}" class="t" style="font-size:12px;letter-spacing:2.4px">{line}</text>')
-o.append('</svg>')
-open(os.path.join(OUT, 'hero.svg'), 'w').write('\n'.join(o))
+o.append('</g></svg>')
+write_text(os.path.join(OUT, 'hero'), '\n'.join(o))
 render('hero', W, H)
 
 # --- pills ----------------------------------------------------------------
@@ -88,6 +92,6 @@ for label, kind, icon in PILLS:
     svg = (head(w, h) + f'<rect x="1" y="1" width="{w-2}" height="{h-2}" rx="19" class="ink" style="fill:#fff"/>' + mark +
            f'<text x="44" y="24.5" class="t" style="font-size:12px;letter-spacing:1.8px">{text}</text></svg>')
     slug = label.lower().replace(' · ', '-').replace(' ', '-')
-    open(os.path.join(OUT, f'pill-{slug}.svg'), 'w').write(svg)
+    write_text(os.path.join(OUT, f'pill-{slug}'), svg)
     render(f'pill-{slug}', w, h)
 print('ok', sorted(os.listdir(OUT)))

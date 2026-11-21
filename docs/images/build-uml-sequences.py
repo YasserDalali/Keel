@@ -11,7 +11,7 @@ def divider(s, y, label, a, b):
                + text(x0 + 10, y + 15, f'[{label}]', style="font-family:'DejaVu Sans Mono',monospace;font-size:11px"))
 
 def phase(s, label):
-    s.o.append(text(60, s.y - 6, label, 't', style='font-size:10.5px;fill:#1f4fe0'))
+    s.o.append(text(60, s.y - 6, label, 't', style='font-size:10.5px;fill:#1f7a4d'))
     s.gap(26)
 
 # --- UML-04: apply for a loan ------------------------------------------------

@@ -63,8 +63,8 @@ for group, rows in events:
         o.append(f'<text x="60" y="{y}" class="s">{name}</text>')
         for col, x, _, _ in COLS:
             o.append(f'<circle cx="{x}" cy="{y-4}" r="4.5" fill="{INK}"/>' if col in subs
-                     else f'<circle cx="{x}" cy="{y-4}" r="1.5" fill="#c3cddc"/>')
-        o.append(f'<line x1="60" y1="{y+7}" x2="365" y2="{y+7}" stroke="#e9eef6" stroke-width="1"/>')
+                     else f'<circle cx="{x}" cy="{y-4}" r="1.5" fill="#bcc0be"/>')
+        o.append(f'<line x1="60" y1="{y+7}" x2="365" y2="{y+7}" stroke="#eceeed" stroke-width="1"/>')
         y += 22
     y += 8
 o.append(f'<text x="60" y="{y+12}" class="t" style="font-size:10px">ICONS</text>')

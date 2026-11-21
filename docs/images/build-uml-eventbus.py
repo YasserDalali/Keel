@@ -31,7 +31,7 @@ tiles = [
 for x, y, w, d, inner, acc in sorted(tiles, key=lambda t: bp.depth(t[0], t[1])):
     o.append(tile(x, y, w, d, 0, inner, acc))
 
-EVT = 'stroke-dasharray:6 4;stroke:#1f4fe0'
+EVT = 'stroke-dasharray:6 4;stroke:#1f7a4d'
 o.append(face(H) +
          wire('M190 95 H243') +                  # 1 Loan -> use case (pullEvents)
          wire('M340 160 V198') +                 # 2 use case -> D1 (save)
@@ -78,10 +78,10 @@ for i, (t, sub) in enumerate(cols):
 for r, (label, cells) in enumerate(rows):
     y = Y0 + HEAD + r * RH
     if r:
-        o.append(f'<line x1="{X0}" y1="{y}" x2="{xs[-1]}" y2="{y}" style="stroke:#d3dcea;stroke-width:1"/>')
-    o.append(text(X0 + 14, y + 22, label, style='font-size:12.5px;fill:#14213d'))
+        o.append(f'<line x1="{X0}" y1="{y}" x2="{xs[-1]}" y2="{y}" style="stroke:#d9dcdb;stroke-width:1"/>')
+    o.append(text(X0 + 14, y + 22, label, style='font-size:12.5px;fill:#14271f'))
     for c, v in enumerate(cells):
-        o.append(text(xs[c + 1] + 14, y + 22, v, style='font-size:12.5px;fill:#14213d'))
-o.append(text(60, 1174, 'Keel starts with the simplest bus that works. The contexts only know publish and subscribe,', style='font-size:13px;fill:#14213d'))
-o.append(text(60, 1194, 'so Cloudflare Queues can replace it later without a change to Lending, Payments or Documents.', style='font-size:13px;fill:#14213d'))
+        o.append(text(xs[c + 1] + 14, y + 22, v, style='font-size:12.5px;fill:#14271f'))
+o.append(text(60, 1174, 'Keel starts with the simplest bus that works. The contexts only know publish and subscribe,', style='font-size:13px;fill:#14271f'))
+o.append(text(60, 1194, 'so Cloudflare Queues can replace it later without a change to Lending, Payments or Documents.', style='font-size:13px;fill:#14271f'))
 uml.finish(o, 'uml-eventbus', 'UML-08 EVENT BUS', view='AXO 7/52')

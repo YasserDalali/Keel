@@ -51,7 +51,7 @@ o.append(face(H) +
          + badge(5, 340, 495) + badge(7, 340, 615) + '</g>')
 
 Y = 880
-o.append(f'<line x1="60" y1="{Y-30}" x2="1540" y2="{Y-30}" class="thin" style="stroke:#d3dcea"/>')
+o.append(f'<line x1="60" y1="{Y-30}" x2="1540" y2="{Y-30}" class="thin" style="stroke:#d9dcdb"/>')
 checks = ['Payments asks Lending for the amount. The client never sets it.',
           'The provider must report the money as collected.',
           'The payment must match the loan, the user and the installment.',

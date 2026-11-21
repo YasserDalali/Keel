@@ -3,7 +3,7 @@
 from blueprint import ACC, INK, SOFT, header, lu, si, title_block, write
 
 MONO = "font-family:'JetBrains Mono','DejaVu Sans Mono',monospace"
-TINT = '#f1f5ff'
+TINT = '#edf7f1'
 HALO = 'paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round'  # keeps labels readable over lines
 
 # Extra markers. Start markers use auto-start-reverse, so one shape serves both ends.
@@ -41,10 +41,10 @@ def note(x, y, w, lines, accent=False):
     """UML note: a box with a folded corner."""
     h = 16 + 18 * len(lines)
     col = ACC if accent else INK
-    o = (f'<path d="M{x} {y} H{x+w-12} L{x+w} {y+12} V{y+h} H{x} Z" style="fill:#fffdf5;stroke:{col};stroke-width:1.2"/>'
+    o = (f'<path d="M{x} {y} H{x+w-12} L{x+w} {y+12} V{y+h} H{x} Z" style="fill:#f7f6f2;stroke:{col};stroke-width:1.2"/>'
          f'<path d="M{x+w-12} {y} V{y+12} H{x+w}" style="fill:none;stroke:{col};stroke-width:1.2"/>')
     for i, l in enumerate(lines):
-        o += text(x + 12, y + 22 + i * 18, l, style='font-size:12px;fill:#14213d')
+        o += text(x + 12, y + 22 + i * 18, l, style='font-size:12px;fill:#14271f')
     return o
 
 def step(n, x, y):
@@ -62,7 +62,7 @@ def actor(x, y, name, sub='', label_right=False):
 
 def usecase(cx, cy, label, rx=105, ry=20):
     return (f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" class="ink" style="fill:#fff"/>'
-            + text(cx, cy + 4.5, label, anchor='middle', style='font-size:13px;fill:#14213d'))
+            + text(cx, cy + 4.5, label, anchor='middle', style='font-size:13px;fill:#14271f'))
 
 def package(x, y, w, h, name):
     return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" class="dash" style="fill:#fff"/>'
@@ -88,10 +88,10 @@ def klass(x, y, w, name, stereo=None, attrs=(), ops=(), accent=False, lh=18):
     o += text(x + w / 2, y + head - 10, name, 'h', 'middle', f'font-size:14px;{"fill:" + ACC if accent else ""}')
     o += f'<line x1="{x}" y1="{y+head}" x2="{x+w}" y2="{y+head}" style="stroke:{col};stroke-width:1"/>'
     for i, a in enumerate(attrs):
-        o += text(x + 10, y + head + 18 + i * lh, a, style=f'{MONO};font-size:11px;fill:#14213d')
+        o += text(x + 10, y + head + 18 + i * lh, a, style=f'{MONO};font-size:11px;fill:#14271f')
     o += f'<line x1="{x}" y1="{y+head+ha}" x2="{x+w}" y2="{y+head+ha}" style="stroke:{col};stroke-width:1"/>'
     for i, op in enumerate(ops):
-        o += text(x + 10, y + head + ha + 18 + i * lh, op, style=f'{MONO};font-size:11px;fill:#14213d')
+        o += text(x + 10, y + head + ha + 18 + i * lh, op, style=f'{MONO};font-size:11px;fill:#14271f')
     return o, (x, y, w, h)
 
 # --- ER diagrams ------------------------------------------------------------
@@ -104,14 +104,14 @@ def table(x, y, w, name, cols, accent=False, group=''):
          f'<rect x="{x}" y="{y}" width="{w}" height="{head}" style="fill:{fill};stroke:{col};stroke-width:{2 if accent else 1.5}"/>'
          + text(x + 10, y + 20, name, 'h', style=f'font-size:13.5px;{MONO};{"fill:" + ACC if accent else ""}'))
     if group:
-        o += text(x + w - 10, y + 19, group, 't', 'end', 'font-size:9px;letter-spacing:1.2px;fill:#4a5670')
+        o += text(x + w - 10, y + 19, group, 't', 'end', 'font-size:9px;letter-spacing:1.2px;fill:#5d6963')
     rows = {}
     for i, (tag, c, t) in enumerate(cols):
         ry = y + head + 8 + i * rh + 12
         rows[c] = ry - 4
         if tag:
             o += text(x + 10, ry, tag, 't', style='font-size:8.5px;letter-spacing:.6px;fill:' + (ACC if 'PK' in tag else SOFT))
-        o += text(x + 50, ry, c, style=f'{MONO};font-size:11px;fill:#14213d')
+        o += text(x + 50, ry, c, style=f'{MONO};font-size:11px;fill:#14271f')
         o += text(x + w - 10, ry, t, anchor='end', style=f'{MONO};font-size:10px')
     return o, (x, y, w, h), rows
 
@@ -162,7 +162,7 @@ class Seq:
         self.n += 1
         self.o.append(step(self.n, x + (60 if d > 0 else -46), y + 12))
         self.o.append(text(x + (72 if d > 0 else -78), y + 12, label, anchor='end' if left else 'start',
-                           style=f'{MONO};{HALO};font-size:11px;fill:#14213d'))
+                           style=f'{MONO};{HALO};font-size:11px;fill:#14271f'))
         self.y += self.step + 10
 
     def frame(self, kind, guard, y0, y1, a, b):

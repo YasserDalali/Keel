@@ -39,7 +39,7 @@ put('txn', 1240, 460, 290, 'transactions', [('PK', 'id', 'text'), ('FK', 'loan_i
 
 # Bottom row: supporting tables
 o.append(text(60, 742, 'SUPPORTING TABLES', 't'))
-o.append(f'<line x1="60" y1="752" x2="1530" y2="752" class="thin" style="stroke:#d3dcea"/>')
+o.append(f'<line x1="60" y1="752" x2="1530" y2="752" class="thin" style="stroke:#d9dcdb"/>')
 W2, Y2 = 262, 772
 for i, (key, name, cols, group) in enumerate([
     ('docs', 'documents', [('PK', 'id', 'text'), ('FK', 'user_id', '→ users'), ('', 'document_type', 'enum'),
@@ -89,10 +89,10 @@ o.append(text(60, ky, 'KEY', 't'))
 o.append(line(f'M60 {ky+24} H124', start='many', end='one') + text(140, ky + 28, 'many to one'))
 o.append(line(f'M60 {ky+50} H124', start='one', end='one') + text(140, ky + 54, 'one to one (shared key)'))
 o.append(line(f'M60 {ky+76} H124', 'dashed', start='many', end='one') + text(140, ky + 80, 'optional'))
-o.append(text(330, ky + 28, '→ users', style=f'{MONO};font-size:11px;fill:#14213d') + text(410, ky + 28, 'a foreign key to users.id (not drawn)'))
-o.append(text(330, ky + 54, 'sealed', style=f'{MONO};font-size:11px;fill:#14213d') + text(410, ky + 54, 'AES-GCM ciphertext'))
-o.append(text(330, ky + 80, 'real $', style=f'{MONO};font-size:11px;fill:#14213d') + text(410, ky + 80, 'dollars; the domain uses whole cents'))
-o.append(note(760, 975, 560, ['Blue tables: the Loan aggregate, saved together in one D1 batch.',
+o.append(text(330, ky + 28, '→ users', style=f'{MONO};font-size:11px;fill:#14271f') + text(410, ky + 28, 'a foreign key to users.id (not drawn)'))
+o.append(text(330, ky + 54, 'sealed', style=f'{MONO};font-size:11px;fill:#14271f') + text(410, ky + 54, 'AES-GCM ciphertext'))
+o.append(text(330, ky + 80, 'real $', style=f'{MONO};font-size:11px;fill:#14271f') + text(410, ky + 80, 'dollars; the domain uses whole cents'))
+o.append(note(760, 975, 560, ['Green tables: the Loan aggregate, saved together in one D1 batch.',
                               'A unique index on external_reference_id records each',
                               'provider payment at most once.',
                               'loans.status stores declined and cancelled as "defaulted".',

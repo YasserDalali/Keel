@@ -3,8 +3,8 @@ import math, os, re
 HERE = os.path.dirname(os.path.abspath(__file__))
 SI = HERE + '/icons/simple-icons/'; LU = HERE + '/icons/lucide/'
 ICON_PX = 2.2
-INK, SOFT, ACC = '#14213d', '#4a5670', '#1f4fe0'
-SIDE_X, SIDE_Y = '#e3e9f2', '#f2f5fa'   # shaded faces: +x (right) darker, +y (left) lighter
+INK, SOFT, ACC = '#14271f', '#5d6963', '#1f7a4d'
+SIDE_X, SIDE_Y = '#e5e7e6', '#f3f4f4'   # shaded faces: +x (right) darker, +y (left) lighter
 
 def si(n, x, y, sz):
     d = re.search(r' d="([^"]+)"', open(SI + n + '.svg').read()).group(1)
@@ -86,7 +86,7 @@ def slab(z):
     return block(0, 0, PW, PD, z - T, T) + face(z) + f'<rect width="{PW}" height="{PD}" fill="url(#minor)"/></g>'
 
 def tile(x, y, w, d, z, inner, accent=False):
-    o = block(x, y, w, d, z, TILE_H, '#f1f5ff' if accent else '#fff', 'acc' if accent else 'ink')
+    o = block(x, y, w, d, z, TILE_H, '#edf7f1' if accent else '#fff', 'acc' if accent else 'ink')
     return o + face(z + TILE_H) + f'<g transform="translate({x},{y})">' + inner + '</g></g>'
 
 def num(n, cx, cy):  # flat step circle on a 2D line
@@ -117,9 +117,10 @@ H = 1000  # sheet height; a sheet may set bp.H before header() for more room
 def header(title):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 {H}" width="1600" height="{H}" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
-<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9eef6" stroke-width="0.6"/></pattern>
-<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d3dcea" stroke-width="0.9"/></pattern>
+<pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#eceeed" stroke-width="0.6"/></pattern>
+<pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#minor)"/><path d="M100 0H0V100" fill="none" stroke="#d9dcdb" stroke-width="0.9"/></pattern>
 <marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L10 5L0 9z" fill="{INK}"/></marker>
+<clipPath id="sheetclip"><rect width="1600" height="{H}" rx="24"/></clipPath>
 </defs>
 <style>
 .ink{{stroke:{INK};fill:none;stroke-width:1.5;stroke-linejoin:round}}.thin{{stroke:{INK};fill:none;stroke-width:1}}
@@ -127,8 +128,8 @@ def header(title):
 .t{{fill:{INK};font-size:11px;letter-spacing:1.6px;font-weight:600}}.h{{fill:{INK};font-size:15px;font-weight:700;letter-spacing:.6px}}
 .s{{fill:{SOFT};font-size:12px}}.n{{fill:{ACC};font-size:9.5px;font-weight:700;text-anchor:middle}}
 </style>
-<rect width="1600" height="{H}" fill="#ffffff"/><rect width="1600" height="{H}" fill="url(#major)"/>
-<rect x="20" y="20" width="1560" height="{H-40}" class="ink"/><rect x="30" y="30" width="1540" height="{H-60}" class="thin"/>
+<g clip-path="url(#sheetclip)"><rect width="1600" height="{H}" fill="#ffffff"/><rect width="1600" height="{H}" fill="url(#major)"/>
+<rect x="20" y="20" width="1560" height="{H-40}" rx="14" class="ink"/><rect x="30" y="30" width="1540" height="{H-60}" rx="8" class="thin"/>
 <text x="60" y="108" fill="{INK}" font-size="36" font-weight="600">{title}</text>
 <line x1="60" y1="132" x2="1540" y2="132" class="thin"/>'''
 
@@ -152,10 +153,37 @@ def key(lines, y0=760, x=60):
 def title_block(sheet, view='ISO VIEW', rev='REV A'):
     return (f'<rect x="1380" y="{H-120}" width="160" height="70" class="ink"/><line x1="1380" y1="{H-85}" x2="1540" y2="{H-85}" class="thin"/>'
             f'<line x1="1460" y1="{H-85}" x2="1460" y2="{H-50}" class="thin"/><text x="1392" y="{H-98}" class="t">{sheet}</text>'
-            f'<text x="1392" y="{H-62}" class="s">{view}</text><text x="1472" y="{H-62}" class="s">{rev}</text></svg>')
+            f'<text x="1392" y="{H-62}" class="s">{view}</text><text x="1472" y="{H-62}" class="s">{rev}</text></g></svg>')
+
+# --- dark theme -------------------------------------------------------------
+# Every sheet is drawn once, in the light palette. The dark file is the same drawing with each palette colour
+# swapped, so the two can never drift apart. Sheet and box fills both become the GitHub dark page colour, which
+# keeps text halos invisible, exactly as white on white does in the light theme.
+DARK = {'#14271f': '#f2f1ec',  # ink
+        '#5d6963': '#a6b1ab',  # soft text
+        '#1f7a4d': '#7fd1ae',  # accent
+        '#edf7f1': '#102220',  # accent tint
+        '#e5e7e6': '#182426',  # shaded face, right
+        '#f3f4f4': '#131b1f',  # shaded face, front
+        '#eceeed': '#141d20',  # minor grid, row lines
+        '#d9dcdb': '#1c2a2b',  # major grid, soft rules
+        '#bcc0be': '#263b38',  # empty marks
+        '#f7f6f2': '#24282d',  # note paper
+        '#ffffff': '#0d1117',  # sheet
+        '#fff': '#0d1117',     # box fill
+}
+
+def dark(svg):
+    """The same drawing in the dark palette."""
+    return re.sub(r'#[0-9a-fA-F]{3,6}(?![0-9a-zA-Z])', lambda m: DARK.get(m.group(0).lower(), m.group(0)), svg)
+
+def write_text(path, svg):
+    """Write path.svg (light) and path-dark.svg. `path` has no extension."""
+    open(path + '.svg', 'w').write(svg)
+    open(path + '-dark.svg', 'w').write(dark(svg))
 
 def write(name, parts):
-    open(f'{HERE}/{name}.svg', 'w').write('\n'.join(parts))
+    write_text(f'{HERE}/{name}', '\n'.join(parts))
 
 # --- single-plane sheets (CF-02 onwards) ----------------------------------
 # Arrow styles: calls a port, implements a port, publishes an event, reads tables.
